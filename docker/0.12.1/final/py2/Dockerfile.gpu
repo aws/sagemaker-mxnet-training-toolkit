@@ -1,4 +1,5 @@
-FROM 142577830533.dkr.ecr.us-west-2.amazonaws.com/sagemaker-mxnet-gpu-base:1.0
+# Use local version of image built from Dockerfile.cpu in /docker/$version/base directory
+FROM mxnet-base:0.12.1-gpu-py2
 
 ENV PYTHONPATH="/opt/amazon/lib/python2.7/site-packages/"
 ENTRYPOINT ["python2", "/opt/amazon/bin/entry.py"]

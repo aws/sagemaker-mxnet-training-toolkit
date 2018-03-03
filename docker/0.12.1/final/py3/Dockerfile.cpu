@@ -1,4 +1,5 @@
-FROM 142577830533.dkr.ecr.us-west-2.amazonaws.com/sagemaker-mxnet-cpu-base:1.0
+# Use local version of image built from Dockerfile.cpu in /docker/$version/base directory
+FROM mxnet-base:0.12.1-cpu-py3
 
 RUN pip3 install --no-cache \
     numpy==1.13.3 requests==2.18.4 graphviz==0.8.1 boto3==1.5.2 \
