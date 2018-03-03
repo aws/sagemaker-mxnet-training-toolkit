@@ -1,0 +1,5 @@
+# Use local version of image built from Dockerfile.cpu in /docker/$version/base directory
+FROM mxnet-base:1.0.0-gpu-py3
+
+ENV PYTHONPATH="/opt/amazon/lib/python3.4/site-packages/"
+ENTRYPOINT ["python3", "/opt/amazon/bin/entry.py"]
