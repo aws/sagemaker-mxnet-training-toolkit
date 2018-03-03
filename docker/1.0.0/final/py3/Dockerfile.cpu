@@ -1,0 +1,8 @@
+FROM 142577830533.dkr.ecr.us-west-2.amazonaws.com/sagemaker-mxnet-cpu-base:1.1
+
+RUN pip3 install --no-cache \
+    numpy==1.13.3 requests==2.18.4 graphviz==0.8.1 boto3==1.5.2 \
+    six==1.11.0 gevent==1.2.2 gunicorn==19.7.1 flask==0.11 Jinja2==2.9
+
+ENV PYTHONPATH="/opt/amazon/lib/python3.4/site-packages/"
+ENTRYPOINT ["python3", "/opt/amazon/bin/entry.py"]

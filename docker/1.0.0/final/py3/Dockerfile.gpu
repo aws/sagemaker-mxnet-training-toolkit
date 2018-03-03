@@ -1,0 +1,4 @@
+FROM 142577830533.dkr.ecr.us-west-2.amazonaws.com/sagemaker-mxnet-gpu-base:1.1
+
+ENV PYTHONPATH="/opt/amazon/lib/python3.4/site-packages/"
+ENTRYPOINT ["python3", "/opt/amazon/bin/entry.py"]
