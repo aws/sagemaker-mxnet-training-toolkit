@@ -7,6 +7,8 @@ import utils
 import os
 import json
 
+
+# The image should run the user-provided code using the right python version when training.
 def test_train_py_version(docker_image, sagemaker_session, py_version, opt_ml):
     resource_path = 'test/resources/py_version/code'
 
@@ -22,12 +24,13 @@ def test_train_py_version(docker_image, sagemaker_session, py_version, opt_ml):
     os.makedirs(os.path.join(opt_ml, 'model'))
     docker_utils.train(docker_image, opt_ml)
 
+    # The usermodule.py train_fn will assert on the expected python versions passed in through hyperparameters,
+    # and training will fail if they are incorrect.
     success_file = 'output/success'
     assert os.path.exists(os.path.join(opt_ml, success_file)), 'expected file not found: {}'.format(success_file)
 
 
-
-# The image should use the model_fn and transform_fn defined in the user-provided script when serving.
+# The image should run the user-provided code using the right python version when hosting.
 def test_hosting_py_version(docker_image, py_version, opt_ml):
     resource_path = 'test/resources/py_version'
     utils.copy_resource(resource_path, opt_ml, 'code')
@@ -37,7 +40,9 @@ def test_hosting_py_version(docker_image, py_version, opt_ml):
     with docker_utils.HostingContainer(image=docker_image,
                                        opt_ml=opt_ml, script_name='usermodule.py') as c:
         c.ping()
-        output = c.invoke_endpoint(input)
+        # We send the json of the expect py versions in the request. The usermodule.py transform_fn will assert on the python versions,
+        # and this request will fail and throw an exception if they are incorrect.
+        c.invoke_endpoint(input)
 
 
 def _py_version_dict(py_version):
