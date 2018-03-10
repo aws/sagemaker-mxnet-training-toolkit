@@ -18,4 +18,4 @@ RUN rm $container_support_tar && \
     rm $mxnet_support_tar 
 
 # Entrypoint script comes from sagemaker_container_support
-ENTRYPOINT ["entry.py"]
+ENTRYPOINT ["/usr/bin/python2", "/usr/local/bin/entry.py"]

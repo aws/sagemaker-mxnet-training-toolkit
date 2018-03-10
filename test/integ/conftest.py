@@ -49,7 +49,7 @@ def framework_version(request):
 
 @pytest.fixture(scope='session')
 def py_version(request):
-    return request.config.getoption('--py-version')
+    return int(request.config.getoption('--py-version'))
 
 
 @pytest.fixture(scope='session')
