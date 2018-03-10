@@ -13,11 +13,11 @@ logging.getLogger('connectionpool.py').setLevel(logging.INFO)
 
 
 def pytest_addoption(parser):
-    parser.addoption('--aws-id')
+    parser.addoption('--aws-id', required=True)
     parser.addoption('--docker-base-name', default='preprod-mxnet')
-    parser.addoption('--instance-type')
+    parser.addoption('--instance-type', required=True)
     parser.addoption('--region', default='us-west-2')
-    parser.addoption('--tag')
+    parser.addoption('--tag', required=True)
 
 
 @pytest.fixture(scope='session')
@@ -51,14 +51,8 @@ def docker_registry(aws_id, region):
 
 
 @pytest.fixture(scope='module')
-def docker_image(docker_base_name, tag):
-    return '{}:{}'.format(docker_base_name, tag)
-
-
-@pytest.fixture(scope='module')
-def docker_image_uri(docker_registry, docker_image):
-    uri = '{}/{}'.format(docker_registry, docker_image)
-    return uri
+def ecr_image(docker_registry, docker_base_name, tag):
+    return '{}/{}:{}'.format(docker_registry, docker_base_name, tag)
 
 
 @pytest.fixture(scope='session')
