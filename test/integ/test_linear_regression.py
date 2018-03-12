@@ -7,7 +7,7 @@ import utils
 import numpy as np
 import os
 
-def test_linear_regression(docker_image, sagemaker_session, opt_ml):
+def test_linear_regression(docker_image, sagemaker_session, opt_ml, processor):
     resource_path = 'test/resources/linear_regression'
 
     # create training data
@@ -35,7 +35,7 @@ def test_linear_regression(docker_image, sagemaker_session, opt_ml):
     utils.create_config_files('linear_regression.py', s3_source_archive.s3_prefix, opt_ml)
     os.makedirs(os.path.join(opt_ml, 'model'))
 
-    docker_utils.train(docker_image, opt_ml)
+    docker_utils.train(docker_image, opt_ml, processor)
 
     for f in ['output/success', 'model/model-symbol.json', 'model/model-0000.params', 'model/model-shapes.json']:
         assert os.path.exists(os.path.join(opt_ml, f)), 'expected file not found: {}'.format(f)

@@ -9,7 +9,7 @@ import json
 
 
 # The image should run the user-provided code using the right python version when training.
-def test_train_py_version(docker_image, sagemaker_session, py_version, opt_ml):
+def test_train_py_version(docker_image, sagemaker_session, py_version, opt_ml, processor):
     resource_path = 'test/resources/py_version/code'
 
     s3_source_archive = fw_utils.tar_and_upload_dir(session=sagemaker_session.boto_session,
@@ -22,7 +22,7 @@ def test_train_py_version(docker_image, sagemaker_session, py_version, opt_ml):
 
     utils.create_config_files('usermodule.py', s3_source_archive.s3_prefix, opt_ml, additional_hp=hp)
     os.makedirs(os.path.join(opt_ml, 'model'))
-    docker_utils.train(docker_image, opt_ml)
+    docker_utils.train(docker_image, opt_ml, processor)
 
     # The usermodule.py train_fn will assert on the expected python versions passed in through hyperparameters,
     # and training will fail if they are incorrect.
@@ -31,13 +31,13 @@ def test_train_py_version(docker_image, sagemaker_session, py_version, opt_ml):
 
 
 # The image should run the user-provided code using the right python version when hosting.
-def test_hosting_py_version(docker_image, py_version, opt_ml):
+def test_hosting_py_version(docker_image, py_version, opt_ml, processor):
     resource_path = 'test/resources/py_version'
     utils.copy_resource(resource_path, opt_ml, 'code')
 
     input = json.dumps(_py_version_dict(py_version))
 
-    with docker_utils.HostingContainer(image=docker_image,
+    with docker_utils.HostingContainer(image=docker_image, processor=processor,
                                        opt_ml=opt_ml, script_name='usermodule.py') as c:
         c.ping()
         # We send the json of the expect py versions in the request. The usermodule.py transform_fn will assert on the python versions,
