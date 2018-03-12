@@ -21,20 +21,16 @@ SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 def pytest_addoption(parser):
     parser.addoption('--docker-base-name', default='preprod-mxnet')
-    parser.addoption('--tag', required=True)
     parser.addoption('--region', default='us-west-2')
     parser.addoption('--framework-version', required=True)
     parser.addoption('--py-version', required=True, choices=['2', '3'])
-
+    parser.addoption('--processor', required=True, choices=['gpu','cpu'])
+    # If not specified, will default to {framework-version}-{processor}-py{py-version}
+    parser.addoption('--tag', default=None)
 
 @pytest.fixture(scope='session')
 def docker_base_name(request):
     return request.config.getoption('--docker-base-name')
-
-
-@pytest.fixture(scope='session')
-def tag(request):
-    return request.config.getoption('--tag')
 
 
 @pytest.fixture(scope='session')
@@ -50,6 +46,18 @@ def framework_version(request):
 @pytest.fixture(scope='session')
 def py_version(request):
     return int(request.config.getoption('--py-version'))
+
+
+@pytest.fixture(scope='session')
+def processor(request):
+    return request.config.getoption('--processor')
+
+
+@pytest.fixture(scope='session')
+def tag(request, framework_version, processor, py_version):
+    provided_tag = request.config.getoption('--tag')
+    default_tag = '{}-{}-py{}'.format(framework_version, processor, py_version)
+    return provided_tag if provided_tag is not None else default_tag
 
 
 @pytest.fixture(scope='session')
