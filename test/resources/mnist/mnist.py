@@ -42,7 +42,7 @@ def get_train_context(num_gpus):
         return mx.cpu()
 
 
-def train(channel_input_dirs, hyperparameters, hosts, num_gpus, **kwargs):
+def train(channel_input_dirs, hyperparameters, hosts, current_host, num_gpus, **kwargs):
     (train_labels, train_images) = load_data(os.path.join(channel_input_dirs['train']))
     (test_labels, test_images) = load_data(os.path.join(channel_input_dirs['test']))
 
