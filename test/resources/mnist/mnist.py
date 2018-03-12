@@ -45,8 +45,17 @@ def get_train_context(num_gpus):
 def train(channel_input_dirs, hyperparameters, hosts, num_gpus, **kwargs):
     (train_labels, train_images) = load_data(os.path.join(channel_input_dirs['train']))
     (test_labels, test_images) = load_data(os.path.join(channel_input_dirs['test']))
+
+    # Data parallel training - shard the data so each host only trains on a subset of the total data.
+    shard_size = len(train_images) // len(hosts)
+    for i, host in enumerate(hosts):
+        if host == current_host:
+            start = shard_size * i
+            end = start + shard_size
+            break
+
     batch_size = 100
-    train_iter = mx.io.NDArrayIter(train_images, train_labels, batch_size, shuffle=True)
+    train_iter = mx.io.NDArrayIter(train_images[start:end], train_labels[start:end], batch_size, shuffle=True)
     val_iter = mx.io.NDArrayIter(test_images, test_labels, batch_size)
     logging.getLogger().setLevel(logging.DEBUG)
     kvstore = 'local' if len(hosts) == 1 else 'dist_sync'
