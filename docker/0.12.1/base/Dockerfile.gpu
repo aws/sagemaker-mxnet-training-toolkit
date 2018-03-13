@@ -26,7 +26,7 @@ RUN cd /usr/src/gtest && cmake CMakeLists.txt && make && cp *.a /usr/lib
 # https://github.com/apache/incubator-mxnet/blob/master/docker/Dockerfiles/Dockerfile.in.lib.gpu
 RUN cd /tmp && \
     git clone --recursive https://github.com/apache/incubator-mxnet mxnet && cd mxnet && \
-    git checkout tags/0.12.1 -b 0.12.1 && git submodule update --recursive && \
+    git checkout tags/0.12.1 -b 0.12.1 && git submodule update --init --recursive && \
     make -j$(nproc) USE_CUDA=1 USE_CUDA_PATH=/usr/local/cuda USE_CUDNN=1 USE_DIST_KVSTORE=1 && \
     cd /tmp/mxnet/python && \
     python2 setup.py install && \
