@@ -39,7 +39,7 @@ def test_mxnet_distributed(sagemaker_session, ecr_image, instance_type):
         mx.fit({'train': train_input, 'test': test_input})
         
     with timeout_and_delete_endpoint(estimator=mx, minutes=30):
-        predictor = mx.deploy(initial_instance_count=1, instance_type='ml.c4.xlarge')
+        predictor = mx.deploy(initial_instance_count=1, instance_type=instance_type)
 
         data=np.zeros(shape=(1, 1, 28, 28))
         predictor.predict(data)
