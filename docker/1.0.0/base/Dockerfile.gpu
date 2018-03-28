@@ -10,6 +10,8 @@ RUN cd /tmp && \
     python2 get-pip.py && \
     python3 get-pip.py
 
+COPY patches /patches
+
 # build mxnet
 # from https://github.com/apache/incubator-mxnet/blob/master/docker/install/cpp.sh
 RUN cd /usr/src/gtest && cmake CMakeLists.txt && make && cp *.a /usr/lib
@@ -19,6 +21,7 @@ RUN cd /usr/src/gtest && cmake CMakeLists.txt && make && cp *.a /usr/lib
 RUN cd /tmp && \
     git clone --recursive https://github.com/apache/incubator-mxnet mxnet && cd mxnet && \
     git checkout tags/1.0.0 -b 1.0.0 && git submodule update --init --recursive && \
+    git apply --verbose /patches/*.patch && \
     make -j$(nproc) USE_CUDA=1 USE_CUDA_PATH=/usr/local/cuda USE_CUDNN=1 USE_DIST_KVSTORE=1 && \
     cd /tmp/mxnet/python && \
     python2 setup.py install && \

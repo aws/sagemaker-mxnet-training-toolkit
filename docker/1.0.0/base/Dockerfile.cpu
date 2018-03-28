@@ -10,6 +10,7 @@ RUN cd /tmp && \
     python3 get-pip.py
 
 COPY patches /patches
+COPY cpu_patches /cpu_patches
 
 # Install mxnet for python 2 and python 3
 RUN cd /tmp && \
@@ -17,6 +18,7 @@ RUN cd /tmp && \
     cd /tmp/mxnet && \
     git checkout tags/1.0.0 -b 1.0.0 && git submodule update --init --recursive && \
     git apply --verbose /patches/*.patch && \
+    git apply --verbose /cpu_patches/*.patch && \    
     make -j$(nproc) USE_BLAS=openblas USE_MKL2017=1 USE_DIST_KVSTORE=1 && \
     cd /tmp/mxnet/python && \
     python2 setup.py install && \

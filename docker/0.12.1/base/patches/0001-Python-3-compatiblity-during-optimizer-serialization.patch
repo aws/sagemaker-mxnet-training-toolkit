@@ -1,0 +1,25 @@
+From c462d343b0782e82a7a91d3dcccc3863bb947dff Mon Sep 17 00:00:00 2001
+From: Tobias Domhan <tdomhan@gmail.com>
+Date: Sat, 25 Nov 2017 23:02:49 +0100
+Subject: [PATCH] Python 3 compatiblity during optimizer serialization. (#8334)
+
+---
+ python/mxnet/kvstore.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/python/mxnet/kvstore.py b/python/mxnet/kvstore.py
+index d068d06..ad598d0 100644
+--- a/python/mxnet/kvstore.py
++++ b/python/mxnet/kvstore.py
+@@ -451,7 +451,7 @@ class KVStore(object):
+             # send the optimizer to server
+             try:
+                 # use ASCII protocol 0, might be slower, but not a big ideal
+-                optim_str = pickle.dumps(optimizer, 0)
++                optim_str = py_str(pickle.dumps(optimizer, 0))
+             except:
+                 raise
+             self._send_command_to_servers(0, optim_str)
+-- 
+2.7.3.AMZN
+
