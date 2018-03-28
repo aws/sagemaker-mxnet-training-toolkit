@@ -1,11 +1,11 @@
 FROM nvidia/cuda:9.0-cudnn7-devel
-ARG mxnet_installable
+ARG framework_installable
 ARG py_version
-ARG mxnet_support_tar=sagemaker_mxnet_container-1.0.tar.gz
-ARG container_support_tar=sagemaker_container_support-1.0.tar.gz
+ARG framework_support_installable=sagemaker_mxnet_container-1.0.tar.gz
+ARG container_support_installable=sagemaker_container_support-1.0.tar.gz
 
 # Validate that arguments are specified
-RUN test $mxnet_installable || exit 1 && \
+RUN test $framework_installable || exit 1 && \
     test $py_version || exit 1
 
 WORKDIR /tmp
@@ -26,21 +26,21 @@ RUN pip install --no-cache \
     six==1.11.0 gevent==1.2.2 gunicorn==19.7.1 flask==0.11 Jinja2==2.9
 
 # Will install from pypi once packages are released there. For now, copy from local file system.
-COPY $mxnet_installable .
-COPY $mxnet_support_tar .
-COPY $container_support_tar .
+COPY $framework_installable .
+COPY $framework_support_installable .
+COPY $container_support_installable .
 
-RUN mxnet_installable_local=$(basename $mxnet_installable) && \
-    mxnet_support_tar_local=$(basename $mxnet_support_tar) && \
-    container_support_tar_local=$(basename $container_support_tar) && \
+RUN framework_installable_local=$(basename $framework_installable) && \
+    framework_support_installable_local=$(basename $framework_support_installable) && \
+    container_support_installable_local=$(basename $container_support_installable) && \
     \
-    pip install $mxnet_installable_local && \
-    pip install $container_support_tar_local && \
-    pip install $mxnet_support_tar_local && \
+    pip install $framework_installable_local && \
+    pip install $container_support_installable_local && \
+    pip install $framework_support_installable_local && \
     \
-    rm $mxnet_installable_local && \
-    rm $container_support_tar_local && \
-    rm $mxnet_support_tar_local
+    rm $framework_installable_local && \
+    rm $container_support_installable_local && \
+    rm $framework_support_installable_local
 
 # This is here to make our installed version of OpenCV work.
 # https://stackoverflow.com/questions/29274638/opencv-libdc1394-error-failed-to-initialize-libdc1394
