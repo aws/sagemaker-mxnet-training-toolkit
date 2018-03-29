@@ -34,6 +34,8 @@ setup(
         'Programming Language :: Python :: 3.5',
     ],
 
+    # We don't declare our dependency on mxnet here because we build with
+    # different packages for different variants (e.g. mxnet-mkl and mxnet-cu90).
     install_requires=['sagemaker-container-support >= 1.0, <2'],
     extras_require={
         'test': ['tox', 'flake8', 'pytest', 'pytest-cov', 'pytest-xdist', 'mock', 'sagemaker']
