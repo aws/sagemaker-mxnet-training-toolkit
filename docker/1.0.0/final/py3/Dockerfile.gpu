@@ -1,21 +1,16 @@
 # Use local version of image built from Dockerfile.gpu in /docker/$version/base directory
 FROM mxnet-base:1.0.0-gpu-py3
-ARG mxnet_support_tar=sagemaker_mxnet_container-1.0.tar.gz
-ARG container_support_tar=sagemaker_container_support-1.0.tar.gz
+ARG mxnet_support_tar=sagemaker_mxnet_container-1.0.0.tar.gz
 
 RUN pip3 install --no-cache \
     numpy==1.13.3 requests==2.18.4 graphviz==0.8.1 boto3==1.5.2 \
     six==1.11.0 gevent==1.2.2 gunicorn==19.7.1 flask==0.11 Jinja2==2.9
 
-# Will install from pypi once packages are released there. For now, copy from local file system.
-COPY $container_support_tar .
 COPY $mxnet_support_tar .
 
-RUN pip3 install $container_support_tar && \
-    pip3 install $mxnet_support_tar
+RUN pip3 install $mxnet_support_tar
 
-RUN rm $container_support_tar && \
-    rm $mxnet_support_tar 
+RUN rm $mxnet_support_tar
 
 # Entrypoint script comes from sagemaker_container_support
 ENTRYPOINT ["/usr/bin/python3", "/usr/local/bin/entry.py"]
