@@ -12,7 +12,7 @@ def read(fname):
 
 setup(
     name='sagemaker_mxnet_container',
-    version='1.0',
+    version='1.0.0',
     description='Open source library for creating MXNet containers to run on Amazon SageMaker.',
 
     packages=find_packages(where='src', exclude=('test',)),
@@ -36,7 +36,7 @@ setup(
 
     # We don't declare our dependency on mxnet here because we build with
     # different packages for different variants (e.g. mxnet-mkl and mxnet-cu90).
-    install_requires=['sagemaker-container-support >= 1.0, <2'],
+    install_requires=['sagemaker-container-support >= 1.0.0, <2'],
     extras_require={
         'test': ['tox', 'flake8', 'pytest', 'pytest-cov', 'pytest-xdist', 'mock', 'sagemaker']
     },
