@@ -3,8 +3,7 @@ FROM mxnet-base:1.0.0-gpu-py2
 ARG mxnet_support_tar=sagemaker_mxnet_container-1.0.0.tar.gz
 
 RUN pip2 install --no-cache \
-    numpy==1.13.3 requests==2.18.4 graphviz==0.8.1 boto3==1.5.2 \
-    six==1.11.0 gevent==1.2.2 gunicorn==19.7.1 flask==0.11 Jinja2==2.9
+    numpy==1.13.3
 
 COPY $mxnet_support_tar .
 
