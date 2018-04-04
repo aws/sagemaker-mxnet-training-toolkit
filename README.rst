@@ -77,20 +77,20 @@ If you want to build your base docker image, then use:
     # All build instructions assume you're building from the same directory as the dockerfile.
 
     # CPU
-    docker build -t mxnet-base:<MXNet_version>-cpu-<python_version> Dockerfile.cpu .
+    docker build -t mxnet-base:<MXNet_version>-cpu-<python_version> -f Dockerfile.cpu .
 
     # GPU
-    docker build -t mxnet-base:<MXNet_version>-gpu-<python_version> Dockerfile.gpu .
+    docker build -t mxnet-base:<MXNet_version>-gpu-<python_version> -f Dockerfile.gpu .
 
 ::
 
     # Example
 
     # CPU
-    docker build -t mxnet-base:0.12.1-cpu-py2 Dockerfile.cpu .
+    docker build -t mxnet-base:0.12.1-cpu-py2 -f Dockerfile.cpu .
 
     # GPU
-    docker build -t mxnet-base:0.12.1-gpu-py2 Dockerfile.gpu .
+    docker build -t mxnet-base:0.12.1-gpu-py2 -f Dockerfile.gpu .
 
 Final Images
 ~~~~~~~~~~~~
@@ -125,20 +125,25 @@ If you want to build "final" Docker images, then use:
     # All build instructions assumes you're building from the same directory as the dockerfile.
 
     # CPU
-    docker build -t <image_name>:<tag> Dockerfile.cpu .
+    docker build -t <image_name>:<tag> -f Dockerfile.cpu .
 
     # GPU
-    docker build -t <image_name>:<tag> Dockerfile.gpu .
+    docker build -t <image_name>:<tag> -f Dockerfile.gpu .
 
 ::
 
     # Example
 
     # CPU
-    docker build -t preprod-mxnet:0.12.1-cpu-py2 Dockerfile.cpu .
+    docker build -t preprod-mxnet:0.12.1-cpu-py2 -f Dockerfile.cpu .
 
     # GPU
-    docker build -t preprod-mxnet:0.12.1-gpu-py2 Dockerfile.gpu .
+    docker build -t preprod-mxnet:0.12.1-gpu-py2 -f Dockerfile.gpu .
+
+    # For building images of MXNet versions 1.1 and above
+    docker build -t preprod-mxnet:1.1.0-cpu-py2 --build-arg py_version=2
+    --build-arg framework_installable=mxnet-1.1.0-py2.py3-none-manylinux1_x86_64.whl -f Dockerfile.cpu .
+
 
 Running the tests
 -----------------
