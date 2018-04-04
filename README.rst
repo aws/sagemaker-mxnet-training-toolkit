@@ -5,11 +5,21 @@ SageMaker MXNet Containers
 SageMaker MXNet Containers is an open source library for making the
 MXNet framework run on Amazon SageMaker.
 
+This repository also contains Dockerfiles which install this library, MXNet, and dependencies
+for building SageMaker MXNet images.
+
 For information on running MXNet jobs on SageMaker: `Python
 SDK <https://github.com/aws/sagemaker-python-sdk>`__.
 
 For notebook examples: `SageMaker Notebook
 Examples <https://github.com/awslabs/amazon-sagemaker-examples>`__.
+
+Table of Contents
+-----------------
+
+#. `Getting Started <#getting-started>`__
+#. `Building your Image <#building-your-image>`__
+#. `Running the tests <#running-the-tests>`__
 
 Getting Started
 ---------------
@@ -37,24 +47,28 @@ Recommended
 Building your image
 -------------------
 
-Amazon SageMaker utilizes docker containers to run all training &
-inference jobs.
+`Amazon SageMaker <https://aws.amazon.com/documentation/sagemaker/>`__
+utilizes Docker containers to run all training jobs & inference endpoints.
 
-The docker images are built from the dockerfiles specified in
-`docker/ <https://github.com/aws/sagemaker-mxnet-containers/tree/master/docker>`__.
+The Docker images are built from the Dockerfiles specified in
+`Docker/ <https://github.com/aws/sagemaker-mxnet-containers/tree/master/docker>`__.
 
-The docker files are grouped based on MXNet version and separated
-based on python version and processor type.
+The Docker files are grouped based on MXNet version and separated
+based on Python version and processor type.
 
-The docker images, used to run training & inference jobs, are built from
-both corresponding “base” and “final” dockerfiles.
+The Docker images, used to run training & inference jobs, are built from
+both corresponding “base” and “final” Dockerfiles.
 
 Base Images
 ~~~~~~~~~~~
 
-    -  Tagging scheme is based on <MXNet_version>-<processor>-<python_version>. (e.g. 0.12.1-cpu-py2)
-    -  All “final” dockerfiles build images using base images that use
-       the tagging scheme above.
+The "base" Dockerfile encompass the installation of the framework and all of the dependencies
+needed.
+
+Tagging scheme is based on <mxnet_version>-<processor>-<python_version>. (e.g. 0.12.1-cpu-py2)
+
+All “final” Dockerfiles build images using base images that use the tagging scheme
+above.
 
 If you want to build your base docker image, then use:
 
@@ -81,22 +95,30 @@ If you want to build your base docker image, then use:
 Final Images
 ~~~~~~~~~~~~
 
-    -  All “final” dockerfiles use `base images for
-       building <https://github.com/aws/sagemaker-mxnet-containers/blob/master/docker/0.12.1/final/py2/Dockerfile.cpu#L2>`__.
-    -  These “base” images are specified with the naming convention of
-       mxnet-base:<MXNet_version>-<processor>-<python_version>.
+The "final" Dockerfiles encompass the installation of the SageMaker specific support code.
 
-..
+All “final” dockerfiles use `base images for building <https://github
+.com/aws/sagemaker-mxnet-containers/blob/master/docker/0.12.1/final/py2/Dockerfile.cpu#L2>`__.
 
-    -  Before building “final” images:
+These “base” images are specified with the naming convention of
+mxnet-base:<MXNet_version>-<processor>-<python_version>.
 
-    #. Build your “base” image. Make sure it is named and tagged in
-       accordance with your “final” dockerfile.
-    #. Create the SageMaker MXNet Container python package. (python
-       setup.py sdist)
-    #. Copy your python package to the “final” dockerfile directory that you
-       are building. (cp dist/sagemaker_mxnet_container-<package_version>.tar.gz
-       docker/<mxnet_version>/final/)
+Before building “final” images:
+
+Build your “base” image. Make sure it is named and tagged in accordance with your “final”
+Dockerfile.
+
+
+::
+
+    # Create the SageMaker MXNet Container Python package.
+    cd sagemaker-mxnet-containers
+    python setup.py sdist
+
+    #. Copy your Python package to “final” Dockerfile directory that you are building.
+    cp dist/sagemaker_mxnet_container-<package_version>.tar.gz docker/<mxnet_version>/final
+
+If you want to build "final" Docker images, then use:
 
 ::
 
@@ -121,6 +143,15 @@ Final Images
 Running the tests
 -----------------
 
+Running the tests requires installation of the SageMaker MXNet Container code and its test
+dependencies.
+
+::
+
+    git clone https://github.com/aws/sagemaker-mxnet-containers.git
+    cd sagemaker-mxnet-containers
+    pip install -e .[test]
+
 Tests are defined in
 `test/ <https://github.com/aws/sagemaker-mxnet-containers/tree/master/test>`__
 and include unit, integration and functional tests.
@@ -139,25 +170,19 @@ If you want to run unit tests, then use:
 Integration Tests
 ~~~~~~~~~~~~~~~~~
 
-    Running integration tests require
-    `docker <https://www.docker.com/>`__ and `AWS
-    credentials <https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-credentials.html>`__,
-    as the integration tests make calls to a couple AWS services. The
-    integration and functional tests require configurations specified
-    within their respective
-    `conftest.py <https://github.com/aws/sagemaker-mxnet-containers/blob/master/test/integ/conftest.py>`__.
+Running integration tests require `Docker <https://www.docker.com/>`__ and `AWS
+credentials <https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-credentials.html>`__,
+as the integration tests make calls to a couple AWS services. The integration and functional
+tests require configurations specified within their respective
+`conftest.py <https://github.com/aws/sagemaker-mxnet-containers/blob/master/test/integ/conftest
+.py>`__.
 
-..
+Integration tests on GPU require `Nvidia-Docker <https://github.com/NVIDIA/nvidia-docker>`__.
 
-    Integration tests on GPU require
-    `nvidia-docker <https://github.com/NVIDIA/nvidia-docker>`__.
+Before running integration tests:
 
-..
-
-    Before running integration tests:
-
-    #. Build your docker image.
-    #. Pass in the correct pytest arguments to run tests against your docker image.
+#. Build your Docker image.
+#. Pass in the correct pytest arguments to run tests against your Docker image.
 
 If you want to run local integration tests, then use:
 
@@ -183,25 +208,23 @@ If you want to run local integration tests, then use:
 Functional Tests
 ~~~~~~~~~~~~~~~~
 
+Functional tests require your Docker image to be within an `Amazon ECR repository <https://docs
+.aws.amazon.com/AmazonECS/latest/developerguide/ECS_Console_Repositories.html>`__.
+
+The Docker-base-name is your `ECR repository namespace <https://docs.aws.amazon
+.com/AmazonECR/latest/userguide/Repositories.html>`__.
+
+The instance-type is your specified `Amazon SageMaker Instance Type
+<https://aws.amazon.com/sagemaker/pricing/instance-types/>`__ that the functional test will run on.
+
+Before running functional tests:
+
+#. Build your Docker image.
+#. Push the image to your ECR repository.
+#. Pass in the correct pytest arguments to run tests on SageMaker against the image within your ECR repository.
+
 If you want to run a functional end to end test on `Amazon
 SageMaker <https://aws.amazon.com/sagemaker/>`__, then use:
-
-    -  Functional tests require your docker image to be within an
-       `Amazon ECR repository <https://docs.aws.amazon
-       .com/AmazonECS/latest/developerguide/ECS_Console_Repositories.html>`__.
-    -  The docker-base-name is your `ECR repository
-       namespace <https://docs.aws.amazon.com/AmazonECR/latest/userguide/Repositories.html>`__.
-    -  The instance-type is your specified `Amazon SageMaker Instance
-       Type <https://aws.amazon.com/sagemaker/pricing/instance-types/>`__
-       that the functional test will run on.
-
-..
-
-    Before running functional tests:
-
-    #. Build your docker image.
-    #. Push the image to your ECR repository.
-    #. Pass in the correct pytest arguments to run tests on SageMaker against the image within your ECR repository.
 
 ::
 
