@@ -1,14 +1,14 @@
 #  Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#  
+#
 #  Licensed under the Apache License, Version 2.0 (the "License").
 #  You may not use this file except in compliance with the License.
 #  A copy of the License is located at
-#  
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-#  
-#  or in the "license" file accompanying this file. This file is distributed 
-#  on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either 
-#  express or implied. See the License for the specific language governing 
+#
+#  or in the "license" file accompanying this file. This file is distributed
+#  on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+#  express or implied. See the License for the specific language governing
 #  permissions and limitations under the License.
 
 import container_support as cs
@@ -40,10 +40,10 @@ class MXNetTrainingEnvironment(cs.TrainingEnvironment):
         self._ps_verbose = int(self.hyperparameters.get('_ps_verbose', 0))
         self._ps_port = int(self.hyperparameters.get('_ps_port', 8000))
         self._scheduler_host = sorted(self.hosts)[0]
-        self._scheduler_ip = dns_lookup(self._scheduler_host)
-        # Block until all host DNS lookups succeed. Relies on retrying dns_lookup.
+        self._scheduler_ip = host_lookup(self._scheduler_host)
+        # Block until all host lookups succeed. Relies on retrying host_lookup.
         for host in self.hosts:
-            dns_lookup(host)
+            host_lookup(host)
 
     @property
     def distributed(self):
@@ -123,8 +123,8 @@ class MXNetTrainingEnvironment(cs.TrainingEnvironment):
 @cs.retry(stop_max_delay=1000 * 60 * 15,
           wait_exponential_multiplier=100,
           wait_exponential_max=30000)
-def dns_lookup(host):
-    """ Retrying dns lookup on host """
+def host_lookup(host):
+    """ Retrying host lookup on host """
     return socket.gethostbyname(host)
 
 
