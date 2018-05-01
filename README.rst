@@ -57,7 +57,7 @@ The Docker files are grouped based on MXNet version and separated
 based on Python version and processor type.
 
 The Docker images, used to run training & inference jobs, are built from
-both corresponding “base” and “final” Dockerfiles.
+both corresponding "base" and "final" Dockerfiles.
 
 Base Images
 ~~~~~~~~~~~
@@ -65,9 +65,9 @@ Base Images
 The "base" Dockerfile encompass the installation of the framework and all of the dependencies
 needed.
 
-Tagging scheme is based on <mxnet_version>-<processor>-<python_version>. (e.g. 0.12.1-cpu-py2)
+Tagging scheme is based on <mxnet_version>-<processor>-<python_version>. (e.g. 0.12.1-cpu-py2)
 
-All “final” Dockerfiles build images using base images that use the tagging scheme
+All "final" Dockerfiles build images using base images that use the tagging scheme
 above.
 
 If you want to build your base docker image, then use:
@@ -97,15 +97,15 @@ Final Images
 
 The "final" Dockerfiles encompass the installation of the SageMaker specific support code.
 
-All “final” dockerfiles use `base images for building <https://github
+All "final" Dockerfiles use `base images for building <https://github
 .com/aws/sagemaker-mxnet-containers/blob/master/docker/0.12.1/final/py2/Dockerfile.cpu#L2>`__.
 
-These “base” images are specified with the naming convention of
+These "base" images are specified with the naming convention of
 mxnet-base:<MXNet_version>-<processor>-<python_version>.
 
-Before building “final” images:
+Before building "final" images:
 
-Build your “base” image. Make sure it is named and tagged in accordance with your “final”
+Build your "base" image. Make sure it is named and tagged in accordance with your "final"
 Dockerfile.
 
 
@@ -115,7 +115,7 @@ Dockerfile.
     cd sagemaker-mxnet-containers
     python setup.py sdist
 
-    #. Copy your Python package to “final” Dockerfile directory that you are building.
+    #. Copy your Python package to "final" Dockerfile directory that you are building.
     cp dist/sagemaker_mxnet_container-<package_version>.tar.gz docker/<mxnet_version>/final
 
 If you want to build "final" Docker images, then use:
