@@ -165,7 +165,9 @@ def train(base_dir=MXNetTrainingEnvironment.BASE_DIRECTORY):
     mxnet_env = MXNetTrainingEnvironment(base_dir)
     logger.info("MXNetTrainingEnvironment: {}".format(repr(mxnet_env.__dict__)))
 
-    mxnet_env.download_user_module()
+    if mxnet_env.user_script_archive.lower().startswith('s3://'):
+        mxnet_env.download_user_module()
+
     logger.info("Starting distributed training task")
     if mxnet_env.current_host_scheduler:
         _run_mxnet_process("scheduler", mxnet_env)
