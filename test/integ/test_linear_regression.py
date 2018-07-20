@@ -34,10 +34,10 @@ def test_linear_regression(docker_image, sagemaker_session, opt_ml, processor):
     # save training data
     for path in ['training', 'evaluation']:
         os.makedirs(os.path.join(opt_ml, 'input', 'data', path))
-    np.savetxt(os.path.join(opt_ml, 'input/data/training/train_data.txt.gz'), train_data)
-    np.savetxt(os.path.join(opt_ml, 'input/data/training/train_label.txt.gz'), train_label)
-    np.savetxt(os.path.join(opt_ml, 'input/data/evaluation/eval_data.txt.gz'), eval_data)
-    np.savetxt(os.path.join(opt_ml, 'input/data/evaluation/eval_label.txt.gz'), eval_label)
+    np.savetxt(os.path.join(opt_ml, 'input/data/training/train_data.txt'), train_data)
+    np.savetxt(os.path.join(opt_ml, 'input/data/training/train_label.txt'), train_label)
+    np.savetxt(os.path.join(opt_ml, 'input/data/evaluation/eval_data.txt'), eval_data)
+    np.savetxt(os.path.join(opt_ml, 'input/data/evaluation/eval_label.txt'), eval_label)
 
     s3_source_archive = fw_utils.tar_and_upload_dir(session=sagemaker_session.boto_session,
                                 bucket=sagemaker_session.default_bucket(),
