@@ -27,10 +27,10 @@ def train(num_cpus, num_gpus, channel_input_dirs, **kwargs):
         ctx = _get_context(num_cpus, num_gpus)
 
         # load training data
-        train_data = np.loadtxt(os.path.join(channel_input_dirs['training'], 'train_data.txt.gz'))
-        train_label = np.loadtxt(os.path.join(channel_input_dirs['training'], 'train_label.txt.gz'))
-        eval_data = np.loadtxt(os.path.join(channel_input_dirs['evaluation'], 'eval_data.txt.gz'))
-        eval_label = np.loadtxt(os.path.join(channel_input_dirs['evaluation'], 'eval_label.txt.gz'))
+        train_data = np.loadtxt(os.path.join(channel_input_dirs['training'], 'train_data.txt'))
+        train_label = np.loadtxt(os.path.join(channel_input_dirs['training'], 'train_label.txt'))
+        eval_data = np.loadtxt(os.path.join(channel_input_dirs['evaluation'], 'eval_data.txt'))
+        eval_label = np.loadtxt(os.path.join(channel_input_dirs['evaluation'], 'eval_label.txt'))
 
         batch_size = 1
         if isinstance(ctx, list):
