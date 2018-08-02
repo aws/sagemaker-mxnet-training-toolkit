@@ -33,6 +33,9 @@ RUN framework_installable_local=$(basename $framework_installable) && \
     rm $framework_installable_local && \
     rm $framework_support_installable_local
 
+# For ONNX model import - https://onnx.ai/
+RUN pip install onnx
+
 # This is here to make our installed version of OpenCV work.
 # https://stackoverflow.com/questions/29274638/opencv-libdc1394-error-failed-to-initialize-libdc1394
 # TODO: Should we be installing OpenCV in our image like this? Is there another way we can fix this?
