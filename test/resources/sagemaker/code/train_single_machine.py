@@ -69,9 +69,8 @@ def train(hyperparameters=None,
 
     # Assert that we can open the input files and they contain something
     for channel in input_data_config:
-        assert open(
-            os.path.join(channel_input_dirs[channel], "data.txt")).read(), "Cannot read {}".format(
-            channel)
+        with open(os.path.join(channel_input_dirs[channel], 'data.txt')) as f:
+            assert f.read(), 'Cannot read {}'.format(f)
 
     # Write out to the model dir and the output_data_dir
     with open(os.path.join(model_dir, 'model.txt'), 'w') as f:

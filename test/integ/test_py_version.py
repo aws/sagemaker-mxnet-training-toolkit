@@ -42,9 +42,9 @@ def test_train_py_version(docker_image, sagemaker_session, py_version, opt_ml, p
     # The usermodule.py train_fn will assert on the expected
     # python versions passed in through hyperparameters,
     # and training will fail if they are incorrect.
-    success_file = 'output/success'
-    assert os.path.exists(os.path.join(opt_ml, success_file)), 'expected file not found: {}'.format(
-        success_file)
+
+    success_file = os.path.join(opt_ml, 'output', 'success')
+    assert os.path.exists(success_file), 'expected file not found: {}'.format(success_file)
 
 
 # The image should run the user-provided code using the right python version when hosting.
