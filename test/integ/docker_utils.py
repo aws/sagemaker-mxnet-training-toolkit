@@ -86,8 +86,6 @@ class Container(object):
         # waiting for the server to spin up
         sleep(self.startup_delay)
 
-
-
         self.execute_command(['pip', 'install', 'requests'])
         self.execute_command(['pip', 'install', 'pytest'])
         return self
@@ -124,13 +122,13 @@ class Container(object):
         lines = []
         process = subprocess.Popen(docker_cmd, stdout=subprocess.PIPE)
         print(
-        '{}============================= container output ============================='.format(
-            CYAN_COLOR))
+            '{}============================= container output ============================='.format(
+                CYAN_COLOR))
         for line in iter(process.stdout.readline, b''):
             sys.stdout.write(line.decode('utf-8'))
             sys.stdout.flush()
             lines.append(line.decode('utf-8'))
-        msg = '\n{}============================= end of container output ============================='
+        msg = '\n{}========================= end of container output =========================='
         print(msg.format(CYAN_COLOR))
 
         process.wait()

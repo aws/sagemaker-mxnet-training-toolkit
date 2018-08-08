@@ -13,12 +13,12 @@
 
 import json
 import os
-import pytest
 import shutil
 import tempfile
-
-from container_support import ContainerEnvironment
 from inspect import getargspec
+
+import pytest
+from container_support import ContainerEnvironment
 from mock import patch, MagicMock, create_autospec
 
 INPUT_DATA_CONFIG = {
@@ -35,13 +35,16 @@ HYPERPARAMETERS = {
     'sagemaker_region': "us-west-2"
 }
 
+
 class NoKWArgsModule:
     def train(self, hyperparameters):
         pass
 
+
 class KWArgsModule:
     def train(self, **kwargs):
         pass
+
 
 getargspec_orig = getargspec
 
@@ -148,12 +151,12 @@ def test_train_with_no_kwargs_in_user_module(mxc):
             patch('container_support.untar_directory') as patched_untar_directory, \
             patch('socket.gethostbyname') as patched_gethostbyname, \
             patch('inspect.getargspec') as patched_getargspec, \
-            patch('importlib.import_module', new_callable=train_no_kwargs_mock) as patched_import_module:
+            patch('importlib.import_module',
+                  new_callable=train_no_kwargs_mock) as patched_import_module:
         patched_getargspec.return_value = getargspec_orig(NoKWArgsModule.train)
 
         train(optml())
         assert patched_import_module.return_value.train.called
-
 
 
 def test_train_failing_script(mxc):
@@ -166,7 +169,8 @@ def test_train_failing_script(mxc):
             patch('container_support.untar_directory') as patched_untar_directory, \
             patch('socket.gethostbyname') as patched_gethostbyname, \
             patch('inspect.getargspec') as patched_getargspec, \
-            patch('importlib.import_module', new_callable=train_kwargs_mock) as patched_import_module:
+            patch('importlib.import_module',
+                  new_callable=train_kwargs_mock) as patched_import_module:
         patched_getargspec.return_value = getargspec_orig(KWArgsModule.train)
         patched_import_module.return_value.train.side_effect = raise_error
 
@@ -181,9 +185,10 @@ def test_train(mxc):
     with patch('container_support.download_s3_resource') as patched_download_s3_resource, \
             patch('container_support.untar_directory') as patched_untar_directory, \
             patch('subprocess.Popen') as patched_Popen, \
-            patch('socket.gethostbyname'),\
-            patch('inspect.getargspec') as patched_getargspec,\
-            patch('importlib.import_module', new_callable=train_kwargs_mock) as patched_import_module:
+            patch('socket.gethostbyname'), \
+            patch('inspect.getargspec') as patched_getargspec, \
+            patch('importlib.import_module',
+                  new_callable=train_kwargs_mock) as patched_import_module:
         patched_getargspec.return_value = getargspec_orig(KWArgsModule.train)
 
         train(optml())

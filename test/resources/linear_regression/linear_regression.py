@@ -12,9 +12,10 @@
 #  permissions and limitations under the License.
 
 import logging
+import os
+
 import mxnet as mx
 import numpy as np
-import os
 
 
 def train(num_cpus, num_gpus, channel_input_dirs, **kwargs):
@@ -36,7 +37,8 @@ def train(num_cpus, num_gpus, channel_input_dirs, **kwargs):
         if isinstance(ctx, list):
             batch_size = len(ctx)
 
-        train_iter = mx.io.NDArrayIter(train_data, train_label, batch_size, shuffle=True, label_name='lin_reg_label')
+        train_iter = mx.io.NDArrayIter(train_data, train_label, batch_size, shuffle=True,
+                                       label_name='lin_reg_label')
         eval_iter = mx.io.NDArrayIter(eval_data, eval_label, batch_size, shuffle=False)
 
         x = mx.sym.Variable('data')

@@ -11,12 +11,14 @@
 #  express or implied. See the License for the specific language governing 
 #  permissions and limitations under the License.
 
-import docker_utils
-import utils
 import json
 
+import docker_utils
+import utils
 
-# The image should use the model_fn and transform_fn defined in the user-provided script when serving.
+
+# The image should use the model_fn and transform_fn defined
+# in the user-provided script when serving.
 def test_hosting(docker_image, opt_ml, processor):
     resource_path = 'test/resources/dummy_hosting'
     utils.copy_resource(resource_path, opt_ml, 'code')
@@ -28,4 +30,3 @@ def test_hosting(docker_image, opt_ml, processor):
         c.ping()
         output = c.invoke_endpoint(input)
         assert input == output
-

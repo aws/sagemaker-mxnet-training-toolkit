@@ -13,13 +13,14 @@
 
 import logging
 import os
+from types import ModuleType
+
 import pytest
 from container_support.serving import UnsupportedContentTypeError, \
     UnsupportedAcceptTypeError, \
     JSON_CONTENT_TYPE
 from mock import Mock
 from mock import patch, MagicMock
-from types import ModuleType
 
 
 @pytest.fixture()

@@ -11,21 +11,9 @@
 #  express or implied. See the License for the specific language governing 
 #  permissions and limitations under the License.
 
-# Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License"). You
-# may not use this file except in compliance with the License. A copy of
-# the License is located at
-#
-#     http://aws.amazon.com/apache2.0/
-#
-# or in the "license" file accompanying this file. This file is
-# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
-# ANY KIND, either express or implied. See the License for the specific
-# language governing permissions and limitations under the License.
+import logging
 import signal
 from contextlib import contextmanager
-import logging
 
 from botocore.exceptions import ClientError
 
@@ -83,7 +71,8 @@ def timeout_and_delete_endpoint(estimator, seconds=0, minutes=0, hours=0):
 
 
 @contextmanager
-def timeout_and_delete_endpoint_by_name(endpoint_name, sagemaker_session, seconds=0, minutes=0, hours=0):
+def timeout_and_delete_endpoint_by_name(endpoint_name, sagemaker_session, seconds=0, minutes=0,
+                                        hours=0):
     with timeout(seconds=seconds, minutes=minutes, hours=hours) as t:
         try:
             yield [t]
