@@ -11,11 +11,11 @@
 #  express or implied. See the License for the specific language governing 
 #  permissions and limitations under the License.
 
-import mxnet as mx
-import numpy as np 
-import time
-import logging
 import uuid
+
+import mxnet as mx
+import numpy as np
+
 
 def train(hosts, **kwargs):
     """
@@ -29,21 +29,21 @@ def train(hosts, **kwargs):
     shared_var = str(uuid.uuid4())
 
     kv = mx.kv.create('dist_sync')
-    shape = (3,3)
-    
+    shape = (3, 3)
+
     # Init to -1
     kv.init(shared_var, mx.nd.ones(shape) * -1)
 
-    # Push to contain a single value repeated across array equal to this host's index in the host array
+    # Push to contain a single value repeated across array equal
+    # to this host's index in the host array
     kv.push(shared_var, mx.nd.ones(shape))
 
     # Pull aggregated matrix
     arr_out = mx.nd.zeros(shape)
-    kv.pull(shared_var, out = arr_out)
+    kv.pull(shared_var, out=arr_out)
 
     expected = mx.nd.full(shape, len(hosts)).asnumpy()
     received = arr_out.asnumpy()
 
     assert np.array_equal(expected, received), \
         "Received: {}, Expected: {}".format(received, expected)
-

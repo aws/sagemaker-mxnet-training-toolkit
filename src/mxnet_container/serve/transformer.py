@@ -13,15 +13,17 @@
 
 import csv
 import json
-import mxnet as mx
 import os
+from types import ModuleType
+
+import mxnet as mx
 from container_support.serving import UnsupportedContentTypeError, \
     UnsupportedAcceptTypeError, \
     UnsupportedInputShapeError, \
     JSON_CONTENT_TYPE, \
     CSV_CONTENT_TYPE
 from six import StringIO
-from types import ModuleType
+
 from mxnet_container.serve.environment import MXNetHostingEnvironment
 from mxnet_container.train import DEFAULT_MODEL_FILENAMES, DEFAULT_MODEL_NAME
 
@@ -35,9 +37,9 @@ def load_dependencies():
 
 
 class MXNetTransformer(object):
-    """A ``Transformer`` encapsulates the function(s) responsible
-    for parsing incoming request data, passing it through an  and converting the result into something
-    that can be returned as the body of and HTTP response.
+    """A ``Transformer`` encapsulates the function(s) responsible for parsing
+    incoming request data, passing it through a model, and converting the
+    result into something that can be returned as the body of and HTTP response.
     """
 
     def __init__(self, model, transform_fn):
@@ -83,8 +85,8 @@ class MXNetTransformer(object):
         default implementation is compatible with the ``Module``s saved by the ``default_save``
         method in MXNetTrainingEnvironment.
 
-        The ``model_fn`` (user-supplied or default) will be called once during each inference worker's
-        startup process.
+        The ``model_fn`` (user-supplied or default) will be called once during
+        each inference worker's startup process.
 
         The module may supply a ``transform_fn``. If it is present, it will be used to handle
         each inference request. If it is not present, then a ``transform_fn`` will be composed
@@ -279,12 +281,14 @@ class ModuleTransformer(MXNetTransformer):
         if len(model.data_shapes) != 1:
             raise UnsupportedInputShapeError(len(model.data_shapes))
 
-        # model is already loaded with data shape bound, ignore the first parameter that is batch_size
+        # model is already loaded with data shape bound,
+        # ignore the first parameter that is batch_size
         model_data_shape = model.data_shapes[0]
         (shape_name, input_data_shape) = model_data_shape
         no_batch_data_shape = input_data_shape[1:]
 
-        # let's read the csv into ndarray doing reshaping as specified by the model since csv is arriving flattened
+        # let's read the csv into ndarray doing reshaping as
+        # specified by the model since csv is arriving flattened
         csv_buff = StringIO(data)
         csv_to_parse = csv.reader(csv_buff, delimiter=',')
         full_array = []
@@ -312,7 +316,8 @@ class ModuleTransformer(MXNetTransformer):
             padding = mx.ndarray.zeros(shape=padding_shape)
             ndarray = mx.ndarray.concat(ndarray, padding, dim=0)
 
-        model_input = mx.io.NDArrayIter(ndarray, batch_size=model_batch_size, last_batch_handle='pad')
+        model_input = mx.io.NDArrayIter(ndarray, batch_size=model_batch_size,
+                                        last_batch_handle='pad')
 
         if pad_rows:
             # Update the getpad method on the model_input data iterator to return the amount of
@@ -380,7 +385,8 @@ class ModuleTransformer(MXNetTransformer):
                 raise ValueError('missing %s file' % f)
 
         shapes_file = os.path.join(model_dir, DEFAULT_MODEL_FILENAMES['shapes'])
-        data_names, data_shapes = ModuleTransformer._read_data_shapes(shapes_file, preferred_batch_size)
+        data_names, data_shapes = ModuleTransformer._read_data_shapes(shapes_file,
+                                                                      preferred_batch_size)
 
         sym, args, aux = mx.model.load_checkpoint('%s/%s' % (model_dir, DEFAULT_MODEL_NAME), 0)
 

@@ -14,8 +14,10 @@
 import json
 import logging
 import os
-import pytest
 import tempfile
+from types import ModuleType
+
+import pytest
 from container_support.serving import UnsupportedContentTypeError, \
     UnsupportedAcceptTypeError, \
     UnsupportedInputShapeError, \
@@ -23,7 +25,6 @@ from container_support.serving import UnsupportedContentTypeError, \
     CSV_CONTENT_TYPE
 from mock import Mock
 from mock import patch, MagicMock
-from types import ModuleType
 
 JSON_DATA = json.dumps({'k1': 'v1', 'k2': [1, 2, 3]})
 CSV_INPUT = "1,2,3\r\n"
@@ -64,7 +65,8 @@ def user_module():
 def transformer(mxc, user_module):
     import mxnet_container
     from mxnet_container.serve.transformer import ModuleTransformer
-    with patch('mxnet_container.serve.transformer.MXNetTransformer.select_transformer_class') as select:
+    transform_class = 'mxnet_container.serve.transformer.MXNetTransformer.select_transformer_class'
+    with patch(transform_class) as select:
         select.return_value = ModuleTransformer
         yield mxnet_container.serve.transformer.transformer(user_module)
 
@@ -124,7 +126,8 @@ class TestModuleTransformer(object):
     def test_transformer_default_handler_json(self, mxc, transformer):
         with patch('json.dumps') as patched:
             patched.return_value = JSON_DATA
-            response, response_content_type = transformer.transform(JSON_DATA, JSON_CONTENT_TYPE, JSON_CONTENT_TYPE)
+            response, response_content_type = transformer.transform(JSON_DATA, JSON_CONTENT_TYPE,
+                                                                    JSON_CONTENT_TYPE)
 
         assert JSON_DATA == response
         assert JSON_CONTENT_TYPE == response_content_type
@@ -139,7 +142,8 @@ class TestModuleTransformer(object):
 
         csv_transformer = mxnet_container.serve.transformer.transformer(m)
 
-        response, response_content_type = csv_transformer.transform(CSV_INPUT, CSV_CONTENT_TYPE, CSV_CONTENT_TYPE)
+        response, response_content_type = csv_transformer.transform(CSV_INPUT, CSV_CONTENT_TYPE,
+                                                                    CSV_CONTENT_TYPE)
 
         assert CSV_INPUT == response
         assert CSV_CONTENT_TYPE == response_content_type
@@ -154,7 +158,8 @@ class TestModuleTransformer(object):
 
         csv_transformer = mxnet_container.serve.transformer.transformer(m)
 
-        response, response_content_type = csv_transformer.transform("", CSV_CONTENT_TYPE, CSV_CONTENT_TYPE)
+        response, response_content_type = csv_transformer.transform("", CSV_CONTENT_TYPE,
+                                                                    CSV_CONTENT_TYPE)
 
         assert CSV_INPUT == response
         assert CSV_CONTENT_TYPE == response_content_type

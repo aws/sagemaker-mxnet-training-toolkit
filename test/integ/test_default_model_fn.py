@@ -15,7 +15,8 @@ import docker_utils
 import utils
 
 
-# The image should serve a MXNet model saved in the default format, even without a user-provided script.
+# The image should serve a MXNet model saved in the
+# default format, even without a user-provided script.
 def test_default_model_fn(docker_image, opt_ml, processor):
     resource_path = 'test/resources/default_handlers'
     for path in ['code', 'model']:

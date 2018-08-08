@@ -11,9 +11,10 @@
 #  express or implied. See the License for the specific language governing 
 #  permissions and limitations under the License.
 
+import json
+
 import docker_utils
 import utils
-import json
 
 
 # The image should support serving Gluon-created models.

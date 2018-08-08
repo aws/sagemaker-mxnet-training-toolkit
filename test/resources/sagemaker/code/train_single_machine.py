@@ -12,8 +12,8 @@
 #  permissions and limitations under the License.
 
 import logging
-import module_to_import  # noqa
 import os
+
 import mxnet
 import numpy
 
@@ -29,7 +29,6 @@ def train(hyperparameters=None,
           num_cpus=None,
           hosts=None,
           current_host=None):
-
     logger.info("hyperparameters: {}".format(hyperparameters))
     logger.info("input_data_config: {}".format(input_data_config))
     logger.info("channel_input_dirs: {}".format(channel_input_dirs))
@@ -70,7 +69,9 @@ def train(hyperparameters=None,
 
     # Assert that we can open the input files and they contain something
     for channel in input_data_config:
-        assert open(os.path.join(channel_input_dirs[channel], "data.txt")).read(), "Cannot read {}".format(channel)
+        assert open(
+            os.path.join(channel_input_dirs[channel], "data.txt")).read(), "Cannot read {}".format(
+            channel)
 
     # Write out to the model dir and the output_data_dir
     with open(os.path.join(model_dir, 'model.txt'), 'w') as f:
