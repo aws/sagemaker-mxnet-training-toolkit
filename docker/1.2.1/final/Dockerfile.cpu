@@ -1,7 +1,7 @@
 FROM ubuntu:16.04
 ARG framework_installable
 ARG py_version
-ARG framework_support_installable=sagemaker_mxnet_container-1.0.0.tar.gz
+ARG framework_support_installable=sagemaker_mxnet_container-2.0.0.tar.gz
 
 # Validate that arguments are specified
 RUN test $framework_installable || exit 1 && \
@@ -45,5 +45,4 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib"
 
-# Entrypoint script comes from sagemaker_container_support
-ENTRYPOINT ["/usr/bin/python", "/usr/local/bin/entry.py"]
+ENV SAGEMAKER_TRAINING_MODULE sagemaker_mxnet_container.training:main

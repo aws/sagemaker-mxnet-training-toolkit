@@ -10,8 +10,10 @@
 #  on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
 #  express or implied. See the License for the specific language governing
 #  permissions and limitations under the License.
-
+import argparse
+import ast
 import gzip
+import json
 import logging
 import os
 import struct
@@ -55,9 +57,10 @@ def get_train_context(num_gpus):
         return mx.cpu()
 
 
-def train(channel_input_dirs, hyperparameters, hosts, current_host, num_gpus, **kwargs):
-    (train_labels, train_images) = load_data(os.path.join(channel_input_dirs['train']))
-    (test_labels, test_images) = load_data(os.path.join(channel_input_dirs['test']))
+def train(batch_size, epochs, learning_rate, num_gpus, training_channel, testing_channel,
+          hosts, current_host):
+    (train_labels, train_images) = load_data(training_channel)
+    (test_labels, test_images) = load_data(testing_channel)
 
     # Data parallel training - shard the data so each host
     # only trains on a subset of the total data.
@@ -68,22 +71,56 @@ def train(channel_input_dirs, hyperparameters, hosts, current_host, num_gpus, **
             end = start + shard_size
             break
 
-    batch_size = 100
     train_iter = mx.io.NDArrayIter(train_images[start:end], train_labels[start:end], batch_size,
                                    shuffle=True)
     val_iter = mx.io.NDArrayIter(test_images, test_labels, batch_size)
+
     logging.getLogger().setLevel(logging.DEBUG)
+
     kvstore = 'local' if len(hosts) == 1 else 'dist_sync'
-    mlp_model = mx.mod.Module(
-        symbol=build_graph(),
-        context=get_train_context(num_gpus))
+
+    mlp_model = mx.mod.Module(symbol=build_graph(),
+                              context=get_train_context(num_gpus))
     mlp_model.fit(train_iter,
                   eval_data=val_iter,
                   kvstore=kvstore,
                   optimizer='sgd',
-                  optimizer_params={
-                      'learning_rate': float(hyperparameters.get("learning_rate", 0.1))},
+                  optimizer_params={'learning_rate': learning_rate},
                   eval_metric='acc',
                   batch_end_callback=mx.callback.Speedometer(batch_size, 100),
-                  num_epoch=1)
+                  num_epoch=epochs)
+
     return mlp_model
+
+
+def save(model_dir, model):
+    model.symbol.save(os.path.join(model_dir, 'model-symbol.json'))
+    model.save_params(os.path.join(model_dir, 'model-0000.params'))
+
+    signature = [{'name': data_desc.name, 'shape': [dim for dim in data_desc.shape]}
+                 for data_desc in model.data_shapes]
+    with open(os.path.join(model_dir, 'model-shapes.json'), 'w') as f:
+        json.dump(signature, f)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--batch-size', type=int, default=100)
+    parser.add_argument('--epochs', type=int, default=10)
+    parser.add_argument('--learning-rate', type=float, default=0.1)
+
+    parser.add_argument('--model-dir', type=str, default=os.environ['SM_MODEL_DIR'])
+    parser.add_argument('--train', type=str, default=os.environ['SM_CHANNEL_TRAIN'])
+    parser.add_argument('--test', type=str, default=os.environ['SM_CHANNEL_TEST'])
+
+    parser.add_argument('--hosts', type=str, default=os.environ['SM_HOSTS'])
+    parser.add_argument('--current-host', type=str, default=os.environ['SM_CURRENT_HOST'])
+
+    num_gpus = int(os.environ['SM_NUM_GPUS'])
+
+    args = parser.parse_args()
+
+    model = train(args.batch_size, args.epochs, args.learning_rate, num_gpus, args.train, args.test,
+                  ast.literal_eval(args.hosts), args.current_host)
+    save(args.model_dir, model)
