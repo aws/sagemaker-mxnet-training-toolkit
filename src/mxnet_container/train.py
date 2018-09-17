@@ -30,11 +30,13 @@ DEFAULT_MODEL_FILENAMES = {
 }
 
 UPCOMING_SCRIPT_MODE_WARNING = (
+    '\033[1;33m'  # print warning in yellow
     'This required structure for training scripts will be '
     'deprecated with the next major release of MXNet images. '
     'The train() function will no longer be required; '
     'instead the training script must be able to be run as a standalone script. '
     'For more information, see https://github.com/aws/sagemaker-python-sdk/tree/master/src/sagemaker/mxnet#updating-your-mxnet-training-script.'  # noqa: E501
+    '\033[1;0m'
 )
 
 
