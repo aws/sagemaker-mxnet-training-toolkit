@@ -29,6 +29,16 @@ DEFAULT_MODEL_FILENAMES = {
     'shapes': 'model-shapes.json',
 }
 
+UPCOMING_SCRIPT_MODE_WARNING = (
+    '\033[1;33m'  # print warning in yellow
+    'This required structure for training scripts will be '
+    'deprecated with the next major release of MXNet images. '
+    'The train() function will no longer be required; '
+    'instead the training script must be able to be run as a standalone script. '
+    'For more information, see https://github.com/aws/sagemaker-python-sdk/tree/master/src/sagemaker/mxnet#updating-your-mxnet-training-script.'  # noqa: E501
+    '\033[1;0m'
+)
+
 
 class MXNetTrainingEnvironment(cs.TrainingEnvironment):
     """ Configuration for single machine and distributed mxnet training.
@@ -162,6 +172,8 @@ def train(base_dir=MXNetTrainingEnvironment.BASE_DIRECTORY):
     Args:
         base_dir (str): The SageMaker container environment base directory.
     """
+    logger.warning(UPCOMING_SCRIPT_MODE_WARNING)
+
     mxnet_env = MXNetTrainingEnvironment(base_dir)
     logger.info("MXNetTrainingEnvironment: {}".format(repr(mxnet_env.__dict__)))
 
