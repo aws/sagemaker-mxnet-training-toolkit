@@ -45,5 +45,4 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib"
 
-# Entrypoint script comes from sagemaker_container_support
-ENTRYPOINT ["/usr/bin/python", "/usr/local/bin/entry.py"]
+ENV SAGEMAKER_TRAINING_MODULE sagemaker_mxnet_container.training:main
