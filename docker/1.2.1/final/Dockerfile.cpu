@@ -1,7 +1,7 @@
 FROM ubuntu:16.04
 ARG framework_installable
 ARG py_version
-ARG framework_support_installable=sagemaker_mxnet_container-1.0.0.tar.gz
+ARG framework_support_installable=sagemaker_mxnet_container-2.0.0.tar.gz
 
 # Validate that arguments are specified
 RUN test $framework_installable || exit 1 && \
