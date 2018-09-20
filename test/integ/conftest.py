@@ -19,7 +19,7 @@ import pytest
 import shutil
 import tempfile
 
-from sagemaker import Session
+from sagemaker import LocalSession, Session
 
 logger = logging.getLogger(__name__)
 logging.getLogger('boto').setLevel(logging.INFO)
@@ -81,6 +81,11 @@ def docker_image(docker_base_name, tag):
 @pytest.fixture(scope='session')
 def sagemaker_session(region):
     return Session(boto_session=boto3.Session(region_name=region))
+
+
+@pytest.fixture(scope='session')
+def sagemaker_local_session(region):
+    return LocalSession(boto_session=boto3.Session(region_name=region))
 
 
 @pytest.fixture

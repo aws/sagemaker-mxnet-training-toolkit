@@ -14,15 +14,22 @@ from __future__ import print_function
 
 import os
 
-import local_mode
+from sagemaker.mxnet import MXNet
 
 
-def test_mnist_script_mode(docker_image, sagemaker_session, opt_ml, processor):
-    resource_path = 'test/resources/mnist'
+def test_mnist_script_mode(docker_image, sagemaker_local_session, opt_ml):
+    resource_path = os.path.join(os.path.dirname(__file__), '..', 'resources', 'mnist')
     script_path = os.path.join(resource_path, 'mnist_script_mode.py')
 
-    local_mode.train(script_path, resource_path, docker_image, opt_ml)
+    mx = MXNet(entry_point=script_path, role='SageMakerRole', train_instance_count=1,
+               train_instance_type='local', sagemaker_session=sagemaker_local_session,
+               image_name=docker_image)
 
+    train = 'file://{}'.format(os.path.join(resource_path, 'train'))
+    test = 'file://{}'.format(os.path.join(resource_path, 'test'))
+    mx.fit({'train': train, 'test': test})
+
+    output_path = os.path.dirname(mx.sagemaker_session.sagemaker_client.s3_model_artifacts)
     for f in ['output/success', 'model/model-symbol.json', 'model/model-0000.params',
               'model/model-shapes.json']:
-        assert local_mode.file_exists(opt_ml, f), 'expected file not found: {}'.format(f)
+        assert os.path.exists(os.path.join(output_path, f)), 'expected file not found: {}'.format(f)
