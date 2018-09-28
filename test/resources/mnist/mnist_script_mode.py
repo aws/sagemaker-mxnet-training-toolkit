@@ -13,13 +13,18 @@
 import argparse
 import ast
 import gzip
-import json
+# import json
 import logging
 import os
 import struct
 
 import mxnet as mx
+from mxnet.contrib import onnx as onnx_mxnet
 import numpy as np
+import onnx
+from onnx import checker
+
+from sagemaker_mxnet_container.distributed import DefaultParameterServer
 
 
 def load_data(path):
@@ -58,7 +63,7 @@ def get_train_context(num_gpus):
 
 
 def train(batch_size, epochs, learning_rate, num_gpus, training_channel, testing_channel,
-          hosts, current_host):
+          hosts, current_host, scheduler_host, model_dir):
     (train_labels, train_images) = load_data(training_channel)
     (test_labels, test_images) = load_data(testing_channel)
 
@@ -90,17 +95,29 @@ def train(batch_size, epochs, learning_rate, num_gpus, training_channel, testing
                   batch_end_callback=mx.callback.Speedometer(batch_size, 100),
                   num_epoch=epochs)
 
-    return mlp_model
+    if len(hosts) == 1 or scheduler_host == current_host:
+        save(model_dir, mlp_model)
 
 
 def save(model_dir, model):
-    model.symbol.save(os.path.join(model_dir, 'model-symbol.json'))
-    model.save_params(os.path.join(model_dir, 'model-0000.params'))
+    sym = os.path.join(model_dir, 'model-symbol.json')
+    model.symbol.save(sym)
+    params = os.path.join(model_dir, 'model-0000.params')
+    model.save_params(params)
 
-    signature = [{'name': data_desc.name, 'shape': [dim for dim in data_desc.shape]}
-                 for data_desc in model.data_shapes]
-    with open(os.path.join(model_dir, 'model-shapes.json'), 'w') as f:
-        json.dump(signature, f)
+    # signature = [{'name': data_desc.name, 'shape': [dim for dim in data_desc.shape]}
+    #              for data_desc in model.data_shapes]
+    # with open(os.path.join(model_dir, 'model-shapes.json'), 'w') as f:
+    #     json.dump(signature, f)
+
+    print('Saving model as ONNX')
+    input_shape = (60000, 1, 28, 28)
+    onnx_file = os.path.join(model_dir, 'exported-model.onnx')
+    onnx_model = onnx_mxnet.export_model(sym, params, [input_shape], np.float32, onnx_file)
+
+    print('Validating ONNX export')
+    model_proto = onnx.load(onnx_model)
+    checker.check_graph(model_proto.graph)
 
 
 if __name__ == '__main__':
@@ -114,13 +131,15 @@ if __name__ == '__main__':
     parser.add_argument('--train', type=str, default=os.environ['SM_CHANNEL_TRAIN'])
     parser.add_argument('--test', type=str, default=os.environ['SM_CHANNEL_TEST'])
 
-    parser.add_argument('--hosts', type=str, default=os.environ['SM_HOSTS'])
     parser.add_argument('--current-host', type=str, default=os.environ['SM_CURRENT_HOST'])
-
-    num_gpus = int(os.environ['SM_NUM_GPUS'])
+    parser.add_argument('--hosts', type=str, default=os.environ['SM_HOSTS'])
 
     args = parser.parse_args()
 
-    model = train(args.batch_size, args.epochs, args.learning_rate, num_gpus, args.train, args.test,
-                  ast.literal_eval(args.hosts), args.current_host)
-    save(args.model_dir, model)
+    num_gpus = int(os.environ['SM_NUM_GPUS'])
+    hosts = ast.literal_eval(args.hosts)
+
+    distributed_server = DefaultParameterServer(hosts)
+    with distributed_server.setup(args.current_host):
+        train(args.batch_size, args.epochs, args.learning_rate, num_gpus, args.train, args.test,
+              hosts, args.current_host, distributed_server.scheduler_host(hosts), args.model_dir)

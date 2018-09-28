@@ -1,7 +1,7 @@
 FROM nvidia/cuda:9.0-cudnn7-devel
-ARG framework_installable
+ARG framework_installable='mxnet-cu90mkl==1.3.0.post0'
 ARG py_version
-ARG framework_support_installable=sagemaker_mxnet_container-1.0.0.tar.gz
+ARG framework_support_installable=sagemaker_mxnet_container-2.0.0.tar.gz
 
 # Validate that arguments are specified
 RUN test $framework_installable || exit 1 && \
@@ -21,7 +21,6 @@ RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
     /usr/bin/python get-pip.py
 
 # Will install from pypi once packages are released there. For now, copy from local file system.
-COPY $framework_installable .
 COPY $framework_support_installable .
 
 RUN framework_installable_local=$(basename $framework_installable) && \
@@ -30,11 +29,10 @@ RUN framework_installable_local=$(basename $framework_installable) && \
     pip install $framework_installable_local && \
     pip install $framework_support_installable_local && \
     \
-    rm $framework_installable_local && \
     rm $framework_support_installable_local
 
-# For ONNX model import - https://onnx.ai/
-RUN pip install onnx
+RUN pip install onnx \
+                keras-mxnet
 
 # This is here to make our installed version of OpenCV work.
 # https://stackoverflow.com/questions/29274638/opencv-libdc1394-error-failed-to-initialize-libdc1394
@@ -45,5 +43,4 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib"
 
-# Entrypoint script comes from sagemaker_container_support
-ENTRYPOINT ["/usr/bin/python", "/usr/local/bin/entry.py"]
+ENV SAGEMAKER_TRAINING_MODULE sagemaker_mxnet_container.training:main
