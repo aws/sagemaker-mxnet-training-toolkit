@@ -1,15 +1,16 @@
 #  Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#  
+#
 #  Licensed under the Apache License, Version 2.0 (the "License").
 #  You may not use this file except in compliance with the License.
 #  A copy of the License is located at
-#  
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-#  
-#  or in the "license" file accompanying this file. This file is distributed 
-#  on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either 
-#  express or implied. See the License for the specific language governing 
+#
+#  or in the "license" file accompanying this file. This file is distributed
+#  on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+#  express or implied. See the License for the specific language governing
 #  permissions and limitations under the License.
+from __future__ import absolute_import
 
 import logging
 import os
@@ -20,7 +21,7 @@ import pytest
 import shutil
 import tempfile
 
-from sagemaker import Session
+from sagemaker import LocalSession, Session
 
 logger = logging.getLogger(__name__)
 logging.getLogger('boto').setLevel(logging.INFO)
@@ -37,9 +38,10 @@ def pytest_addoption(parser):
     parser.addoption('--region', default='us-west-2')
     parser.addoption('--framework-version', required=True)
     parser.addoption('--py-version', required=True, choices=['2', '3'])
-    parser.addoption('--processor', required=True, choices=['gpu','cpu'])
+    parser.addoption('--processor', required=True, choices=['gpu', 'cpu'])
     # If not specified, will default to {framework-version}-{processor}-py{py-version}
     parser.addoption('--tag', default=None)
+
 
 @pytest.fixture(scope='session')
 def docker_base_name(request):
@@ -81,6 +83,11 @@ def docker_image(docker_base_name, tag):
 @pytest.fixture(scope='session')
 def sagemaker_session(region):
     return Session(boto_session=boto3.Session(region_name=region))
+
+
+@pytest.fixture(scope='session')
+def sagemaker_local_session(region):
+    return LocalSession(boto_session=boto3.Session(region_name=region))
 
 
 @pytest.fixture
