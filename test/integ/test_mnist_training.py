@@ -17,7 +17,7 @@ import os
 from sagemaker.mxnet import MXNet
 
 
-def test_mnist_script_mode(docker_image, sagemaker_local_session, opt_ml):
+def test_mnist_script_mode(docker_image, sagemaker_local_session):
     resource_path = os.path.join(os.path.dirname(__file__), '..', 'resources', 'mnist')
     script_path = os.path.join(resource_path, 'mnist_script_mode.py')
 
@@ -29,7 +29,7 @@ def test_mnist_script_mode(docker_image, sagemaker_local_session, opt_ml):
     test = 'file://{}'.format(os.path.join(resource_path, 'test'))
     mx.fit({'train': train, 'test': test})
 
-    output_path = os.path.dirname(mx.sagemaker_session.sagemaker_client.s3_model_artifacts)
+    output_path = os.path.dirname(mx.create_model().model_data)
     for f in ['output/success', 'model/model-symbol.json', 'model/model-0000.params',
               'model/model-shapes.json']:
         assert os.path.exists(os.path.join(output_path, f)), 'expected file not found: {}'.format(f)
