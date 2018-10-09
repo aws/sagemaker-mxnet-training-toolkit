@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 def train(env):
+    logger.info('MXNet training environment: {}'.format(env.to_env_vars()))
     framework.modules.run_module(env.module_dir, env.to_cmd_args(),
                                  env.to_env_vars(), env.module_name)
 
