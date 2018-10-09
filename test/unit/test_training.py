@@ -12,8 +12,8 @@
 # language governing permissions and limitations under the License.
 from __future__ import absolute_import
 
-import pytest
 from mock import MagicMock, patch
+import pytest
 
 from sagemaker_mxnet_container import training
 
@@ -37,3 +37,12 @@ def test_single_machine(run_module, single_machine_training_env):
     training.train(single_machine_training_env)
     run_module.assert_called_with(MODULE_DIR, single_machine_training_env.to_cmd_args(),
                                   single_machine_training_env.to_env_vars(), MODULE_NAME)
+
+
+@patch('sagemaker_mxnet_container.training.train')
+@patch('sagemaker_containers.beta.framework.training_env')
+def test_main(env, train, single_machine_training_env):
+    env.return_value = single_machine_training_env
+
+    training.main()
+    train.assert_called_with(single_machine_training_env)
