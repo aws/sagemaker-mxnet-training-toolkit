@@ -38,7 +38,7 @@ def pytest_addoption(parser):
     parser.addoption('--framework-version', default='1.2.1')
     parser.addoption('--py-version', default='3', choices=['2', '3'])
     parser.addoption('--processor', default='cpu', choices=['gpu', 'cpu'])
-    parser.addoption('--account-id', default='142577830533')
+    parser.addoption('--account-id', default=None)
     parser.addoption('--instance-type', default=None)
     # If not specified, will default to {framework-version}-{processor}-py{py-version}
     parser.addoption('--tag', default=None)
