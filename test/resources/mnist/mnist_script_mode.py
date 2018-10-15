@@ -11,7 +11,6 @@
 #  express or implied. See the License for the specific language governing
 #  permissions and limitations under the License.
 import argparse
-import ast
 import gzip
 import json
 import logging
@@ -118,14 +117,14 @@ if __name__ == '__main__':
     parser.add_argument('--test', type=str, default=os.environ['SM_CHANNEL_TEST'])
 
     parser.add_argument('--current-host', type=str, default=os.environ['SM_CURRENT_HOST'])
-    parser.add_argument('--hosts', type=str, default=os.environ['SM_HOSTS'])
+    parser.add_argument('--hosts', type=list, default=json.load(os.environ['SM_HOSTS']))
 
     args = parser.parse_args()
 
     num_gpus = int(os.environ['SM_NUM_GPUS'])
-    hosts = ast.literal_eval(args.hosts)
 
-    distributed_server = DefaultParameterServer(hosts)
+    distributed_server = DefaultParameterServer(args.hosts)
     with distributed_server.setup(args.current_host):
         train(args.batch_size, args.epochs, args.learning_rate, num_gpus, args.train, args.test,
-              hosts, args.current_host, distributed_server.scheduler_host(hosts), args.model_dir)
+              args.hosts, args.current_host, distributed_server.scheduler_host(args.hosts),
+              args.model_dir)

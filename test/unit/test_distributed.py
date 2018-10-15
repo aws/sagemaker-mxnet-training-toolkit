@@ -18,7 +18,7 @@ from sagemaker_mxnet_container.distributed import DefaultParameterServer
 
 SCHEDULER = 'host-1'
 SINGLE_HOST_LIST = [SCHEDULER]
-MULTIPLE_HOSTS_LIST = [SCHEDULER, 'host-2', 'host-3']
+MULTIPLE_HOSTS_LIST = ['host-2', SCHEDULER, 'host-3']
 
 IP_ADDRESS = '0.0.0.0000'
 DEFAULT_PORT = '8000'
@@ -34,13 +34,24 @@ BASE_ENV_VARS = {
 MXNET_COMMAND = "python -c 'import mxnet'"
 
 
-def test_init():
+def test_init_for_single_host_with_defaults():
     server = DefaultParameterServer(SINGLE_HOST_LIST)
 
     assert server.hosts == SINGLE_HOST_LIST
     assert server.scheduler == SCHEDULER
     assert server.ps_port == DEFAULT_PORT
     assert server.ps_verbose == DEFAULT_VERBOSITY
+
+
+def test_init_for_multiple_hosts_and_ps_options():
+    port = '8080'
+    verbosity = '1'
+    server = DefaultParameterServer(MULTIPLE_HOSTS_LIST, ps_port=port, ps_verbose=verbosity)
+
+    assert server.hosts == MULTIPLE_HOSTS_LIST
+    assert server.scheduler == SCHEDULER
+    assert server.ps_port == port
+    assert server.ps_verbose == verbosity
 
 
 @patch('sagemaker_mxnet_container.distributed.DefaultParameterServer._run_mxnet_process')
