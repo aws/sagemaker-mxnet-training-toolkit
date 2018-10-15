@@ -27,12 +27,12 @@ class DefaultParameterServer():
     ROLES = ['worker', 'scheduler', 'server']
 
     def __init__(self, hosts, ps_port='8000', ps_verbose='0'):
-        self.scheduler = self.scheduler_host(hosts)
-        self.hosts = hosts
-        self.ps_port = ps_port
         self.ps_verbose = ps_verbose
+        self.ps_port = ps_port
+        self.hosts = hosts
+        self.scheduler = self._scheduler_host()
 
-    def scheduler_host(self):
+    def _scheduler_host(self):
         return sorted(self.hosts)[0]
 
     @contextmanager
