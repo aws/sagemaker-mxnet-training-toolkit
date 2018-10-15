@@ -21,7 +21,7 @@ import struct
 import mxnet as mx
 import numpy as np
 
-from sagemaker_mxnet_container.default_parameter_server import DefaultParameterServer
+from sagemaker_mxnet_container.distributed import DefaultParameterServer
 
 
 def load_data(path):
