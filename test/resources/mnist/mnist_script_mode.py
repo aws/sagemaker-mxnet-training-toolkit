@@ -117,7 +117,7 @@ if __name__ == '__main__':
     parser.add_argument('--test', type=str, default=os.environ['SM_CHANNEL_TEST'])
 
     parser.add_argument('--current-host', type=str, default=os.environ['SM_CURRENT_HOST'])
-    parser.add_argument('--hosts', type=list, default=json.load(os.environ['SM_HOSTS']))
+    parser.add_argument('--hosts', type=list, default=json.loads(os.environ['SM_HOSTS']))
 
     args = parser.parse_args()
 
