@@ -19,7 +19,7 @@ from sagemaker.mxnet import MXNet
 
 def test_keras_training(docker_image, sagemaker_local_session):
     resource_path = os.path.join(os.path.dirname(__file__), '..', 'resources', 'keras')
-    script_path = os.path.join(resource_path, 'keras_script_mode.py')
+    script_path = os.path.join(resource_path, 'keras_mnist.py')
 
     mx = MXNet(entry_point=script_path, role='SageMakerRole', train_instance_count=1,
                train_instance_type='local', sagemaker_session=sagemaker_local_session,
