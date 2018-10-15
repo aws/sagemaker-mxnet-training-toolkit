@@ -54,6 +54,11 @@ def test_init_for_multiple_hosts_and_ps_options():
     assert server.ps_verbose == verbosity
 
 
+def test_scheduler_host():
+    server = DefaultParameterServer(MULTIPLE_HOSTS_LIST)
+    assert server.scheduler_host() == SCHEDULER
+
+
 @patch('sagemaker_mxnet_container.distributed.DefaultParameterServer._run_mxnet_process')
 def test_setup_for_single_host(run_process):
     server = DefaultParameterServer(SINGLE_HOST_LIST)

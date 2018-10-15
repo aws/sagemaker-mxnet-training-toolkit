@@ -126,5 +126,5 @@ if __name__ == '__main__':
     distributed_server = DefaultParameterServer(args.hosts)
     with distributed_server.setup(args.current_host):
         train(args.batch_size, args.epochs, args.learning_rate, num_gpus, args.train, args.test,
-              args.hosts, args.current_host, distributed_server.scheduler_host(args.hosts),
+              args.hosts, args.current_host, distributed_server.scheduler_host(),
               args.model_dir)

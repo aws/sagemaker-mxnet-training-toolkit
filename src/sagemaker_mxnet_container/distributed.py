@@ -32,8 +32,8 @@ class DefaultParameterServer():
         self.ps_port = ps_port
         self.ps_verbose = ps_verbose
 
-    def scheduler_host(self, hosts):
-        return sorted(hosts)[0]
+    def scheduler_host(self):
+        return sorted(self.hosts)[0]
 
     @contextmanager
     def setup(self, current_host):
