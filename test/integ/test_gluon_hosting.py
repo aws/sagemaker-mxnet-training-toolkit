@@ -13,25 +13,26 @@
 from __future__ import absolute_import
 
 import json
+import os
 
-import pytest
+from sagemaker.mxnet.model import MXNetModel
 
-import docker_utils
-import utils
+import local_mode
 
 
 # The image should support serving Gluon-created models.
-@pytest.mark.skip
 def test_gluon_hosting(docker_image, opt_ml, processor):
-    resource_path = 'test/resources/gluon_hosting'
-    for path in ['code', 'model']:
-        utils.copy_resource(resource_path, opt_ml, path)
+    resource_path = os.path.join(os.path.dirname(__file__), '..', 'resources', 'gluon_hosting')
+    m = MXNetModel(os.path.join('file://', resource_path, 'model'), 'SageMakerRole',
+                   os.path.join(resource_path, 'code', 'gluon.py'), image=docker_image)
 
     with open('test/resources/mnist_images/04.json', 'r') as f:
         input = json.load(f)
 
-    with docker_utils.HostingContainer(image=docker_image, processor=processor,
-                                       opt_ml=opt_ml, script_name='gluon.py') as c:
-        c.ping()
-        output = c.invoke_endpoint(input)
-        assert '[4.0]' == output
+    with local_mode.lock():
+        try:
+            predictor = m.deploy(1, 'local')
+            output = predictor.predict(input)
+            assert [4.0] == output
+        finally:
+            predictor.delete_endpoint()
