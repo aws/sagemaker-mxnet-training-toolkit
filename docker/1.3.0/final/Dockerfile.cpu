@@ -10,8 +10,8 @@ RUN test $framework_installable || exit 1 && \
 WORKDIR /tmp
 
 RUN apt-get update && \
-    apt-get -y install build-essential libopencv-dev libopenblas-dev libjemalloc-dev libgfortran3 \
-    python-dev python3-dev wget curl nginx
+    apt-get -y install libopencv libopenblas libjemalloc libgfortran3 \
+    python python3 wget curl nginx
 
 # Symlink /usr/bin/python to the python version we're building for.
 RUN rm /usr/bin/python && ln -s "/usr/bin/python$py_version" /usr/bin/python
@@ -33,8 +33,8 @@ RUN framework_installable_local=$(basename $framework_installable) && \
     rm $framework_installable_local && \
     rm $framework_support_installable_local
 
-RUN pip install onnx \
-                keras-mxnet
+RUN pip install onnx==1.2.1 \
+                keras-mxnet==2.2.2
 
 # This is here to make our installed version of OpenCV work.
 # https://stackoverflow.com/questions/29274638/opencv-libdc1394-error-failed-to-initialize-libdc1394
