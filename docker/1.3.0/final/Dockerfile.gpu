@@ -1,4 +1,4 @@
-FROM nvidia/cuda:9.0-cudnn7-devel
+FROM nvidia/cuda:9.0-cudnn7
 ARG framework_installable
 ARG py_version
 ARG framework_support_installable=sagemaker_mxnet_container-2.0.0.tar.gz
@@ -18,7 +18,8 @@ RUN rm /usr/bin/python && ln -s "/usr/bin/python$py_version" /usr/bin/python
 
 # install pip
 RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
-    /usr/bin/python get-pip.py
+    /usr/bin/python get-pip.py && \
+    rm get-pip.py
 
 # Will install from pypi once packages are released there. For now, copy from local file system.
 COPY $framework_installable .
