@@ -10,7 +10,7 @@ RUN test $framework_installable || exit 1 && \
 WORKDIR /tmp
 
 RUN apt-get update && \
-    apt-get -y install libopencv libopenblas libjemalloc libgfortran3 \
+    apt-get -y install libopencv-dev libopenblas-dev libjemalloc-dev libgfortran3 \
     python python3 wget curl nginx
 
 # Symlink /usr/bin/python to the python version we're building for.

@@ -10,8 +10,8 @@ RUN test $framework_installable || exit 1 && \
 WORKDIR /tmp
 
 RUN apt-get update && \
-    apt-get -y install libopencv libatlas-base libcurl4-openssl libgtest \
-        libjemalloc python python3 unzip git wget curl nginx
+    apt-get -y install libopencv-dev libatlas-base-dev libcurl4-openssl-dev libgtest-dev \
+        libjemalloc-dev python python3 unzip git wget curl nginx
 
 # Symlink /usr/bin/python to the python version we're building for.
 RUN rm /usr/bin/python && ln -s "/usr/bin/python$py_version" /usr/bin/python
