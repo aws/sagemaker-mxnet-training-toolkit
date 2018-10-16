@@ -1,4 +1,4 @@
-FROM nvidia/cuda:9.0-cudnn7-devel
+FROM nvidia/cuda:9.0-cudnn7-runtime
 ARG framework_installable
 ARG py_version
 ARG framework_support_installable=sagemaker_mxnet_container-2.0.0.tar.gz
