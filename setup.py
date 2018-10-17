@@ -38,6 +38,7 @@ setup(
     # different packages for different variants (e.g. mxnet-mkl and mxnet-cu90).
     install_requires=['sagemaker-container-support >= 1.0.0, <2'],
     extras_require={
-        'test': ['tox', 'flake8', 'pytest', 'pytest-cov', 'pytest-xdist', 'mock', 'sagemaker']
+        'test': ['tox', 'flake8', 'pytest', 'pytest-cov', 'pytest-xdist', 'mock',
+                 'requests==2.18.4', 'sagemaker']
     },
 )
