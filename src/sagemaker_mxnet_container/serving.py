@@ -21,6 +21,15 @@ from sagemaker_containers.beta.framework import encoders, env, modules, transfor
 
 logger = logging.getLogger(__name__)
 
+PREFERRED_BATCH_SIZE_PARAM ='SAGEMAKER_DEFAULT_MODEL_FIRST_DIMENSION_SIZE'
+DEFAULT_ENV_VARS = {
+    'MXNET_CPU_WORKER_NTHREADS': 1,
+    'MXNET_CPU_PRIORITY_NTHREADS': 1,
+    'MXNET_KVSTORE_REDUCTION_NTHREADS': 1,
+    'MXNET_ENGINE_TYPE': 'NativeEngine',
+    'OMP_NUM_THREADS': 1,
+}
+
 DEFAULT_MODEL_NAME = 'model'
 DEFAULT_MODEL_FILENAMES = {
     'symbol': 'model-symbol.json',
@@ -45,6 +54,7 @@ def default_model_fn(model_dir, preferred_batch_size=None):
             raise ValueError('missing %s file' % f)
 
     shapes_file = os.path.join(model_dir, DEFAULT_MODEL_FILENAMES['shapes'])
+    preferred_batch_size = preferred_batch_size or os.environ.get(PREFERRED_BATCH_SIZE_PARAM)
     data_names, data_shapes = _read_data_shapes(shapes_file, preferred_batch_size)
 
     sym, args, aux = mx.model.load_checkpoint(os.path.join(model_dir, DEFAULT_MODEL_NAME), 0)
@@ -233,6 +243,12 @@ class GluonBlockTransformer(MXNetTransformer):
             mxnet.nd.array: the prediction result
         """
         return block(data)
+
+
+def _update_mxnet_env_vars():
+    for k, v in DEFAULT_ENV_VARS:
+        if k not in os.environ:
+            os.environ[k] = v
 
 
 def _user_module_transformer(user_module, model_dir):
