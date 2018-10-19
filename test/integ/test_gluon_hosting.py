@@ -24,7 +24,8 @@ import local_mode
 def test_gluon_hosting(docker_image, sagemaker_local_session):
     resource_path = os.path.join(os.path.dirname(__file__), '..', 'resources', 'gluon_hosting')
     m = MXNetModel(os.path.join('file://', resource_path, 'model'), 'SageMakerRole',
-                   os.path.join(resource_path, 'code', 'gluon.py'), image=docker_image)
+                   os.path.join(resource_path, 'code', 'gluon.py'), image=docker_image,
+                   sagemaker_session=sagemaker_local_session)
 
     with open('test/resources/mnist_images/04.json', 'r') as f:
         input = json.load(f)
@@ -35,4 +36,4 @@ def test_gluon_hosting(docker_image, sagemaker_local_session):
             output = predictor.predict(input)
             assert [4.0] == output
         finally:
-            predictor.delete_endpoint()
+            sagemaker_local_session.delete_endpoint(m.endpoint_name)
