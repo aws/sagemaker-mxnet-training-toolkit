@@ -41,7 +41,7 @@ def test_default_model_fn(path_exists, mx_load_checkpoint, mx_module, mx_cpu):
     mx_cpu.return_value = mx_context
 
     data_name = 'foo'
-    data_shape = 'bar'
+    data_shape = [1]
     signature = json.dumps([{'name': data_name, 'shape': data_shape}])
 
     with patch('six.moves.builtins.open', mock_open(read_data=signature)):
