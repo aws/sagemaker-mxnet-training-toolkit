@@ -21,7 +21,7 @@ import local_mode
 
 
 # The image should support serving Gluon-created models.
-def test_gluon_hosting(docker_image, opt_ml, processor):
+def test_gluon_hosting(docker_image, sagemaker_local_session):
     resource_path = os.path.join(os.path.dirname(__file__), '..', 'resources', 'gluon_hosting')
     m = MXNetModel(os.path.join('file://', resource_path, 'model'), 'SageMakerRole',
                    os.path.join(resource_path, 'code', 'gluon.py'), image=docker_image)
