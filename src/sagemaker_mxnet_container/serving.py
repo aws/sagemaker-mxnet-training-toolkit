@@ -39,8 +39,8 @@ DEFAULT_MODEL_FILENAMES = {
 
 
 def default_model_fn(model_dir, preferred_batch_size=1):
-    """Function responsible for loading the model. For more information, see
-    https://github.com/aws/sagemaker-python-sdk#model-loading.
+    """Function responsible for loading the model. This implementation is designed to work with
+    the default save function provided for MXNet training.
 
     Args:
         model_dir (str): The directory where model files are stored
@@ -52,7 +52,9 @@ def default_model_fn(model_dir, preferred_batch_size=1):
     for f in DEFAULT_MODEL_FILENAMES.values():
         path = os.path.join(model_dir, f)
         if not os.path.exists(path):
-            raise ValueError('missing %s file' % f)
+            raise ValueError('Failed to load model with default model_fn: missing file {}.'
+                             'Expected files: {}'.format(f, [file_name for _, file_name
+                                                             in DEFAULT_MODEL_FILENAMES.items()]))
 
     shapes_file = os.path.join(model_dir, DEFAULT_MODEL_FILENAMES['shapes'])
     preferred_batch_size = preferred_batch_size or os.environ.get(PREFERRED_BATCH_SIZE_PARAM)
