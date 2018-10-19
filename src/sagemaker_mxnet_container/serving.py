@@ -21,7 +21,7 @@ from sagemaker_containers.beta.framework import encoders, env, modules, transfor
 
 logger = logging.getLogger(__name__)
 
-PREFERRED_BATCH_SIZE_PARAM ='SAGEMAKER_DEFAULT_MODEL_FIRST_DIMENSION_SIZE'
+PREFERRED_BATCH_SIZE_PARAM = 'SAGEMAKER_DEFAULT_MODEL_FIRST_DIMENSION_SIZE'
 DEFAULT_ENV_VARS = {
     'MXNET_CPU_WORKER_NTHREADS': 1,
     'MXNET_CPU_PRIORITY_NTHREADS': 1,
@@ -38,12 +38,13 @@ DEFAULT_MODEL_FILENAMES = {
 }
 
 
-def default_model_fn(model_dir, preferred_batch_size=None):
+def default_model_fn(model_dir, preferred_batch_size=1):
     """Function responsible for loading the model. For more information, see
     https://github.com/aws/sagemaker-python-sdk#model-loading.
 
     Args:
-        model_dir (str): The directory where model files are stored.
+        model_dir (str): The directory where model files are stored
+        preferred_batch_size (int): The preferred batch size of the model's data shape (default: 1)
 
     Returns:
         mxnet.mod.Module: the loaded model.
