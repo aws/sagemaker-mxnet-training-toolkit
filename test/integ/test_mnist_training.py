@@ -14,7 +14,10 @@ from __future__ import absolute_import
 
 import os
 
+import numpy
 from sagemaker.mxnet import MXNet
+
+import local_mode
 
 RESOURCE_PATH = os.path.join(os.path.dirname(__file__), '..', 'resources', 'mnist')
 SCRIPT_PATH = os.path.join(RESOURCE_PATH, 'mnist_script_mode.py')
@@ -29,6 +32,14 @@ def test_mnist_training(docker_image, sagemaker_local_session):
                image_name=docker_image)
 
     _train_and_assert_success(mx)
+
+    with local_mode.lock():
+        try:
+            predictor = mx.deploy(1, 'local')
+            data = numpy.zeros(shape=(1, 1, 28, 28))
+            predictor.predict(data)
+        finally:
+            mx.delete_endpoint()
 
 
 def test_distributed_mnist_training(docker_image, sagemaker_local_session):
