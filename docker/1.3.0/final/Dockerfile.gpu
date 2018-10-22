@@ -47,3 +47,4 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib"
 
 ENV SAGEMAKER_TRAINING_MODULE sagemaker_mxnet_container.training:main
+ENV SAGEMAKER_SERVING_MODULE sagemaker_mxnet_container.serving:main
