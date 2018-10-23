@@ -12,24 +12,27 @@
 #  permissions and limitations under the License.
 from __future__ import absolute_import
 
-import pytest
+import os
 
-import docker_utils
-import utils
+from sagemaker.mxnet.model import MXNetModel
+
+import local_mode
 
 
 # The image should serve a MXNet model saved in the
 # default format, even without a user-provided script.
-@pytest.mark.skip
-def test_default_model_fn(docker_image, opt_ml, processor):
-    resource_path = 'test/resources/default_handlers'
-    for path in ['code', 'model']:
-        utils.copy_resource(resource_path, opt_ml, path)
+def test_default_model_fn(docker_image, sagemaker_local_session):
+    resource_path = os.path.join(os.path.dirname(__file__), '..', 'resources', 'default_handlers')
+    m = MXNetModel(os.path.join('file://', resource_path, 'model'), 'SageMakerRole',
+                   os.path.join(resource_path, 'code', 'empty_module.py'), image=docker_image,
+                   sagemaker_session=sagemaker_local_session)
 
     input = [[1, 2]]
 
-    with docker_utils.HostingContainer(image=docker_image, processor=processor,
-                                       opt_ml=opt_ml, script_name='empty_module.py') as c:
-        c.ping()
-        output = c.invoke_endpoint(input)
-        assert '[[4.9999918937683105]]' == output
+    with local_mode.lock():
+        try:
+            predictor = m.deploy(1, 'local')
+            output = predictor.predict(input)
+            assert [[4.9999918937683105]] == output
+        finally:
+            sagemaker_local_session.delete_endpoint(m.endpoint_name)

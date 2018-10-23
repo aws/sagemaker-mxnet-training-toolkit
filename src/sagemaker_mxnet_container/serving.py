@@ -23,11 +23,11 @@ logger = logging.getLogger(__name__)
 
 PREFERRED_BATCH_SIZE_PARAM = 'SAGEMAKER_DEFAULT_MODEL_FIRST_DIMENSION_SIZE'
 DEFAULT_ENV_VARS = {
-    'MXNET_CPU_WORKER_NTHREADS': 1,
-    'MXNET_CPU_PRIORITY_NTHREADS': 1,
-    'MXNET_KVSTORE_REDUCTION_NTHREADS': 1,
+    'MXNET_CPU_WORKER_NTHREADS': '1',
+    'MXNET_CPU_PRIORITY_NTHREADS': '1',
+    'MXNET_KVSTORE_REDUCTION_NTHREADS': '1',
     'MXNET_ENGINE_TYPE': 'NativeEngine',
-    'OMP_NUM_THREADS': 1,
+    'OMP_NUM_THREADS': '1',
 }
 
 DEFAULT_MODEL_NAME = 'model'
@@ -249,17 +249,22 @@ class GluonBlockTransformer(MXNetTransformer):
 
 
 def _update_mxnet_env_vars():
-    for k, v in DEFAULT_ENV_VARS:
+    for k, v in DEFAULT_ENV_VARS.items():
         if k not in os.environ:
             os.environ[k] = v
 
 
-def _user_module_transformer(user_module, model_dir):
-    if hasattr(user_module, 'transform_fn'):
-        # TODO: need to implement user-supplied transform_fn support in SageMaker Containers
-        raise ValueError('User-supplied transform_fn is not supported at this time')
+def _transformer_with_transform_fn(model_fn, transform_fn):
+    user_transformer = transformer.Transformer(model_fn=model_fn, transform_fn=transform_fn)
+    user_transformer.initialize()
+    return user_transformer
 
+
+def _user_module_transformer(user_module, model_dir):
     model_fn = getattr(user_module, 'model_fn', default_model_fn)
+
+    if hasattr(user_module, 'transform_fn'):
+        return _transformer_with_transform_fn(model_fn, getattr(user_module, 'transform_fn'))
 
     model = model_fn(model_dir)
     if isinstance(model, mx.module.BaseModule):
@@ -284,9 +289,12 @@ def main(environ, start_response):
     global app
     if app is None:
         serving_env = env.ServingEnv()
-        user_module = modules.import_module(serving_env.module_dir, serving_env.module_name)
+        _update_mxnet_env_vars()
 
-        transformer = _user_module_transformer(user_module, serving_env.model_dir)
-        app = worker.Worker(transform_fn=transformer.transform, module_name=serving_env.module_name)
+        user_module = modules.import_module(serving_env.module_dir, serving_env.module_name)
+        user_transformer = _user_module_transformer(user_module, serving_env.model_dir)
+
+        app = worker.Worker(transform_fn=user_transformer.transform,
+                            module_name=serving_env.module_name)
 
     return app(environ, start_response)
