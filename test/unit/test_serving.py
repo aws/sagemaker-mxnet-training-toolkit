@@ -164,17 +164,17 @@ def test_gluon_transformer_default_predict_fn():
     block.assert_called_with(data)
 
 
-def test_user_module_transformer_with_transform_fn():
+@patch('sagemaker_containers.beta.framework.functions.error_wrapper', lambda x, y: x)
+@patch('sagemaker_mxnet_container.serving.default_model_fn')
+def test_user_module_transformer_with_transform_fn(model_fn):
     class UserModule:
         def __init__(self):
             self.transform_fn = Mock()
 
     user_module = UserModule()
 
-    with pytest.raises(ValueError) as e:
-        _user_module_transformer(user_module, MODEL_DIR)
-
-    assert 'transform_fn is not supported' in str(e)
+    t = _user_module_transformer(user_module, MODEL_DIR)
+    assert t._transform_fn == user_module.transform_fn
 
 
 @patch('sagemaker_containers.beta.framework.functions.error_wrapper', lambda x, y: x)
