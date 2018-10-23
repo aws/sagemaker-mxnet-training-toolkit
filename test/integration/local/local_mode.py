@@ -17,7 +17,8 @@ import fcntl
 import os
 import time
 
-RESOURCE_PATH = os.path.join(os.path.dirname(__file__), '..', 'resources')
+from test.integration import RESOURCE_PATH
+
 LOCK_PATH = os.path.join(RESOURCE_PATH, 'local_mode_lock')
 
 
