@@ -18,21 +18,22 @@ import os
 from sagemaker.mxnet.model import MXNetModel
 
 import local_mode
+from test.integration import RESOURCE_PATH
 
 
 # The image should use the model_fn and transform_fn defined
 # in the user-provided script when serving.
-def test_hosting(docker_image, sagemaker_local_session):
-    resource_path = os.path.join(os.path.dirname(__file__), '..', 'resources', 'dummy_hosting')
-    m = MXNetModel(os.path.join('file://', resource_path, 'code'), 'SageMakerRole',
-                   os.path.join(resource_path, 'code', 'dummy_hosting_module.py'),
+def test_hosting(docker_image, sagemaker_local_session, local_instance_type):
+    hosting_resource_path = os.path.join(RESOURCE_PATH, 'dummy_hosting')
+    m = MXNetModel(os.path.join('file://', hosting_resource_path, 'code'), 'SageMakerRole',
+                   os.path.join(hosting_resource_path, 'code', 'dummy_hosting_module.py'),
                    image=docker_image, sagemaker_session=sagemaker_local_session)
 
     input = json.dumps({'some': 'json'})
 
     with local_mode.lock():
         try:
-            predictor = m.deploy(1, 'local')
+            predictor = m.deploy(1, local_instance_type)
             output = predictor.predict(input)
             assert input == output
         finally:

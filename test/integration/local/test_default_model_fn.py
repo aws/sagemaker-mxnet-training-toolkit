@@ -12,28 +12,28 @@
 #  permissions and limitations under the License.
 from __future__ import absolute_import
 
-import json
 import os
 
 from sagemaker.mxnet.model import MXNetModel
 
 import local_mode
+from test.integration import RESOURCE_PATH
 
 
-# The image should support serving Gluon-created models.
-def test_gluon_hosting(docker_image, sagemaker_local_session):
-    resource_path = os.path.join(os.path.dirname(__file__), '..', 'resources', 'gluon_hosting')
-    m = MXNetModel(os.path.join('file://', resource_path, 'model'), 'SageMakerRole',
-                   os.path.join(resource_path, 'code', 'gluon.py'), image=docker_image,
-                   sagemaker_session=sagemaker_local_session)
+# The image should serve a MXNet model saved in the
+# default format, even without a user-provided script.
+def test_default_model_fn(docker_image, sagemaker_local_session, local_instance_type):
+    default_handler_path = os.path.join(RESOURCE_PATH, 'default_handlers')
+    m = MXNetModel(os.path.join('file://', default_handler_path, 'model'), 'SageMakerRole',
+                   os.path.join(default_handler_path, 'code', 'empty_module.py'),
+                   image=docker_image, sagemaker_session=sagemaker_local_session)
 
-    with open('test/resources/mnist_images/04.json', 'r') as f:
-        input = json.load(f)
+    input = [[1, 2]]
 
     with local_mode.lock():
         try:
-            predictor = m.deploy(1, 'local')
+            predictor = m.deploy(1, local_instance_type)
             output = predictor.predict(input)
-            assert [4.0] == output
+            assert [[4.9999918937683105]] == output
         finally:
             sagemaker_local_session.delete_endpoint(m.endpoint_name)

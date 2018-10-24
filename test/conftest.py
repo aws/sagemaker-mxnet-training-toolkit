@@ -93,6 +93,11 @@ def docker_image(docker_base_name, tag):
 
 
 @pytest.fixture(scope='session')
+def ecr_image(account_id, docker_base_name, tag, region):
+    return '{}.dkr.ecr.{}.amazonaws.com/{}:{}'.format(account_id, region, docker_base_name, tag)
+
+
+@pytest.fixture(scope='session')
 def sagemaker_session(region):
     return Session(boto_session=boto3.Session(region_name=region))
 
@@ -100,6 +105,11 @@ def sagemaker_session(region):
 @pytest.fixture(scope='session')
 def sagemaker_local_session(region):
     return LocalSession(boto_session=boto3.Session(region_name=region))
+
+
+@pytest.fixture(scope='session')
+def local_instance_type(processor):
+    return 'local' if processor == 'cpu' else 'local_gpu'
 
 
 @pytest.fixture
