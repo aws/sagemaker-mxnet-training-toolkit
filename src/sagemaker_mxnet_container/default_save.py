@@ -21,6 +21,22 @@ SHAPES_PATH = 'model-shapes.json'
 
 
 def save(model_dir, model):
+    """Save an MXNet Module to a given location.
+
+    This generates three files in the model directory:
+
+    - model-symbol.json: The serialized module symbolic graph.
+        Formed by invoking ``module.symbole.save``.
+    - model-0000.params: The serialized module parameters.
+        Formed by invoking ``module.save_params``.
+    - model-shapes.json: The serialized module input data shapes in the form of a JSON list of
+        JSON data-shape objects. Each data-shape object contains a string name and
+        a list of integer dimensions.
+
+    Args:
+        model_dir (str): the directory for saving the model
+        model (mxnet.mod.Module): the module to be saved
+    """
     model.symbol.save(os.path.join(model_dir, SYMBOL_PATH))
     model.save_params(os.path.join(model_dir, PARAMS_PATH))
 
