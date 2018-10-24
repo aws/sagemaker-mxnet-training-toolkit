@@ -46,7 +46,8 @@ def test_mnist_training_and_serving(docker_image, sagemaker_local_session, local
 def test_distributed_mnist_training(docker_image, sagemaker_local_session):
     mx = MXNet(entry_point=SCRIPT_PATH, role='SageMakerRole', train_instance_count=2,
                train_instance_type='local', sagemaker_session=sagemaker_local_session,
-               image_name=docker_image)
+               image_name=docker_image,
+               hyperparameters={'sagemaker_mxnet_enable_parameter_server': True})
 
     _train_and_assert_success(mx)
 
