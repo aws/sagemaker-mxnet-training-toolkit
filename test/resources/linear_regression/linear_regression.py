@@ -12,14 +12,18 @@
 #  permissions and limitations under the License.
 from __future__ import absolute_import
 
+import argparse
 import logging
+import json
 import os
 
 import mxnet as mx
 import numpy as np
 
+from sagemaker_mxnet_container.default_save import save
 
-def train(num_cpus, num_gpus, channel_input_dirs, **kwargs):
+
+def train(num_cpus, num_gpus, channel_input_dirs):
     """
     ensure mxnet is fully functional by training simple model
     see http://mxnet.incubator.apache.org/tutorials/python/linear-regression.html
@@ -77,3 +81,18 @@ def _get_context(cpus, gpus):
 
     logging.info("mxnet context: %s" % str(ctx))
     return ctx
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--model-dir', type=str, default=os.environ['SM_MODEL_DIR'])
+    parser.add_argument('--input-channels', type=str, default=json.loads(os.environ['SM_TRAINING_ENV'])['channel_input_dirs'])
+
+    args = parser.parse_args()
+
+    num_cpus = int(os.environ['SM_NUM_CPUS'])
+    num_gpus = int(os.environ['SM_NUM_GPUS'])
+
+    model = train(num_cpus, num_gpus, args.input_channels)
+    save(args.model_dir, model)
