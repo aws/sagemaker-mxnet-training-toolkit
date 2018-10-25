@@ -18,16 +18,13 @@ import socket
 import subprocess
 
 from retrying import retry
-
 import sagemaker_containers.beta.framework as framework
+
+from sagemaker_mxnet_container.training_utils import scheduler_host
 
 ROLES = ['worker', 'scheduler', 'server']
 
 logger = logging.getLogger(__name__)
-
-
-def _scheduler_host(hosts):
-    return hosts[0]
 
 
 def _env_vars_for_role(role, hosts, ps_port, ps_verbose):
@@ -36,7 +33,7 @@ def _env_vars_for_role(role, hosts, ps_port, ps_verbose):
             'DMLC_NUM_WORKER': str(len(hosts)),
             'DMLC_NUM_SERVER': str(len(hosts)),
             'DMLC_ROLE': role,
-            'DMLC_PS_ROOT_URI': _host_lookup(_scheduler_host(hosts)),
+            'DMLC_PS_ROOT_URI': _host_lookup(scheduler_host(hosts)),
             'DMLC_PS_ROOT_PORT': ps_port,
             'PS_VERBOSE': ps_verbose,
         }
@@ -47,7 +44,7 @@ def _env_vars_for_role(role, hosts, ps_port, ps_verbose):
 def _run_mxnet_process(role, hosts, ps_port, ps_verbose):
     role_env = os.environ.copy()
     role_env.update(_env_vars_for_role(role, hosts, ps_port, ps_verbose))
-    return subprocess.Popen("python -c 'import mxnet'", shell=True, env=role_env).pid
+    subprocess.Popen("python -c 'import mxnet'", shell=True, env=role_env).pid
 
 
 @retry(stop_max_delay=1000 * 60 * 15, wait_exponential_multiplier=100,
@@ -71,7 +68,7 @@ def train(env):
         ps_verbose = env.hyperparameters.get('_ps_verbose', '0')
 
         logger.info('Starting distributed training task')
-        if _scheduler_host(env.hosts) == env.current_host:
+        if scheduler_host(env.hosts) == env.current_host:
             _run_mxnet_process('scheduler', env.hosts, ps_port, ps_verbose)
         _run_mxnet_process('server', env.hosts, ps_port, ps_verbose)
         os.environ.update(_env_vars_for_role('worker', env.hosts, ps_port, ps_verbose))

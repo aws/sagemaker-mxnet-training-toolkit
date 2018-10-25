@@ -1,4 +1,4 @@
-# Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"). You
 # may not use this file except in compliance with the License. A copy of
@@ -12,13 +12,31 @@
 # language governing permissions and limitations under the License.
 from __future__ import absolute_import
 
-from mock import MagicMock, patch
+from mock import call, MagicMock, patch
 import pytest
 
 from sagemaker_mxnet_container import training
 
 MODULE_DIR = 's3://my/bucket'
 MODULE_NAME = 'script_name'
+
+SCHEDULER = 'host-1'
+SINGLE_HOST_LIST = [SCHEDULER]
+MULTIPLE_HOST_LIST = [SCHEDULER, 'host-2', 'host-3']
+
+
+IP_ADDRESS = '0.0.0.0000'
+DEFAULT_PORT = '8000'
+DEFAULT_VERBOSITY = '0'
+BASE_ENV_VARS = {
+    'DMLC_NUM_WORKER': str(len(MULTIPLE_HOST_LIST)),
+    'DMLC_NUM_SERVER': str(len(MULTIPLE_HOST_LIST)),
+    'DMLC_PS_ROOT_URI': IP_ADDRESS,
+    'DMLC_PS_ROOT_PORT': DEFAULT_PORT,
+    'PS_VERBOSE': DEFAULT_VERBOSITY,
+}
+
+MXNET_COMMAND = "python -c 'import mxnet'"
 
 
 @pytest.fixture
@@ -28,8 +46,71 @@ def single_machine_training_env():
     env.module_dir = MODULE_DIR
     env.module_name = MODULE_NAME
     env.hyperparameters = {}
+    env.additional_framework_parameters = {}
 
     return env
+
+
+@pytest.fixture
+def distributed_training_env():
+    env = MagicMock()
+
+    env.module_dir = MODULE_DIR
+    env.module_name = MODULE_NAME
+    env.hyperparameters = {}
+
+    env.hosts = MULTIPLE_HOST_LIST
+    env.additional_framework_parameters = {
+        'sagemaker_mxnet_enable_parameter_server': True,
+    }
+
+    return env
+
+
+@patch('os.environ', {})
+@patch('subprocess.Popen')
+@patch('sagemaker_mxnet_container.training._host_lookup')
+@patch('sagemaker_mxnet_container.training._verify_hosts')
+@patch('sagemaker_containers.beta.framework.modules.run_module')
+def test_setup_for_distributed_scheduler(run_module, verify_hosts, host_lookup, popen,
+                                         distributed_training_env):
+    host_lookup.return_value = IP_ADDRESS
+
+    distributed_training_env.current_host = SCHEDULER
+    training.train(distributed_training_env)
+
+    verify_hosts.assert_called_with(MULTIPLE_HOST_LIST)
+
+    scheduler_env = BASE_ENV_VARS.copy()
+    scheduler_env.update({'DMLC_ROLE': 'scheduler'})
+
+    server_env = BASE_ENV_VARS.copy()
+    server_env.update({'DMLC_ROLE': 'server'})
+
+    calls = [call(MXNET_COMMAND, shell=True, env=scheduler_env),
+             call(MXNET_COMMAND, shell=True, env=server_env)]
+
+    popen.assert_has_calls(calls)
+
+
+@patch('os.environ', {})
+@patch('subprocess.Popen')
+@patch('sagemaker_mxnet_container.training._host_lookup')
+@patch('sagemaker_mxnet_container.training._verify_hosts')
+@patch('sagemaker_containers.beta.framework.modules.run_module')
+def test_setup_for_distributed_worker(run_module, verify_hosts, host_lookup, popen,
+                                      distributed_training_env):
+    host_lookup.return_value = IP_ADDRESS
+
+    distributed_training_env.current_host = 'host-2'
+    training.train(distributed_training_env)
+
+    verify_hosts.assert_called_with(MULTIPLE_HOST_LIST)
+
+    server_env = BASE_ENV_VARS.copy()
+    server_env.update({'DMLC_ROLE': 'server'})
+
+    popen.assert_called_once_with(MXNET_COMMAND, shell=True, env=server_env)
 
 
 @patch('sagemaker_containers.beta.framework.modules.run_module')
