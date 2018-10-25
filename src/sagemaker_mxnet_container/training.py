@@ -22,6 +22,7 @@ import sagemaker_containers.beta.framework as framework
 
 from sagemaker_mxnet_container.training_utils import scheduler_host
 
+LAUNCH_PS_ENV_NAME = 'sagemaker_mxnet_launch_parameter_server'
 ROLES = ['worker', 'scheduler', 'server']
 
 logger = logging.getLogger(__name__)
@@ -61,7 +62,7 @@ def _verify_hosts(hosts):
 def train(env):
     logger.info('MXNet training environment: {}'.format(env.to_env_vars()))
 
-    if env.additional_framework_parameters.get('sagemaker_mxnet_enable_parameter_server', False):
+    if env.additional_framework_parameters.get(LAUNCH_PS_ENV_NAME, False):
         _verify_hosts(env.hosts)
 
         ps_port = env.hyperparameters.get('_ps_port', '8000')

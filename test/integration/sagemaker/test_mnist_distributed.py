@@ -29,7 +29,7 @@ def test_mxnet_distributed(sagemaker_session, ecr_image, instance_type):
     mx = MXNet(entry_point=script_path, role='SageMakerRole', train_instance_count=2,
                train_instance_type=instance_type, sagemaker_session=sagemaker_session,
                image_name=ecr_image,
-               hyperparameters={'sagemaker_mxnet_enable_parameter_server': True})
+               hyperparameters={'sagemaker_mxnet_launch_parameter_server': True})
 
     prefix = 'mxnet_mnist/{}'.format(sagemaker_timestamp())
 
