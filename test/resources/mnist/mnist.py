@@ -20,7 +20,7 @@ import struct
 import mxnet as mx
 import numpy as np
 
-from sagemaker_mxnet_container.distributed import DefaultParameterServer
+from sagemaker_mxnet_container.training_utils import scheduler_host
 
 
 def load_data(path):
@@ -59,7 +59,7 @@ def get_train_context(num_gpus):
 
 
 def train(batch_size, epochs, learning_rate, num_gpus, training_channel, testing_channel,
-          hosts, current_host, scheduler_host, model_dir):
+          hosts, current_host, model_dir):
     (train_labels, train_images) = load_data(training_channel)
     (test_labels, test_images) = load_data(testing_channel)
 
@@ -91,7 +91,7 @@ def train(batch_size, epochs, learning_rate, num_gpus, training_channel, testing
                   batch_end_callback=mx.callback.Speedometer(batch_size, 100),
                   num_epoch=epochs)
 
-    if len(hosts) == 1 or scheduler_host == current_host:
+    if len(hosts) == 1 or current_host == scheduler_host(hosts):
         save(model_dir, mlp_model)
 
 
@@ -123,7 +123,5 @@ if __name__ == '__main__':
 
     num_gpus = int(os.environ['SM_NUM_GPUS'])
 
-    distributed_server = DefaultParameterServer(args.hosts)
-    with distributed_server.setup(args.current_host):
-        train(args.batch_size, args.epochs, args.learning_rate, num_gpus, args.train, args.test,
-              args.hosts, args.current_host, distributed_server.scheduler, args.model_dir)
+    train(args.batch_size, args.epochs, args.learning_rate, num_gpus, args.train, args.test,
+          args.hosts, args.current_host, args.model_dir)

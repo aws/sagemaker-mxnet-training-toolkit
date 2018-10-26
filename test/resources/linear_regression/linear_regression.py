@@ -20,7 +20,7 @@ import os
 import mxnet as mx
 import numpy as np
 
-from sagemaker_mxnet_container.default_save import save
+from sagemaker_mxnet_container.training_utils import save
 
 
 def train(num_cpus, num_gpus, channel_input_dirs):
