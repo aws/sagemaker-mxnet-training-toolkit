@@ -194,20 +194,20 @@ If you want to run local integration tests, then use:
 
     # Required arguments for integration tests are found in test/conftest.py
 
-    pytest test/integ --docker-base-name <your_docker_image> \
-                      --tag <your_docker_image_tag> \
-                      --py-version <2_or_3> \
-                      --framework-version <mxnet_version> \
-                      --processor <cpu_or_gpu>
+    pytest test/integration/local --docker-base-name <your_docker_image> \
+                                  --tag <your_docker_image_tag> \
+                                  --py-version <2_or_3> \
+                                  --framework-version <mxnet_version> \
+                                  --processor <cpu_or_gpu>
 
 ::
 
     # Example
-    pytest test/integ --docker-base-name preprod-mxnet \
-                      --tag 1.0 \
-                      --py-version 2 \
-                      --framework-version 0.12.1 \
-                      --processor cpu
+    pytest test/integration/local --docker-base-name preprod-mxnet \
+                                  --tag 1.0 \
+                                  --py-version 2 \
+                                  --framework-version 0.12.1 \
+                                  --processor cpu
 
 SageMaker Integration Tests
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -233,18 +233,18 @@ If you want to run an integration test on `Amazon SageMaker <https://aws.amazon.
 
     # Required arguments for integration tests are found in test/conftest.py
 
-    pytest test/functional --account-id <your_aws_id> \
-                           --docker-base-name <your_docker_image> \
-                           --instance-type <amazon_sagemaker_instance_type> \
-                           --tag <your_docker_image_tag> \
+    pytest test/integration/sagmaker --account-id <your_aws_id> \
+                                     --docker-base-name <your_docker_image> \
+                                     --instance-type <amazon_sagemaker_instance_type> \
+                                     --tag <your_docker_image_tag> \
 
 ::
 
     # Example
-    pytest test/functional --aws-id 12345678910 \
-                           --docker-base-name preprod-mxnet \
-                           --instance-type ml.m4.xlarge \
-                           --tag 1.0
+    pytest test/integration/sagemaker  --account-id 12345678910 \
+                                       --docker-base-name preprod-mxnet \
+                                       --instance-type ml.m4.xlarge \
+                                       --tag 1.0
 
 Contributing
 ------------
