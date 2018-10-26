@@ -61,7 +61,7 @@ def distributed_training_env():
 
     env.hosts = MULTIPLE_HOST_LIST
     env.additional_framework_parameters = {
-        'sagemaker_mxnet_enable_parameter_server': True,
+        training.LAUNCH_PS_ENV_NAME: True,
     }
 
     return env
@@ -72,7 +72,7 @@ def distributed_training_env():
 @patch('sagemaker_mxnet_container.training._host_lookup')
 @patch('sagemaker_mxnet_container.training._verify_hosts')
 @patch('sagemaker_containers.beta.framework.modules.run_module')
-def test_setup_for_distributed_scheduler(run_module, verify_hosts, host_lookup, popen,
+def test_train_for_distributed_scheduler(run_module, verify_hosts, host_lookup, popen,
                                          distributed_training_env):
     host_lookup.return_value = IP_ADDRESS
 
@@ -98,7 +98,7 @@ def test_setup_for_distributed_scheduler(run_module, verify_hosts, host_lookup, 
 @patch('sagemaker_mxnet_container.training._host_lookup')
 @patch('sagemaker_mxnet_container.training._verify_hosts')
 @patch('sagemaker_containers.beta.framework.modules.run_module')
-def test_setup_for_distributed_worker(run_module, verify_hosts, host_lookup, popen,
+def test_train_for_distributed_worker(run_module, verify_hosts, host_lookup, popen,
                                       distributed_training_env):
     host_lookup.return_value = IP_ADDRESS
 
@@ -114,7 +114,7 @@ def test_setup_for_distributed_worker(run_module, verify_hosts, host_lookup, pop
 
 
 @patch('sagemaker_containers.beta.framework.modules.run_module')
-def test_single_machine(run_module, single_machine_training_env):
+def test_train_for_single_machine(run_module, single_machine_training_env):
     training.train(single_machine_training_env)
     run_module.assert_called_with(MODULE_DIR, single_machine_training_env.to_cmd_args(),
                                   single_machine_training_env.to_env_vars(), MODULE_NAME)
