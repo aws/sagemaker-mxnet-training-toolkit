@@ -233,7 +233,7 @@ If you want to run an integration test on `Amazon SageMaker <https://aws.amazon.
 
     # Required arguments for integration tests are found in test/conftest.py
 
-    pytest test/integration/sagmaker --account-id <your_aws_id> \
+    pytest test/integration/sagmaker --aws-id <your_aws_id> \
                                      --docker-base-name <your_docker_image> \
                                      --instance-type <amazon_sagemaker_instance_type> \
                                      --tag <your_docker_image_tag> \
@@ -241,10 +241,10 @@ If you want to run an integration test on `Amazon SageMaker <https://aws.amazon.
 ::
 
     # Example
-    pytest test/integration/sagemaker  --account-id 12345678910 \
-                                       --docker-base-name preprod-mxnet \
-                                       --instance-type ml.m4.xlarge \
-                                       --tag 1.0
+    pytest test/integration/sagemaker --aws-id 12345678910 \
+                                      --docker-base-name preprod-mxnet \
+                                      --instance-type ml.m4.xlarge \
+                                      --tag 1.0
 
 Contributing
 ------------

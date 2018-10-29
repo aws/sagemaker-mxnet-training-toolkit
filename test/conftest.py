@@ -38,7 +38,7 @@ def pytest_addoption(parser):
     parser.addoption('--framework-version', default='1.2.1')
     parser.addoption('--py-version', default='3', choices=['2', '3'])
     parser.addoption('--processor', default='cpu', choices=['gpu', 'cpu'])
-    parser.addoption('--account-id', default=None)
+    parser.addoption('--aws-id', default=None)
     parser.addoption('--instance-type', default=None)
     # If not specified, will default to {framework-version}-{processor}-py{py-version}
     parser.addoption('--tag', default=None)
@@ -70,8 +70,8 @@ def processor(request):
 
 
 @pytest.fixture(scope='session')
-def account_id(request):
-    return request.config.getoption('--account-id')
+def aws_id(request):
+    return request.config.getoption('--aws-id')
 
 
 @pytest.fixture(scope='session')
@@ -93,8 +93,8 @@ def docker_image(docker_base_name, tag):
 
 
 @pytest.fixture(scope='session')
-def ecr_image(account_id, docker_base_name, tag, region):
-    return '{}.dkr.ecr.{}.amazonaws.com/{}:{}'.format(account_id, region, docker_base_name, tag)
+def ecr_image(aws_id, docker_base_name, tag, region):
+    return '{}.dkr.ecr.{}.amazonaws.com/{}:{}'.format(aws_id, region, docker_base_name, tag)
 
 
 @pytest.fixture(scope='session')
