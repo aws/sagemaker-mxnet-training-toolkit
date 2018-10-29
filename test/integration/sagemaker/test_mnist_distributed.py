@@ -22,13 +22,13 @@ from test.integration import RESOURCE_PATH
 from timeout import timeout, timeout_and_delete_endpoint
 
 
-def test_mxnet_distributed(sagemaker_session, ecr_image, instance_type):
+def test_mxnet_distributed(sagemaker_session, ecr_image, instance_type, framework_version):
     data_path = os.path.join(RESOURCE_PATH, 'mnist')
     script_path = os.path.join(data_path, 'mnist.py')
 
     mx = MXNet(entry_point=script_path, role='SageMakerRole', train_instance_count=2,
                train_instance_type=instance_type, sagemaker_session=sagemaker_session,
-               image_name=ecr_image,
+               image_name=ecr_image, framework_version=framework_version,
                hyperparameters={'sagemaker_mxnet_launch_parameter_server': True})
 
     prefix = 'mxnet_mnist/{}'.format(sagemaker_timestamp())

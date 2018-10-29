@@ -19,13 +19,14 @@ from sagemaker.mxnet import MXNet
 from test.integration import MODEL_SUCCESS_FILES, RESOURCE_PATH
 
 
-def test_keras_training(docker_image, sagemaker_local_session, local_instance_type):
+def test_keras_training(docker_image, sagemaker_local_session, local_instance_type,
+                        framework_version):
     keras_path = os.path.join(RESOURCE_PATH, 'keras')
     script_path = os.path.join(keras_path, 'keras_mnist.py')
 
     mx = MXNet(entry_point=script_path, role='SageMakerRole', train_instance_count=1,
                train_instance_type=local_instance_type, sagemaker_session=sagemaker_local_session,
-               image_name=docker_image)
+               image_name=docker_image, framework_version=framework_version)
 
     train = 'file://{}'.format(os.path.join(keras_path, 'data'))
     mx.fit({'train': train})

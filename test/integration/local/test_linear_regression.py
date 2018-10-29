@@ -19,12 +19,14 @@ from sagemaker.mxnet import MXNet
 from test.integration import MODEL_SUCCESS_FILES, RESOURCE_PATH
 
 
-def test_linear_regression(docker_image, sagemaker_local_session, local_instance_type):
+def test_linear_regression(docker_image, sagemaker_local_session, local_instance_type,
+                           framework_version):
     lr_path = os.path.join(RESOURCE_PATH, 'linear_regression')
 
     mx = MXNet(entry_point=os.path.join(lr_path, 'linear_regression.py'), role='SageMakerRole',
                train_instance_count=1, train_instance_type=local_instance_type,
-               sagemaker_session=sagemaker_local_session, image_name=docker_image)
+               sagemaker_session=sagemaker_local_session, image_name=docker_image,
+               framework_version=framework_version)
 
     data_path = os.path.join(lr_path, 'data')
     s3_prefix = 'integ-test-data/mxnet-linear-regression'
