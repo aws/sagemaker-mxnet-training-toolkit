@@ -244,7 +244,7 @@ If you want to run an integration test on `Amazon SageMaker <https://aws.amazon.
     pytest test/integration/sagemaker --aws-id 12345678910 \
                                       --docker-base-name preprod-mxnet \
                                       --instance-type ml.m4.xlarge \
-                                      --tag 1.0
+                                      --tag 1.3.0-cpu-py3
 
 Contributing
 ------------
