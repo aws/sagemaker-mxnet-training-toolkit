@@ -172,19 +172,18 @@ If you want to run unit tests, then use:
 
     pytest test/unit
 
-Integration Tests
-~~~~~~~~~~~~~~~~~
+Local Integration Tests
+~~~~~~~~~~~~~~~~~~~~~~~
 
-Running integration tests require `Docker <https://www.docker.com/>`__ and `AWS
+Running local integration tests require `Docker <https://www.docker.com/>`__ and `AWS
 credentials <https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-credentials.html>`__,
-as the integration tests make calls to a couple AWS services. The integration and functional
+as the integration tests make calls to a couple AWS services. All integration
 tests require configurations specified within their respective
-`conftest.py <https://github.com/aws/sagemaker-mxnet-containers/blob/master/test/integ/conftest
-.py>`__.
+`conftest.py <https://github.com/aws/sagemaker-mxnet-containers/blob/master/test/conftest.py>`__.
 
-Integration tests on GPU require `Nvidia-Docker <https://github.com/NVIDIA/nvidia-docker>`__.
+Local integration tests on GPU require `Nvidia-Docker <https://github.com/NVIDIA/nvidia-docker>`__.
 
-Before running integration tests:
+Before running local integration tests:
 
 #. Build your Docker image.
 #. Pass in the correct pytest arguments to run tests against your Docker image.
@@ -193,72 +192,70 @@ If you want to run local integration tests, then use:
 
 ::
 
-    # Required arguments for integration tests are found in test/integ/conftest.py
+    # Required arguments for integration tests are found in test/conftest.py
 
-    pytest test/integ --docker-base-name <your_docker_image> \
-                      --tag <your_docker_image_tag> \
-                      --py-version <2_or_3> \
-                      --framework-version <mxnet_version> \
-                      --processor <cpu_or_gpu>
+    pytest test/integration/local --docker-base-name <your_docker_image> \
+                                  --tag <your_docker_image_tag> \
+                                  --py-version <2_or_3> \
+                                  --framework-version <mxnet_version> \
+                                  --processor <cpu_or_gpu>
 
 ::
 
     # Example
-    pytest test/integ --docker-base-name preprod-mxnet \
-                      --tag 1.0 \
-                      --py-version 2 \
-                      --framework-version 0.12.1 \
-                      --processor cpu
+    pytest test/integration/local --docker-base-name preprod-mxnet \
+                                  --tag 1.0 \
+                                  --py-version 2 \
+                                  --framework-version 0.12.1 \
+                                  --processor cpu
 
-Functional Tests
-~~~~~~~~~~~~~~~~
+SageMaker Integration Tests
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Functional tests require your Docker image to be within an `Amazon ECR repository <https://docs
+SageMaker Integration tests require your Docker image to be within an `Amazon ECR repository <https://docs
 .aws.amazon.com/AmazonECS/latest/developerguide/ECS_Console_Repositories.html>`__.
 
-The Docker-base-name is your `ECR repository namespace <https://docs.aws.amazon
+The Docker base name is your `ECR repository namespace <https://docs.aws.amazon
 .com/AmazonECR/latest/userguide/Repositories.html>`__.
 
-The instance-type is your specified `Amazon SageMaker Instance Type
-<https://aws.amazon.com/sagemaker/pricing/instance-types/>`__ that the functional test will run on.
+The instance type is your specified `Amazon SageMaker Instance Type
+<https://aws.amazon.com/sagemaker/pricing/instance-types/>`__ that the tests will run on.
 
-Before running functional tests:
+Before running SageMaker Integration tests:
 
 #. Build your Docker image.
 #. Push the image to your ECR repository.
 #. Pass in the correct pytest arguments to run tests on SageMaker against the image within your ECR repository.
 
-If you want to run a functional end to end test on `Amazon
-SageMaker <https://aws.amazon.com/sagemaker/>`__, then use:
+If you want to run an integration test on `Amazon SageMaker <https://aws.amazon.com/sagemaker/>`__, then use:
 
 ::
 
-    # Required arguments for integration tests are found in test/functional/conftest.py
+    # Required arguments for integration tests are found in test/conftest.py
 
-    pytest test/functional --aws-id <your_aws_id> \
-                           --docker-base-name <your_docker_image> \
-                           --instance-type <amazon_sagemaker_instance_type> \
-                           --tag <your_docker_image_tag> \
+    pytest test/integration/sagmaker --aws-id <your_aws_id> \
+                                     --docker-base-name <your_docker_image> \
+                                     --instance-type <amazon_sagemaker_instance_type> \
+                                     --tag <your_docker_image_tag> \
 
 ::
 
     # Example
-    pytest test/functional --aws-id 12345678910 \
-                           --docker-base-name preprod-mxnet \
-                           --instance-type ml.m4.xlarge \
-                           --tag 1.0
+    pytest test/integration/sagemaker --aws-id 12345678910 \
+                                      --docker-base-name preprod-mxnet \
+                                      --instance-type ml.m4.xlarge \
+                                      --tag 1.3.0-cpu-py3
 
 Contributing
 ------------
 
 Please read
 `CONTRIBUTING.md <https://github.com/aws/sagemaker-mxnet-containers/blob/master/CONTRIBUTING.md>`__
-for details on our code of conduct, and the process for submitting pull
-requests to us.
+for details on our code of conduct, and the process for submitting pull requests to us.
 
 License
 -------
 
-SageMaker MXNet Containers is licensed under the Apache 2.0 License. It is copyright 2018 Amazon
-.com, Inc. or its affiliates. All Rights Reserved. The license is available at:
-http://aws.amazon.com/apache2.0/
+SageMaker MXNet Containers is licensed under the Apache 2.0 License.
+It is copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+The license is available at: http://aws.amazon.com/apache2.0/
