@@ -18,7 +18,7 @@ import numpy
 from sagemaker.mxnet import MXNet
 
 import local_mode
-from test.integration import MODEL_SUCCESS_FILES, RESOURCE_PATH
+from test.integration import NUM_MODEL_SERVER_WORKERS, MODEL_SUCCESS_FILES, RESOURCE_PATH
 
 MNIST_PATH = os.path.join(RESOURCE_PATH, 'mnist')
 SCRIPT_PATH = os.path.join(MNIST_PATH, 'mnist.py')
@@ -37,7 +37,8 @@ def test_mnist_training_and_serving(docker_image, sagemaker_local_session, local
 
     with local_mode.lock():
         try:
-            predictor = mx.deploy(1, local_instance_type)
+            model = mx.create_model(model_server_workers=NUM_MODEL_SERVER_WORKERS)
+            predictor = model.deploy(1, local_instance_type)
             data = numpy.zeros(shape=(1, 1, 28, 28))
             predictor.predict(data)
         finally:
