@@ -96,7 +96,7 @@ class MXNetTransformer(transformer.Transformer):
     """Base class for creating Transformers with default methods for use with MXNet models.
     """
 
-    VALID_CONTENT_TYPES = (content_types.JSON)
+    VALID_CONTENT_TYPES = (content_types.JSON,)
 
     def __init__(self, model=None, model_fn=None, input_fn=None, predict_fn=None, output_fn=None,
                  error_class=None):
