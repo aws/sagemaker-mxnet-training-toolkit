@@ -162,9 +162,14 @@ def test_module_transformer_default_input_fn_with_json(decode, mx_ndarray_iter):
     assert init_call in mx_ndarray_iter.mock_calls
 
 
+@patch('mxnet.nd.array')
 @patch('mxnet.io.NDArrayIter')
 @patch('sagemaker_containers.beta.framework.encoders.decode', return_value=[0])
-def test_module_transformer_default_input_fn_with_csv(decode, mx_ndarray_iter):
+def test_module_transformer_default_input_fn_with_csv(decode, mx_ndarray_iter, mx_ndarray):
+    ndarray = Mock(shape=(1, (1,)))
+    ndarray.reshape.return_value = ndarray
+    mx_ndarray.return_value = ndarray
+
     model = Mock(data_shapes=[(1, (1,))])
     t = ModuleTransformer(model=model)
 
@@ -172,9 +177,8 @@ def test_module_transformer_default_input_fn_with_csv(decode, mx_ndarray_iter):
     content_type = 'text/csv'
     t.default_input_fn(input_data, content_type)
 
-    # TODO: check for the reshape call
-
     decode.assert_called_with(input_data, content_type)
+    ndarray.reshape.assert_called_with((1,))
     init_call = call(mx.nd.array([0]), batch_size=1, last_batch_handle='pad')
     assert init_call in mx_ndarray_iter.mock_calls
 
