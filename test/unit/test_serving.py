@@ -66,7 +66,7 @@ def test_mxnet_transformer_init():
     assert t._input_fn == t.default_input_fn
     assert t._predict_fn == t.default_predict_fn
     assert t._output_fn == t.default_output_fn
-    assert t.VALID_CONTENT_TYPES == (content_types.JSON)
+    assert t.VALID_CONTENT_TYPES == (content_types.JSON,)
 
 
 @patch('sagemaker_containers.beta.framework.functions.error_wrapper', lambda x, y: x)
@@ -145,6 +145,12 @@ def test_mxnet_transformer_default_output_fn_invalid_content_type():
     with pytest.raises(errors.UnsupportedFormatError) as e:
         t.default_output_fn(None, 'bad/content-type')
     assert 'Content type bad/content-type is not supported by this framework' in str(e)
+
+
+def test_module_transformer_init_valid_content_types():
+    t = ModuleTransformer()
+    assert content_types.JSON in t.VALID_CONTENT_TYPES
+    assert content_types.CSV in t.VALID_CONTENT_TYPES
 
 
 @patch('mxnet.io.NDArrayIter')
