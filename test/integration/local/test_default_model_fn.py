@@ -17,7 +17,7 @@ import os
 from sagemaker.mxnet.model import MXNetModel
 
 import local_mode
-from test.integration import RESOURCE_PATH
+from test.integration import NUM_MODEL_SERVER_WORKERS, RESOURCE_PATH
 
 
 # The image should serve a MXNet model saved in the
@@ -26,7 +26,8 @@ def test_default_model_fn(docker_image, sagemaker_local_session, local_instance_
     default_handler_path = os.path.join(RESOURCE_PATH, 'default_handlers')
     m = MXNetModel(os.path.join('file://', default_handler_path, 'model'), 'SageMakerRole',
                    os.path.join(default_handler_path, 'code', 'empty_module.py'),
-                   image=docker_image, sagemaker_session=sagemaker_local_session)
+                   image=docker_image, sagemaker_session=sagemaker_local_session,
+                   model_server_workers=NUM_MODEL_SERVER_WORKERS)
 
     input = [[1, 2]]
 

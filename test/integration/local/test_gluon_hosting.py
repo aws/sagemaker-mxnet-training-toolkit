@@ -18,7 +18,7 @@ import os
 from sagemaker.mxnet.model import MXNetModel
 
 import local_mode
-from test.integration import RESOURCE_PATH
+from test.integration import NUM_MODEL_SERVER_WORKERS, RESOURCE_PATH
 
 
 # The image should support serving Gluon-created models.
@@ -26,7 +26,8 @@ def test_gluon_hosting(docker_image, sagemaker_local_session, local_instance_typ
     gluon_path = os.path.join(RESOURCE_PATH, 'gluon_hosting')
     m = MXNetModel(os.path.join('file://', gluon_path, 'model'), 'SageMakerRole',
                    os.path.join(gluon_path, 'code', 'gluon.py'), image=docker_image,
-                   sagemaker_session=sagemaker_local_session)
+                   sagemaker_session=sagemaker_local_session,
+                   model_server_workers=NUM_MODEL_SERVER_WORKERS)
 
     with open(os.path.join(RESOURCE_PATH, 'mnist_images', '04.json'), 'r') as f:
         input = json.load(f)

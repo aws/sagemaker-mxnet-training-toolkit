@@ -22,3 +22,6 @@ MODEL_SUCCESS_FILES = [
     os.path.join('model', 'model-shapes.json'),
     os.path.join('model', 'model-0000.params'),
 ]
+
+# Workaround for the intermittent worker timeout errors
+NUM_MODEL_SERVER_WORKERS = 2
