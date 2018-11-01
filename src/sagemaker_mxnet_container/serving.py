@@ -17,7 +17,8 @@ import logging
 import os
 
 import mxnet as mx
-from sagemaker_containers.beta.framework import encoders, env, modules, transformer, worker
+from sagemaker_containers.beta.framework import (content_types, encoders, env, errors, modules,
+                                                 transformer, worker)
 
 logger = logging.getLogger(__name__)
 
@@ -95,6 +96,8 @@ class MXNetTransformer(transformer.Transformer):
     """Base class for creating Transformers with default methods for use with MXNet models.
     """
 
+    VALID_CONTENT_TYPES = (content_types.JSON)
+
     def __init__(self, model=None, model_fn=None, input_fn=None, predict_fn=None, output_fn=None,
                  error_class=None):
         """Initialize an ``MXNetTransformer``. For each function, if one is not specified,
@@ -141,9 +144,16 @@ class MXNetTransformer(transformer.Transformer):
 
         Returns:
             mxnet.nd.array: an MXNet NDArray
+
+        Raises:
+            sagemaker_containers.beta.framework.errors.UnsupportedFormatError: if an unsupported
+                content type is used.
         """
-        np_array = encoders.decode(input_data, content_type)
-        return mx.nd.array(np_array)
+        if content_type in self.VALID_CONTENT_TYPES:
+            np_array = encoders.decode(input_data, content_type)
+            return mx.nd.array(np_array)
+        else:
+            raise errors.UnsupportedFormatError(content_type)
 
     def default_predict_fn(self, data, model):
         """Use the model to create a prediction for the data.
@@ -166,11 +176,21 @@ class MXNetTransformer(transformer.Transformer):
 
         Returns:
             sagemaker_containers.beta.framework.worker.Response: a Flask response object
+
+        Raises:
+            sagemaker_containers.beta.framework.errors.UnsupportedFormatError: if an unsupported
+                accept type is used.
         """
-        return worker.Response(encoders.encode(prediction.asnumpy().tolist(), accept), accept)
+        if accept in self.VALID_CONTENT_TYPES:
+            return worker.Response(encoders.encode(prediction.asnumpy().tolist(), accept), accept)
+        else:
+            raise errors.UnsupportedFormatError(accept)
 
 
 class ModuleTransformer(MXNetTransformer):
+
+    VALID_CONTENT_TYPES = (content_types.JSON, content_types.CSV)
+
     def default_input_fn(self, input_data, content_type):
         """Take request data and deserialize it into an object for prediction.
         When an InvokeEndpoint operation is made against an Endpoint running SageMaker model server,
@@ -187,12 +207,24 @@ class ModuleTransformer(MXNetTransformer):
 
         Returns:
             mxnet.io.NDArrayIter: data ready for prediction.
+
+        Raises:
+            sagemaker_containers.beta.framework.errors.UnsupportedFormatError: if an unsupported
+                accept type is used.
         """
+        if content_type not in self.VALID_CONTENT_TYPES:
+            raise errors.UnsupportedFormatError(content_type)
+
         np_array = encoders.decode(input_data, content_type)
         ndarray = mx.nd.array(np_array)
 
         # We require model to only have one input
         [data_shape] = self._model.data_shapes
+
+        # Reshape flattened CSV as specified by the model
+        if content_type == content_types.CSV:
+            _, target_shape = data_shape
+            ndarray = ndarray.reshape(target_shape)
 
         # Batch size is first dimension of model input
         model_batch_size = data_shape[1][0]
