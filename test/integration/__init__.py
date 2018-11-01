@@ -24,4 +24,4 @@ MODEL_SUCCESS_FILES = [
 ]
 
 # Workaround for the intermittent worker timeout errors
-NUM_MODEL_SERVER_WORKERS = 8
+NUM_MODEL_SERVER_WORKERS = 4
