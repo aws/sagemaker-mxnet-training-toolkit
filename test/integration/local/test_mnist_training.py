@@ -18,7 +18,7 @@ import numpy
 from sagemaker.mxnet import MXNet
 
 import local_mode
-from test.integration import NUM_MODEL_SERVER_WORKERS, MODEL_SUCCESS_FILES, RESOURCE_PATH
+from test.integration import MODEL_SUCCESS_FILES, NUM_MODEL_SERVER_WORKERS, RESOURCE_PATH
 
 MNIST_PATH = os.path.join(RESOURCE_PATH, 'mnist')
 SCRIPT_PATH = os.path.join(MNIST_PATH, 'mnist.py')
