@@ -18,7 +18,7 @@ import os
 from mock import call, Mock, mock_open, patch
 import mxnet as mx
 import pytest
-from sagemaker_containers.beta.framework import transformer, worker
+from sagemaker_containers.beta.framework import content_types, errors, transformer, worker
 
 from sagemaker_mxnet_container.serving import (_user_module_transformer, default_model_fn,
                                                GluonBlockTransformer, ModuleTransformer,
@@ -66,6 +66,7 @@ def test_mxnet_transformer_init():
     assert t._input_fn == t.default_input_fn
     assert t._predict_fn == t.default_predict_fn
     assert t._output_fn == t.default_output_fn
+    assert t.VALID_CONTENT_TYPES == (content_types.JSON)
 
 
 @patch('sagemaker_containers.beta.framework.functions.error_wrapper', lambda x, y: x)
@@ -107,7 +108,7 @@ def test_mxnet_transformer_initialize_with_model(transformer_initialize):
 @patch('sagemaker_containers.beta.framework.encoders.decode', return_value=[0])
 def test_mxnet_transformer_default_input_fn(decode):
     input_data = Mock()
-    content_type = 'json'
+    content_type = 'application/json'
 
     t = MXNetTransformer()
     deserialized_data = t.default_input_fn(input_data, content_type)
@@ -116,10 +117,18 @@ def test_mxnet_transformer_default_input_fn(decode):
     assert deserialized_data == mx.nd.array([0])
 
 
+def test_mxnet_transformer_default_input_fn_invalid_content_type():
+    t = MXNetTransformer()
+
+    with pytest.raises(errors.UnsupportedFormatError) as e:
+        t.default_input_fn(None, 'bad/content-type')
+    assert 'Content type bad/content-type is not supported by this framework' in str(e)
+
+
 @patch('sagemaker_containers.beta.framework.encoders.encode')
 def test_mxnet_transformer_default_output_fn(encode):
     prediction = mx.ndarray.zeros(1)
-    accept = 'json'
+    accept = 'application/json'
 
     t = MXNetTransformer()
     response = t.default_output_fn(prediction, accept)
@@ -130,19 +139,52 @@ def test_mxnet_transformer_default_output_fn(encode):
     assert isinstance(response, worker.Response)
 
 
+def test_mxnet_transformer_default_output_fn_invalid_content_type():
+    t = MXNetTransformer()
+
+    with pytest.raises(errors.UnsupportedFormatError) as e:
+        t.default_output_fn(None, 'bad/content-type')
+    assert 'Content type bad/content-type is not supported by this framework' in str(e)
+
+
 @patch('mxnet.io.NDArrayIter')
 @patch('sagemaker_containers.beta.framework.encoders.decode', return_value=[0])
-def test_module_transformer_default_input_fn(decode, mx_ndarray_iter):
+def test_module_transformer_default_input_fn_with_json(decode, mx_ndarray_iter):
     model = Mock(data_shapes=[(1, (1,))])
     t = ModuleTransformer(model=model)
 
     input_data = Mock()
-    content_type = 'json'
+    content_type = 'application/json'
     t.default_input_fn(input_data, content_type)
 
     decode.assert_called_with(input_data, content_type)
     init_call = call(mx.nd.array([0]), batch_size=1, last_batch_handle='pad')
     assert init_call in mx_ndarray_iter.mock_calls
+
+
+@patch('mxnet.io.NDArrayIter')
+@patch('sagemaker_containers.beta.framework.encoders.decode', return_value=[0])
+def test_module_transformer_default_input_fn_with_csv(decode, mx_ndarray_iter):
+    model = Mock(data_shapes=[(1, (1,))])
+    t = ModuleTransformer(model=model)
+
+    input_data = Mock()
+    content_type = 'text/csv'
+    t.default_input_fn(input_data, content_type)
+
+    # TODO: check for the reshape call
+
+    decode.assert_called_with(input_data, content_type)
+    init_call = call(mx.nd.array([0]), batch_size=1, last_batch_handle='pad')
+    assert init_call in mx_ndarray_iter.mock_calls
+
+
+def test_module_transformer_default_input_fn_invalid_content_type():
+    t = ModuleTransformer()
+
+    with pytest.raises(errors.UnsupportedFormatError) as e:
+        t.default_input_fn(None, 'bad/content-type')
+    assert 'Content type bad/content-type is not supported by this framework' in str(e)
 
 
 def test_module_transformer_default_predict_fn():
