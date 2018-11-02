@@ -16,6 +16,7 @@ import os
 
 import numpy
 from sagemaker.mxnet import MXNet
+from sagemaker.predictor import csv_serializer
 
 import local_mode
 from test.integration import MODEL_SUCCESS_FILES, NUM_MODEL_SERVER_WORKERS, RESOURCE_PATH
@@ -38,11 +39,24 @@ def test_mnist_training_and_serving(docker_image, sagemaker_local_session, local
     with local_mode.lock():
         try:
             model = mx.create_model(model_server_workers=NUM_MODEL_SERVER_WORKERS)
-            predictor = model.deploy(1, local_instance_type)
+            predictor = _csv_predictor(model, local_instance_type)
             data = numpy.zeros(shape=(1, 1, 28, 28))
-            predictor.predict(data)
+            prediction = predictor.predict(data)
         finally:
             mx.delete_endpoint()
+
+    # Check that there is a probability for each possible class in the prediction
+    prediction_values = prediction.decode('utf-8').split(',')
+    assert len(prediction_values) == 10
+
+
+def _csv_predictor(model, instance_type):
+    predictor = model.deploy(1, instance_type)
+    predictor.content_type = 'text/csv'
+    predictor.serializer = csv_serializer
+    predictor.accept = 'text/csv'
+    predictor.deserializer = None
+    return predictor
 
 
 def test_distributed_mnist_training(docker_image, sagemaker_local_session, framework_version):
