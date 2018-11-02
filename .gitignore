@@ -7,3 +7,4 @@ dist
 .tox/*
 .coverage
 test/resources/local_mode_lock
+.idea/*
