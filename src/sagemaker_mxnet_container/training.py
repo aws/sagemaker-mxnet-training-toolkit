@@ -22,7 +22,7 @@ import sagemaker_containers.beta.framework as framework
 
 from sagemaker_mxnet_container.training_utils import scheduler_host
 
-LAUNCH_PS_ENV_NAME = 'sagemaker_mxnet_launch_parameter_server'
+LAUNCH_PS_ENV_NAME = 'sagemaker_parameter_server_enabled'
 ROLES = ['worker', 'scheduler', 'server']
 
 logger = logging.getLogger(__name__)
