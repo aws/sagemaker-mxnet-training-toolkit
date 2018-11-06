@@ -35,7 +35,7 @@ SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 def pytest_addoption(parser):
     parser.addoption('--docker-base-name', default='preprod-mxnet')
     parser.addoption('--region', default='us-west-2')
-    parser.addoption('--framework-version', default='1.2.1')
+    parser.addoption('--framework-version', default='1.3.0')
     parser.addoption('--py-version', default='3', choices=['2', '3'])
     parser.addoption('--processor', default='cpu', choices=['gpu', 'cpu'])
     parser.addoption('--aws-id', default=None)

@@ -16,12 +16,11 @@ import os
 
 RESOURCE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'resources'))
 
-MODEL_SUCCESS_FILES = [
-    os.path.join('output', 'success'),
-    os.path.join('model', 'model-symbol.json'),
-    os.path.join('model', 'model-shapes.json'),
-    os.path.join('model', 'model-0000.params'),
-]
+MODEL_SUCCESS_FILES = {
+    'output': ['success'],
+    'model': ['model-symbol.json', 'model-shapes.json', 'model-0000.params'],
+}
 
 # Workaround for the intermittent worker timeout errors
+# TODO: find and solve the root cause of this issue
 NUM_MODEL_SERVER_WORKERS = 2

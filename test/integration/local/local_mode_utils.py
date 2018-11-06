@@ -15,6 +15,7 @@ from __future__ import absolute_import
 from contextlib import contextmanager
 import fcntl
 import os
+import tarfile
 import time
 
 from test.integration import RESOURCE_PATH
@@ -36,3 +37,9 @@ def lock():
     finally:
         time.sleep(5)
         fcntl.lockf(local_mode_lock, fcntl.LOCK_UN)
+
+
+def assert_output_files_exist(output_path, directory, files):
+    with tarfile.open(os.path.join(output_path, '{}.tar.gz'.format(directory))) as tar:
+        for f in files:
+            tar.getmember(f)
