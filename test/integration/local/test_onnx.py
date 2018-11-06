@@ -17,7 +17,7 @@ import os
 import numpy
 from sagemaker.mxnet import MXNet, MXNetModel
 
-import local_mode
+import local_mode_utils
 from test.integration import NUM_MODEL_SERVER_WORKERS, RESOURCE_PATH
 
 ONNX_PATH = os.path.join(RESOURCE_PATH, 'onnx')
@@ -34,7 +34,7 @@ def test_onnx_export(docker_image, sagemaker_local_session, local_instance_type,
     input_path = 'file://{}'.format(os.path.join(ONNX_PATH, 'mxnet_module'))
     mx.fit({'train': input_path})
 
-    local_mode.assert_output_files_exist(str(tmpdir), 'model', ['model.onnx'])
+    local_mode_utils.assert_output_files_exist(str(tmpdir), 'model', ['model.onnx'])
 
 
 def test_onnx_import(docker_image, sagemaker_local_session, local_instance_type):
@@ -45,7 +45,7 @@ def test_onnx_import(docker_image, sagemaker_local_session, local_instance_type)
 
     input = numpy.zeros(shape=(1, 1, 28, 28))
 
-    with local_mode.lock():
+    with local_mode_utils.lock():
         try:
             predictor = m.deploy(1, local_instance_type)
             output = predictor.predict(input)

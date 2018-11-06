@@ -18,7 +18,7 @@ import numpy
 from sagemaker.mxnet import MXNet
 from sagemaker.predictor import csv_serializer
 
-import local_mode
+import local_mode_utils
 from test.integration import MODEL_SUCCESS_FILES, NUM_MODEL_SERVER_WORKERS, RESOURCE_PATH
 
 MNIST_PATH = os.path.join(RESOURCE_PATH, 'mnist')
@@ -37,7 +37,7 @@ def test_mnist_training_and_serving(docker_image, sagemaker_local_session, local
 
     _train_and_assert_success(mx, str(tmpdir))
 
-    with local_mode.lock():
+    with local_mode_utils.lock():
         try:
             model = mx.create_model(model_server_workers=NUM_MODEL_SERVER_WORKERS)
             predictor = _csv_predictor(model, local_instance_type)
@@ -75,4 +75,4 @@ def _train_and_assert_success(estimator, output_path):
     estimator.fit({'train': TRAIN_INPUT, 'test': TEST_INPUT})
 
     for directory, files in MODEL_SUCCESS_FILES.items():
-        local_mode.assert_output_files_exist(output_path, directory, files)
+        local_mode_utils.assert_output_files_exist(output_path, directory, files)

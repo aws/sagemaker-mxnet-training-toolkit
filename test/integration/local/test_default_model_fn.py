@@ -16,7 +16,7 @@ import os
 
 from sagemaker.mxnet.model import MXNetModel
 
-import local_mode
+import local_mode_utils
 from test.integration import NUM_MODEL_SERVER_WORKERS, RESOURCE_PATH
 
 
@@ -24,14 +24,14 @@ from test.integration import NUM_MODEL_SERVER_WORKERS, RESOURCE_PATH
 # default format, even without a user-provided script.
 def test_default_model_fn(docker_image, sagemaker_local_session, local_instance_type):
     default_handler_path = os.path.join(RESOURCE_PATH, 'default_handlers')
-    m = MXNetModel(os.path.join('file://', default_handler_path, 'model'), 'SageMakerRole',
+    m = MXNetModel('file://{}'.format(os.path.join(default_handler_path, 'model')), 'SageMakerRole',
                    os.path.join(default_handler_path, 'code', 'empty_module.py'),
                    image=docker_image, sagemaker_session=sagemaker_local_session,
                    model_server_workers=NUM_MODEL_SERVER_WORKERS)
 
     input = [[1, 2]]
 
-    with local_mode.lock():
+    with local_mode_utils.lock():
         try:
             predictor = m.deploy(1, local_instance_type)
             output = predictor.predict(input)
