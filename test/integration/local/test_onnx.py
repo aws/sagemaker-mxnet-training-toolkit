@@ -15,31 +15,42 @@ from __future__ import absolute_import
 import os
 
 import numpy
-from sagemaker.mxnet import MXNet
+from sagemaker.mxnet import MXNet, MXNetModel
 
 import local_mode
 from test.integration import NUM_MODEL_SERVER_WORKERS, RESOURCE_PATH
 
+ONNX_PATH = os.path.join(RESOURCE_PATH, 'onnx')
+SCRIPT_PATH = os.path.join(ONNX_PATH, 'code', 'onnx_export_import.py')
 
-def test_onnx_export_and_import(docker_image, sagemaker_local_session, local_instance_type,
-                                framework_version):
-    script_path = os.path.join(RESOURCE_PATH, 'onnx', 'code', 'onnx_export_import.py')
-    mx = MXNet(entry_point=script_path, role='SageMakerRole', train_instance_count=1,
+
+def test_onnx_export(docker_image, sagemaker_local_session, local_instance_type, framework_version,
+                     tmpdir):
+    mx = MXNet(entry_point=SCRIPT_PATH, role='SageMakerRole', train_instance_count=1,
                train_instance_type=local_instance_type, sagemaker_session=sagemaker_local_session,
-               image_name=docker_image, framework_version=framework_version)
+               image_name=docker_image, framework_version=framework_version,
+               output_path='file://{}'.format(tmpdir))
 
-    input_path = 'file://{}'.format(os.path.join(RESOURCE_PATH, 'onnx', 'model'))
+    input_path = 'file://{}'.format(os.path.join(ONNX_PATH, 'mxnet_module'))
     mx.fit({'train': input_path})
+
+    local_mode.assert_output_files_exist(str(tmpdir), 'model', ['model.onnx'])
+
+
+def test_onnx_import(docker_image, sagemaker_local_session, local_instance_type):
+    model_path = 'file://{}'.format(os.path.join(ONNX_PATH, 'onnx_model'))
+    m = MXNetModel(model_path, 'SageMakerRole', SCRIPT_PATH, image=docker_image,
+                   sagemaker_session=sagemaker_local_session,
+                   model_server_workers=NUM_MODEL_SERVER_WORKERS)
 
     input = numpy.zeros(shape=(1, 1, 28, 28))
 
     with local_mode.lock():
         try:
-            model = mx.create_model(model_server_workers=NUM_MODEL_SERVER_WORKERS)
-            predictor = model.deploy(1, local_instance_type)
+            predictor = m.deploy(1, local_instance_type)
             output = predictor.predict(input)
         finally:
-            mx.delete_endpoint()
+            sagemaker_local_session.delete_endpoint(m.endpoint_name)
 
     # Check that there is a probability for each possible class in the prediction
     assert len(output[0]) == 10
