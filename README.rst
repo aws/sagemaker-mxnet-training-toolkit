@@ -33,14 +33,9 @@ Building Images
 ---------------
 
 The Dockerfiles in this repository are intended to be used for building Docker images to run training jobs and inference endpoints on `Amazon SageMaker <https://aws.amazon.com/documentation/sagemaker/>`__.
-The Dockerfiles and support code for different MXNet versions may be found in different tags in this repository:
 
-=============  ==============
-MXNet Version  Repository Tag
-=============  ==============
-<= 1.2.1       v1.0.0
->= 1.3.0       v2.0.0
-=============  ==============
+The current master branch of this repository contains Dockerfiles and support code for MXNet versions 1.3.0 and higher.
+For MXNet versions 0.12.1-1.2.1, check out v1.0.0 of this repository.
 
 For each supported MXNet version, Dockerfiles can be found for each processor type (i.e. CPU and GPU).
 For MXNet versions 0.12.1 and 1.0.0, there are separate Dockerfiles for each Python version as well.
@@ -196,7 +191,8 @@ Running the tests requires installation of the SageMaker MXNet Container code an
 
 Tests are defined in `test/ <https://github.com/aws/sagemaker-mxnet-containers/tree/master/test>`__ and include unit and integration tests.
 The integration tests include both running the Docker containers locally and running them on SageMaker.
-The tests for a given repository tag are compatible with only the Docker images built by Dockerfiles for that tag.
+The tests are compatible with only the Docker images built by Dockerfiles in the current branch.
+If you want to run tests for MXNet versions 1.2.1 or below, please use the v1.0.0 tests.
 
 All test instructions should be run from the top level directory
 
