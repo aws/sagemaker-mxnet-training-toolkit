@@ -3,6 +3,8 @@ ARG framework_installable
 ARG py_version
 ARG framework_support_installable=sagemaker_mxnet_container-2.0.0.tar.gz
 
+LABEL com.amazonaws.sagemaker.capabilities.accept-bind-to-port=true
+
 # Validate that arguments are specified
 RUN test $framework_installable || exit 1 && \
     test $py_version || exit 1
