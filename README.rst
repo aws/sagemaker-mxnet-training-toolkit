@@ -148,7 +148,7 @@ To create the SageMaker MXNet Container Python package:
 ::
 
     # Create the binary
-    git clone https://github.com/aws/sagemaker-mxnet-container.git
+    git clone -b v1.0.0 https://github.com/aws/sagemaker-mxnet-container.git
     cd sagemaker-mxnet-container
     python setup.py sdist
 
