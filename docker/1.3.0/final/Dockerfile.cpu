@@ -1,0 +1,51 @@
+FROM ubuntu:16.04
+ARG framework_installable
+ARG py_version
+ARG framework_support_installable=sagemaker_mxnet_container-2.0.0.tar.gz
+
+LABEL com.amazonaws.sagemaker.capabilities.accept-bind-to-port=true
+
+# Validate that arguments are specified
+RUN test $framework_installable || exit 1 && \
+    test $py_version || exit 1
+
+WORKDIR /tmp
+
+RUN apt-get update && \
+    apt-get -y install libopencv-dev libopenblas-dev python python3 wget curl nginx
+
+# Symlink /usr/bin/python to the python version we're building for.
+RUN rm /usr/bin/python && ln -s "/usr/bin/python$py_version" /usr/bin/python
+
+# Install pip
+RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
+    /usr/bin/python get-pip.py && \
+    rm get-pip.py
+
+# Will install from pypi once packages are released there. For now, copy from local file system.
+COPY $framework_installable .
+COPY $framework_support_installable .
+
+RUN framework_installable_local=$(basename $framework_installable) && \
+    framework_support_installable_local=$(basename $framework_support_installable) && \
+    \
+    pip install $framework_installable_local && \
+    pip install $framework_support_installable_local && \
+    \
+    rm $framework_installable_local && \
+    rm $framework_support_installable_local
+
+RUN pip install onnx==1.2.1 \
+                keras-mxnet==2.2.2
+
+# This is here to make our installed version of OpenCV work.
+# https://stackoverflow.com/questions/29274638/opencv-libdc1394-error-failed-to-initialize-libdc1394
+# TODO: Should we be installing OpenCV in our image like this? Is there another way we can fix this?
+RUN ln -s /dev/null /dev/raw1394
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib"
+
+ENV SAGEMAKER_TRAINING_MODULE sagemaker_mxnet_container.training:main
+ENV SAGEMAKER_SERVING_MODULE sagemaker_mxnet_container.serving:main

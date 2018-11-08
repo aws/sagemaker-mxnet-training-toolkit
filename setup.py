@@ -1,9 +1,29 @@
-import os
+#  Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+#
+#  Licensed under the Apache License, Version 2.0 (the "License").
+#  You may not use this file except in compliance with the License.
+#  A copy of the License is located at
+#
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  or in the "license" file accompanying this file. This file is distributed
+#  on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+#  express or implied. See the License for the specific language governing
+#
+#  or in the "license" file accompanying this file. This file is distributed
+#  on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+#  express or implied. See the License for the specific language governing
+#  permissions and limitations under the License.
+from __future__ import absolute_import
+
 from glob import glob
+import os
 from os.path import basename
 from os.path import splitext
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 
 def read(fname):
@@ -12,7 +32,7 @@ def read(fname):
 
 setup(
     name='sagemaker_mxnet_container',
-    version='1.0.0',
+    version='2.0.0',
     description='Open source library for creating MXNet containers to run on Amazon SageMaker.',
 
     packages=find_packages(where='src', exclude=('test',)),
@@ -36,9 +56,9 @@ setup(
 
     # We don't declare our dependency on mxnet here because we build with
     # different packages for different variants (e.g. mxnet-mkl and mxnet-cu90).
-    install_requires=['sagemaker-container-support >= 1.0.0, <2'],
+    install_requires=['sagemaker-containers>=2.2.5', 'retrying==1.3.3'],
     extras_require={
-        'test': ['tox', 'flake8', 'pytest', 'pytest-cov', 'pytest-xdist', 'mock',
-                 'requests==2.18.4', 'sagemaker']
+        'test': ['tox', 'flake8', 'pytest', 'pytest-cov', 'pytest-xdist', 'mock', 'sagemaker',
+                 'requests==2.18.4', 'docker-compose', 'mxnet==1.3.0.post0']
     },
 )
