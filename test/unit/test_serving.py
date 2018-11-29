@@ -57,6 +57,37 @@ def test_default_model_fn(path_exists, mx_load_checkpoint, mx_module, mx_cpu):
     model.set_params.assert_called_with(args, aux, allow_missing=True)
 
 
+@patch('mxnet.eia', create=True)
+@patch('mxnet.mod.Module')
+@patch('mxnet.model.load_checkpoint')
+@patch('os.path.exists', return_value=True)
+@patch.dict(os.environ, {'SAGEMAKER_INFERENCE_ACCELERATOR_PRESENT': 'true'}, clear=True)
+def test_default_model_accelerator_fn(path_exists, mx_load_checkpoint, mx_module, mx_eia):
+    sym = Mock()
+    args = Mock()
+    aux = Mock()
+    mx_load_checkpoint.return_value = [sym, args, aux]
+
+    eia_context = Mock()
+    mx_eia.return_value = eia_context
+
+    data_name = 'foo'
+    data_shape = [1]
+    signature = json.dumps([{'name': data_name, 'shape': data_shape}])
+
+    with patch('six.moves.builtins.open', mock_open(read_data=signature)):
+        default_model_fn(MODEL_DIR)
+
+    mx_load_checkpoint.assert_called_with(os.path.join(MODEL_DIR, 'model'), 0)
+
+    init_call = call(symbol=sym, context=eia_context, data_names=[data_name], label_names=None)
+    assert init_call in mx_module.mock_calls
+
+    model = mx_module.return_value
+    model.bind.assert_called_with(for_training=False, data_shapes=[(data_name, data_shape)])
+    model.set_params.assert_called_with(args, aux, allow_missing=True)
+
+
 @patch('sagemaker_containers.beta.framework.functions.error_wrapper', lambda x, y: x)
 def test_mxnet_transformer_init():
     t = MXNetTransformer()

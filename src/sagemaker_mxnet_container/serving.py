@@ -23,6 +23,7 @@ from sagemaker_containers.beta.framework import (content_types, encoders, env, e
 logger = logging.getLogger(__name__)
 
 PREFERRED_BATCH_SIZE_PARAM = 'SAGEMAKER_DEFAULT_MODEL_FIRST_DIMENSION_SIZE'
+INFERENCE_ACCELERATOR_PRESENT_ENV = 'SAGEMAKER_INFERENCE_ACCELERATOR_PRESENT'
 DEFAULT_ENV_VARS = {
     'MXNET_CPU_WORKER_NTHREADS': '1',
     'MXNET_CPU_PRIORITY_NTHREADS': '1',
@@ -64,7 +65,12 @@ def default_model_fn(model_dir, preferred_batch_size=1):
     sym, args, aux = mx.model.load_checkpoint(os.path.join(model_dir, DEFAULT_MODEL_NAME), 0)
 
     # TODO mxnet ctx - better default, allow user control
-    mod = mx.mod.Module(symbol=sym, context=mx.cpu(), data_names=data_names, label_names=None)
+    context = mx.cpu()
+
+    if os.environ.get(INFERENCE_ACCELERATOR_PRESENT_ENV) == 'true':
+        context = mx.eia()
+
+    mod = mx.mod.Module(symbol=sym, context=context, data_names=data_names, label_names=None)
     mod.bind(for_training=False, data_shapes=data_shapes)
     mod.set_params(args, aux, allow_missing=True)
 
