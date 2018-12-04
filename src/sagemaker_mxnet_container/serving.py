@@ -188,7 +188,8 @@ class MXNetTransformer(transformer.Transformer):
                 accept type is used.
         """
         if accept in self.VALID_CONTENT_TYPES:
-            return worker.Response(encoders.encode(prediction.asnumpy().tolist(), accept), accept)
+            return worker.Response(response=encoders.encode(prediction.asnumpy().tolist(), accept),
+                                   mimetype=accept)
         else:
             raise errors.UnsupportedFormatError(accept)
 

@@ -14,27 +14,36 @@ from __future__ import absolute_import
 
 import os
 
+import pytest
+import requests
 from sagemaker.mxnet.model import MXNetModel
 
 import local_mode_utils
 from test.integration import NUM_MODEL_SERVER_WORKERS, RESOURCE_PATH
 
 
-# The image should serve a MXNet model saved in the
-# default format, even without a user-provided script.
-def test_default_model_fn(docker_image, sagemaker_local_session, local_instance_type):
+@pytest.fixture(scope='module')
+def predictor(docker_image, sagemaker_local_session, local_instance_type):
     default_handler_path = os.path.join(RESOURCE_PATH, 'default_handlers')
     m = MXNetModel('file://{}'.format(os.path.join(default_handler_path, 'model')), 'SageMakerRole',
                    os.path.join(default_handler_path, 'code', 'empty_module.py'),
                    image=docker_image, sagemaker_session=sagemaker_local_session,
                    model_server_workers=NUM_MODEL_SERVER_WORKERS)
-
-    input = [[1, 2]]
-
     with local_mode_utils.lock():
         try:
             predictor = m.deploy(1, local_instance_type)
-            output = predictor.predict(input)
-            assert [[4.9999918937683105]] == output
+            yield predictor
         finally:
             sagemaker_local_session.delete_endpoint(m.endpoint_name)
+
+
+def test_default_model_fn(predictor):
+    input = [[1, 2]]
+    output = predictor.predict(input)
+    assert [[4.9999918937683105]] == output
+
+
+def test_default_model_fn_content_type(predictor):
+    r = requests.post('http://localhost:8080/invocations', json=[[1, 2]])
+    assert 'application/json' == r.headers['Content-Type']
+    assert [[4.9999918937683105]] == r.json()

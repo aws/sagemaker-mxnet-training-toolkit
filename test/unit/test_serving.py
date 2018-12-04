@@ -168,6 +168,7 @@ def test_mxnet_transformer_default_output_fn(encode):
     encode.assert_called_with(flattened_prediction, accept)
 
     assert isinstance(response, worker.Response)
+    assert response.mimetype == accept
 
 
 def test_mxnet_transformer_default_output_fn_invalid_content_type():
