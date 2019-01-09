@@ -40,6 +40,14 @@ DEFAULT_MODEL_FILENAMES = {
 }
 
 
+def _context():
+    if os.environ.get(INFERENCE_ACCELERATOR_PRESENT_ENV) == 'true':
+        return mx.eia()
+
+    # TODO mxnet ctx - better default, allow user control
+    return mx.cpu()
+
+
 def default_model_fn(model_dir, preferred_batch_size=1):
     """Function responsible for loading the model. This implementation is designed to work with
     the default save function provided for MXNet training.
@@ -64,13 +72,9 @@ def default_model_fn(model_dir, preferred_batch_size=1):
 
     sym, args, aux = mx.model.load_checkpoint(os.path.join(model_dir, DEFAULT_MODEL_NAME), 0)
 
-    # TODO mxnet ctx - better default, allow user control
-    context = mx.cpu()
+    ctx = _context()
 
-    if os.environ.get(INFERENCE_ACCELERATOR_PRESENT_ENV) == 'true':
-        context = mx.eia()
-
-    mod = mx.mod.Module(symbol=sym, context=context, data_names=data_names, label_names=None)
+    mod = mx.mod.Module(symbol=sym, context=ctx, data_names=data_names, label_names=None)
     mod.bind(for_training=False, data_shapes=data_shapes)
     mod.set_params(args, aux, allow_missing=True)
 
@@ -102,7 +106,7 @@ class MXNetTransformer(transformer.Transformer):
     """Base class for creating Transformers with default methods for use with MXNet models.
     """
 
-    VALID_CONTENT_TYPES = (content_types.JSON,)
+    VALID_CONTENT_TYPES = (content_types.JSON, content_types.NPY)
 
     def __init__(self, model=None, model_fn=None, input_fn=None, predict_fn=None, output_fn=None,
                  error_class=None):
@@ -157,7 +161,7 @@ class MXNetTransformer(transformer.Transformer):
         """
         if content_type in self.VALID_CONTENT_TYPES:
             np_array = encoders.decode(input_data, content_type)
-            return mx.nd.array(np_array)
+            return mx.nd.array(np_array).as_in_context(_context())
         else:
             raise errors.UnsupportedFormatError(content_type)
 
@@ -196,7 +200,7 @@ class MXNetTransformer(transformer.Transformer):
 
 class ModuleTransformer(MXNetTransformer):
 
-    VALID_CONTENT_TYPES = (content_types.JSON, content_types.CSV)
+    VALID_CONTENT_TYPES = (content_types.JSON, content_types.CSV, content_types.NPY)
 
     def default_input_fn(self, input_data, content_type):
         """Take request data and deserialize it into an object for prediction.
@@ -223,7 +227,7 @@ class ModuleTransformer(MXNetTransformer):
             raise errors.UnsupportedFormatError(content_type)
 
         np_array = encoders.decode(input_data, content_type)
-        ndarray = mx.nd.array(np_array)
+        ndarray = mx.nd.array(np_array).as_in_context(_context())
 
         # We require model to only have one input
         [data_shape] = self._model.data_shapes
