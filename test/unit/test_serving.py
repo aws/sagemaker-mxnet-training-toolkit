@@ -97,7 +97,7 @@ def test_mxnet_transformer_init():
     assert t._input_fn == t.default_input_fn
     assert t._predict_fn == t.default_predict_fn
     assert t._output_fn == t.default_output_fn
-    assert t.VALID_CONTENT_TYPES == (content_types.JSON,)
+    assert t.VALID_CONTENT_TYPES == (content_types.JSON, content_types.NPY)
 
 
 @patch('sagemaker_containers.beta.framework.functions.error_wrapper', lambda x, y: x)
@@ -137,9 +137,21 @@ def test_mxnet_transformer_initialize_with_model(transformer_initialize):
 
 
 @patch('sagemaker_containers.beta.framework.encoders.decode', return_value=[0])
-def test_mxnet_transformer_default_input_fn(decode):
+def test_mxnet_transformer_default_input_fn_with_json(decode):
     input_data = Mock()
     content_type = 'application/json'
+
+    t = MXNetTransformer()
+    deserialized_data = t.default_input_fn(input_data, content_type)
+
+    decode.assert_called_with(input_data, content_type)
+    assert deserialized_data == mx.nd.array([0])
+
+
+@patch('sagemaker_containers.beta.framework.encoders.decode', return_value=[0])
+def test_mxnet_transformer_default_input_fn_with_npy(decode):
+    input_data = Mock()
+    content_type = 'application/x-npy'
 
     t = MXNetTransformer()
     deserialized_data = t.default_input_fn(input_data, content_type)
@@ -181,8 +193,7 @@ def test_mxnet_transformer_default_output_fn_invalid_content_type():
 
 def test_module_transformer_init_valid_content_types():
     t = ModuleTransformer()
-    assert content_types.JSON in t.VALID_CONTENT_TYPES
-    assert content_types.CSV in t.VALID_CONTENT_TYPES
+    assert t.VALID_CONTENT_TYPES == (content_types.JSON, content_types.CSV, content_types.NPY)
 
 
 @patch('mxnet.io.NDArrayIter')
@@ -206,6 +217,7 @@ def test_module_transformer_default_input_fn_with_json(decode, mx_ndarray_iter):
 def test_module_transformer_default_input_fn_with_csv(decode, mx_ndarray_iter, mx_ndarray):
     ndarray = Mock(shape=(1, (1,)))
     ndarray.reshape.return_value = ndarray
+    ndarray.as_in_context.return_value = ndarray
     mx_ndarray.return_value = ndarray
 
     model = Mock(data_shapes=[(1, (1,))])
@@ -217,6 +229,21 @@ def test_module_transformer_default_input_fn_with_csv(decode, mx_ndarray_iter, m
 
     decode.assert_called_with(input_data, content_type)
     ndarray.reshape.assert_called_with((1,))
+    init_call = call(mx.nd.array([0]), batch_size=1, last_batch_handle='pad')
+    assert init_call in mx_ndarray_iter.mock_calls
+
+
+@patch('mxnet.io.NDArrayIter')
+@patch('sagemaker_containers.beta.framework.encoders.decode', return_value=[0])
+def test_module_transformer_default_input_fn_with_npy(decode, mx_ndarray_iter):
+    model = Mock(data_shapes=[(1, (1,))])
+    t = ModuleTransformer(model=model)
+
+    input_data = Mock()
+    content_type = 'application/x-npy'
+    t.default_input_fn(input_data, content_type)
+
+    decode.assert_called_with(input_data, content_type)
     init_call = call(mx.nd.array([0]), batch_size=1, last_batch_handle='pad')
     assert init_call in mx_ndarray_iter.mock_calls
 
