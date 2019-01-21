@@ -90,7 +90,7 @@ def main(batch_size, epochs, num_classes, training_channel, model_dir):
     data_name, data_shapes = keras.models.save_mxnet_model(model=model, prefix=model_prefix,
                                                            epoch=0)
 
-    signature = [{'name': data_name, 'shape': [dim for dim in data_desc.shape]}
+    signature = [{'name': data_name[0], 'shape': [dim for dim in data_desc.shape]}
                  for data_desc in data_shapes]
     with open(os.path.join(model_dir, 'model-shapes.json'), 'w') as f:
         json.dump(signature, f)
