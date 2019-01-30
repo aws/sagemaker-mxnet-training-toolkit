@@ -57,7 +57,10 @@ RUN ln -s /dev/null /dev/raw1394
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib"
+    LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib" \
+    PYTHONIOENCODING=UTF-8 \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8
 
 ENV SAGEMAKER_TRAINING_MODULE sagemaker_mxnet_container.training:main
 ENV SAGEMAKER_SERVING_MODULE sagemaker_mxnet_container.serving:main
