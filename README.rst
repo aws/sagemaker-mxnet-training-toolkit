@@ -5,9 +5,11 @@ SageMaker MXNet Container
 SageMaker MXNet Container is an open-source library for making Docker images for using MXNet on Amazon SageMaker.
 For information on running MXNet jobs on Amazon SageMaker, please refer to the `SageMaker Python SDK documentation <https://github.com/aws/sagemaker-python-sdk>`__.
 
-Table Of Contents
 -----------------
-.. contents:: \
+Table of Contents
+-----------------
+.. contents::
+    :local:
 
 Getting Started
 ---------------
