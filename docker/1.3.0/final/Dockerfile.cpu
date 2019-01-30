@@ -29,7 +29,7 @@ RUN rm /usr/bin/python && ln -s "/usr/bin/python$py_version" /usr/bin/python
 
 # Install pip
 RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
-    /usr/bin/python get-pip.py && \
+    /usr/bin/python get-pip.py 'pip<=18.1' && \
     rm get-pip.py
 
 # Will install from pypi once packages are released there. For now, copy from local file system.
