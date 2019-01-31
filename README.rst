@@ -302,8 +302,8 @@ The only difference is that the enhanced version of MXNet was passed in for the 
 
     # Example
 
-    # CPU
-    docker build -t preprod-mxnet:1.3.0-cpu-py3 --build-arg py_version=3
+    # EI
+    docker build -t preprod-mxnet-ei:1.3.0-cpu-py3 --build-arg py_version=3
     --build-arg framework_installable=amazonei_mxnet-1.3.0-py2.py3-none-manylinux1_x86_64.whl -f Dockerfile.cpu .
 
 
