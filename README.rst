@@ -279,24 +279,24 @@ low-cost GPU-powered acceleration to Amazon EC2 and Amazon SageMaker instances t
 learning inference by up to 75%. Currently, Amazon Elastic Inference supports TensorFlow, Apache MXNet, and ONNX
 models, with more frameworks coming soon.
 
-Support for using MXNet with Amazon Elastic Inference in SageMaker is supported in the public `SageMaker MXNet containers <https://github.com/aws/sagemaker-mxnet-container>`__.
+Support for using MXNet with Amazon Elastic Inference in SageMaker is supported in the public SageMaker MXNet containers.
 
 * For information on how to use the Python SDK to create an endpoint with Amazon Elastic Inference and MXNet in SageMaker, see `Deploying MXNet Models <https://github.com/aws/sagemaker-python-sdk/tree/master/src/sagemaker/mxnet#deploying-mxnet-models>`__.
 * For information on how Amazon Elastic Inference works, see `How EI Works <https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html#ei-how-it-works>`__.
 * For more information in regards to using Amazon Elastic Inference in SageMaker, see `Amazon SageMaker Elastic Inference <https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html>`__.
 * For notebook examples on how to use Amazon Elastic Inference with MXNet through the Python SDK in SageMaker, see `EI Sample Notebooks <https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html#ei-intro-sample-nb>`__.
 
-SageMaker Elastic Inference MXNet container
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Building the SageMaker Elastic Inference MXNet container
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Amazon Elastic Inference is designed to be used with AWS enhanced versions of TensorFlow serving or Apache MXNet. These enhanced
 versions of the frameworks are automatically built into containers when you use the Amazon SageMaker Python SDK, or you can
-download them as binary files and import them into your own Docker containers. The enhanced MXNet binary are available on Amazon S3, `here <https://s3.console.aws.amazon.com/s3/buckets/amazonei-apachemxnet/>`__.
+download them as binary files and import them into your own Docker containers. The enhanced MXNet binaries are available on Amazon S3, `here <https://s3.console.aws.amazon.com/s3/buckets/amazonei-apachemxnet/>`__.
 
-The `SageMaker MXNet containers <https://github.com/aws/sagemaker-mxnet-container>`__ with Amazon Elastic Inference support were built utilizing the
+The SageMaker MXNet containers with Amazon Elastic Inference support were built utilizing the
 same instructions listed `above <https://github.com/aws/sagemaker-mxnet-container#building-images>`__ with the
 `CPU Dockerfile <https://github.com/aws/sagemaker-mxnet-container/blob/master/docker/1.3.0/final/Dockerfile.cpu>`__ starting at MXNet version 1.3.0 and above.
 
-The only difference being that the enhanced version of MXNet was passed in for the ``framework_installable`` build-arg.
+The only difference is that the enhanced version of MXNet was passed in for the ``framework_installable`` build-arg.
 
 ::
 
@@ -314,7 +314,9 @@ Using MXNet with Amazon Elastic Inference
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Enabling the enhanced versions of Apache MXNet to load and serve your trained model through Amazon Elastic Inference is done by specifying the MXNet context to ``eia`` within the MXNet Symbol or Module API, as shown `here <https://github.com/aws/sagemaker-mxnet-container/pull/55/files#diff-aabf018d906ed282a3c738377d19a8deR71>`__.
 
-* For information on how to enable the enhanced version of MXNet to interact with Amazon Elastic Inference, see `Using EI with MXNet <https://docs.aws.amazon.com/dlami/latest/devguide/tutorial-mxnet-elastic-inference.html#ei-mxnet>`__.
+The `default model_fn <https://github.com/aws/sagemaker-mxnet-container/pull/55/files#diff-aabf018d906ed282a3c738377d19a8deR71>`__ will load and serve your model through Elastic Inference, if applicable, within the SageMaker MXNet containers.
+
+* For more information on how to enable the enhanced version of MXNet to interact with Amazon Elastic Inference, see `Using EI with MXNet <https://docs.aws.amazon.com/dlami/latest/devguide/tutorial-mxnet-elastic-inference.html#ei-mxnet>`__.
 
 Contributing
 ------------
