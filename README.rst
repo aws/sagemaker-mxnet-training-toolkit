@@ -290,7 +290,7 @@ Building the SageMaker Elastic Inference MXNet container
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Amazon Elastic Inference is designed to be used with AWS enhanced versions of TensorFlow serving or Apache MXNet. These enhanced
 versions of the frameworks are automatically built into containers when you use the Amazon SageMaker Python SDK, or you can
-download them as binary files and import them into your own Docker containers. The enhanced MXNet binaries are available on Amazon S3, `here <https://s3.console.aws.amazon.com/s3/buckets/amazonei-apachemxnet/>`__.
+download them as binary files and import them into your own Docker containers. The enhanced MXNet binaries are available on Amazon S3 at https://s3.console.aws.amazon.com/s3/buckets/amazonei-apachemxnet.
 
 The SageMaker MXNet containers with Amazon Elastic Inference support were built utilizing the
 same instructions listed `above <https://github.com/aws/sagemaker-mxnet-container#building-images>`__ with the
@@ -309,14 +309,6 @@ The only difference is that the enhanced version of MXNet was passed in for the 
 
 * For information about downloading and installing the enhanced binary for Apache MXNet, see `Install Amazon EI Enabled Apache MXNet <https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ei-mxnet.html#ei-apache>`__.
 * For information on which versions of MXNet is supported for Elastic Inference within SageMaker, see `MXNet SageMaker Estimators <https://github.com/aws/sagemaker-python-sdk#mxnet-sagemaker-estimators>`__.
-
-Using MXNet with Amazon Elastic Inference
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Enabling the enhanced versions of Apache MXNet to load and serve your trained model through Amazon Elastic Inference is done by specifying the MXNet context to ``eia`` within the MXNet Symbol or Module API, as shown `here <https://github.com/aws/sagemaker-mxnet-container/pull/55/files#diff-aabf018d906ed282a3c738377d19a8deR71>`__.
-
-The `default model_fn <https://github.com/aws/sagemaker-mxnet-container/pull/55/files#diff-aabf018d906ed282a3c738377d19a8deR71>`__ will load and serve your model through Elastic Inference, if applicable, within the SageMaker MXNet containers.
-
-* For more information on how to enable the enhanced version of MXNet to interact with Amazon Elastic Inference, see `Using EI with MXNet <https://docs.aws.amazon.com/dlami/latest/devguide/tutorial-mxnet-elastic-inference.html#ei-mxnet>`__.
 
 Contributing
 ------------
