@@ -18,7 +18,7 @@ import os
 
 import mxnet as mx
 from sagemaker_containers.beta.framework import (content_types, encoders, env, errors, modules,
-                                                 transformer, worker)
+                                                 transformer, worker, logging as container_logging)
 
 logger = logging.getLogger(__name__)
 
@@ -332,6 +332,7 @@ def main(environ, start_response):
     global app
     if app is None:
         serving_env = env.ServingEnv()
+        container_logging.configure_logger(serving_env.log_level)
         _update_mxnet_env_vars()
 
         user_module = modules.import_module(serving_env.module_dir, serving_env.module_name)
