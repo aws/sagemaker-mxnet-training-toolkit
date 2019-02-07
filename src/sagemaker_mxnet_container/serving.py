@@ -17,8 +17,9 @@ import logging
 import os
 
 import mxnet as mx
-from sagemaker_containers.beta.framework import (content_types, encoders, env, errors, modules,
-                                                 transformer, worker, logging as container_logging)
+from sagemaker_containers.beta.framework import (content_types, encoders, env, errors,
+                                                 logging as container_logging,
+                                                 modules, transformer, worker)
 
 logger = logging.getLogger(__name__)
 
