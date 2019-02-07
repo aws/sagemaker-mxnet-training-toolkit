@@ -21,10 +21,27 @@ import pytest
 from sagemaker_containers.beta.framework import content_types, errors, transformer, worker
 
 from sagemaker_mxnet_container.serving import (_user_module_transformer, default_model_fn,
-                                               GluonBlockTransformer, ModuleTransformer,
+                                               GluonBlockTransformer, main, ModuleTransformer,
                                                MXNetTransformer)
 
 MODEL_DIR = 'foo/model'
+
+
+@patch('sagemaker_containers.beta.framework.env')
+@patch('sagemaker_containers.beta.framework.logging.configure_logger')
+@patch('sagemaker_mxnet_container.serving._update_mxnet_env_vars')
+@patch('sagemaker_mxnet_container.serving._user_module_transformer')
+@patch('sagemaker_containers.beta.framework.modules.import_module')
+@patch('sagemaker_containers.beta.framework.worker.Worker')
+def test_main(worker, import_module, user_module_transformer,
+              update_mxnet_env_vars, configure_logger, env):
+    environ = Mock()
+    start_response = Mock()
+    main(environ, start_response)
+    configure_logger.assert_called_once()
+    import_module.assert_called_once()
+    user_module_transformer.assert_called_once()
+    update_mxnet_env_vars.assert_called_once()
 
 
 @patch('mxnet.cpu')
