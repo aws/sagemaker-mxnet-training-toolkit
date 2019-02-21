@@ -309,6 +309,19 @@ To run SageMaker integration tests:
                                       --instance-type ml.m4.xlarge \
                                       --tag 1.3.0-cpu-py3
 
+If you want to run a SageMaker end to end test for your Elastic Inference container, you will need to provide an `accelerator_type` as an additional pytest argument.
+
+The `accelerator-type` is your specified `Amazon Elastic Inference Accelerator <https://aws.amazon.com/sagemaker/pricing/instance-types/>`__ type that will be attached to your instance type.
+
+::
+
+    # Example for running Elastic Inference functional test
+    pytest test/integration/sagemaker/test_elastic_inference.py --aws-id 12345678910 \
+                                                                --docker-base-name preprod-mxnet \
+                                                                --instance-type ml.m4.xlarge \
+                                                                --accelerator-type ml.eia1.medium \
+                                                                --tag 1.0
+
 Contributing
 ------------
 
