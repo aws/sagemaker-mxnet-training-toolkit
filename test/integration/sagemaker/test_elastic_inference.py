@@ -20,7 +20,7 @@ from sagemaker.mxnet import MXNetModel
 from sagemaker.utils import sagemaker_timestamp
 
 from test.integration import RESOURCE_PATH, EI_SUPPORTED_REGIONS
-from test.integration.sagemaker.timeout import timeout_and_delete_endpoint_by_name
+from timeout import timeout_and_delete_endpoint_by_name
 
 logger = logging.getLogger(__name__)
 logging.getLogger('boto3').setLevel(logging.INFO)
