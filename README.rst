@@ -315,7 +315,7 @@ The `accelerator-type` is your specified `Amazon Elastic Inference Accelerator <
 
 ::
 
-    # Example for running Elastic Inference functional test
+    # Example for running Elastic Inference SageMaker end to end test
     pytest test/integration/sagemaker/test_elastic_inference.py --aws-id 12345678910 \
                                                                 --docker-base-name preprod-mxnet \
                                                                 --instance-type ml.m4.xlarge \
