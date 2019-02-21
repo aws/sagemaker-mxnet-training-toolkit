@@ -79,7 +79,7 @@ def test_default_model_fn(path_exists, mx_load_checkpoint, mx_module, mx_cpu):
 @patch('mxnet.model.load_checkpoint')
 @patch('os.path.exists', return_value=True)
 @patch.dict(os.environ, {'SAGEMAKER_INFERENCE_ACCELERATOR_PRESENT': 'true'}, clear=True)
-def test_default_model_accelerator_fn(path_exists, mx_load_checkpoint, mx_module, mx_eia):
+def test_default_model_fn_with_accelerator(path_exists, mx_load_checkpoint, mx_module, mx_eia):
     sym = Mock()
     args = Mock()
     aux = Mock()
@@ -177,6 +177,20 @@ def test_mxnet_transformer_default_input_fn_with_npy(decode):
     assert deserialized_data == mx.nd.array([0])
 
 
+@patch('mxnet.eia', create=True)
+@patch('mxnet.nd.array')
+@patch('sagemaker_containers.beta.framework.encoders.decode', return_value=[0])
+@patch.dict(os.environ, {'SAGEMAKER_INFERENCE_ACCELERATOR_PRESENT': 'true'}, clear=True)
+def test_mxnet_transformer_default_input_fn_with_accelerator(decode, mx_ndarray, mx_eia):
+    ndarray = Mock()
+    mx_ndarray.return_value = ndarray
+
+    t = MXNetTransformer()
+    t.default_input_fn(Mock(), 'application/json')
+
+    ndarray.as_in_context.assert_called_with(mx.cpu())
+
+
 def test_mxnet_transformer_default_input_fn_invalid_content_type():
     t = MXNetTransformer()
 
@@ -263,6 +277,24 @@ def test_module_transformer_default_input_fn_with_npy(decode, mx_ndarray_iter):
     decode.assert_called_with(input_data, content_type)
     init_call = call(mx.nd.array([0]), batch_size=1, last_batch_handle='pad')
     assert init_call in mx_ndarray_iter.mock_calls
+
+
+@patch('mxnet.eia', create=True)
+@patch('mxnet.nd.array')
+@patch('mxnet.io.NDArrayIter')
+@patch('sagemaker_containers.beta.framework.encoders.decode', return_value=[0])
+@patch.dict(os.environ, {'SAGEMAKER_INFERENCE_ACCELERATOR_PRESENT': 'true'}, clear=True)
+def test_module_transformer_default_input_fn_with_accelerator(decode, mx_ndarray_iter, mx_ndarray,
+                                                              mx_eia):
+    ndarray = Mock(shape=(1, (1,)))
+    ndarray.as_in_context.return_value = ndarray
+    mx_ndarray.return_value = ndarray
+
+    model = Mock(data_shapes=[(1, (1,))])
+    t = ModuleTransformer(model=model)
+    t.default_input_fn(Mock(), 'application/json')
+
+    ndarray.as_in_context.assert_called_with(mx.cpu())
 
 
 def test_module_transformer_default_input_fn_invalid_content_type():

@@ -41,9 +41,6 @@ DEFAULT_MODEL_FILENAMES = {
 
 
 def _context():
-    if os.environ.get(INFERENCE_ACCELERATOR_PRESENT_ENV) == 'true':
-        return mx.eia()
-
     # TODO mxnet ctx - better default, allow user control
     return mx.cpu()
 
@@ -72,7 +69,7 @@ def default_model_fn(model_dir, preferred_batch_size=1):
 
     sym, args, aux = mx.model.load_checkpoint(os.path.join(model_dir, DEFAULT_MODEL_NAME), 0)
 
-    ctx = _context()
+    ctx = mx.eia() if os.environ.get(INFERENCE_ACCELERATOR_PRESENT_ENV) == 'true' else _context()
 
     mod = mx.mod.Module(symbol=sym, context=ctx, data_names=data_names, label_names=None)
     mod.bind(for_training=False, data_shapes=data_shapes)
