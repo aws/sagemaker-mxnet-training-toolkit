@@ -41,6 +41,7 @@ def pytest_addoption(parser):
     parser.addoption('--processor', default='cpu', choices=['gpu', 'cpu'])
     parser.addoption('--aws-id', default=None)
     parser.addoption('--instance-type', default=None)
+    parser.addoption('--accelerator-type', default=None)
     # If not specified, will default to {framework-version}-{processor}-py{py-version}
     parser.addoption('--tag', default=None)
 
@@ -87,6 +88,11 @@ def instance_type(request, processor):
     provided_instance_type = request.config.getoption('--instance-type')
     default_instance_type = 'ml.c4.xlarge' if processor == 'cpu' else 'ml.p2.xlarge'
     return provided_instance_type if provided_instance_type is not None else default_instance_type
+
+
+@pytest.fixture(scope='session')
+def accelerator_type(request):
+    return request.config.getoption('--accelerator-type')
 
 
 @pytest.fixture(scope='session')
