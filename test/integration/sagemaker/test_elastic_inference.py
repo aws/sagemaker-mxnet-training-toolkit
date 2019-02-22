@@ -73,4 +73,4 @@ def test_deploy_elastic_inference_with_pretrained_model(pretrained_model_data, e
         random_input = np.zeros(shape=(1, 3, 224, 224))
 
         predict_response = predictor.predict(random_input.tolist())
-        assert predict_response['outputs']['probabilities']
+        assert predict_response
