@@ -72,3 +72,4 @@ phases:
     finally:
       # remove ecr image
       - aws ecr batch-delete-image --repository-name $ECR_REPO --region $AWS_DEFAULT_REGION --image-ids imageTag=$CPU_TAG
+  
