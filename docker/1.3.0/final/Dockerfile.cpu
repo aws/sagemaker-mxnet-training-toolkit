@@ -48,6 +48,8 @@ RUN framework_installable_local=$(basename $framework_installable) && \
 RUN pip install onnx==1.2.1 \
                 keras-mxnet==2.2.2
 
+# "channels first" is recommended for keras-mxnet
+# https://github.com/awslabs/keras-apache-mxnet/blob/master/docs/mxnet_backend/performance_guide.md#channels-first-image-data-format-for-cnn
 RUN mkdir /root/.keras && \
     echo '{"image_data_format": "channels_first"}' > /root/.keras/keras.json
 
