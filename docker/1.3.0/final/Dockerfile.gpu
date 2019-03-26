@@ -50,7 +50,8 @@ RUN framework_installable_local=$(basename $framework_installable) && \
 RUN pip install onnx==1.2.1 \
                 keras-mxnet==2.2.2
 
-COPY keras.json /root/.keras/keras.json
+RUN mkdir /root/.keras && \
+    echo '{"image_data_format": "channels_first"}' > /root/.keras/keras.json
 
 # This is here to make our installed version of OpenCV work.
 # https://stackoverflow.com/questions/29274638/opencv-libdc1394-error-failed-to-initialize-libdc1394
