@@ -43,9 +43,8 @@ def main(batch_size, epochs, num_classes, training_channel, model_dir):
         x_test = x_test.reshape(x_test.shape[0], 1, img_rows, img_cols)
         input_shape = (1, img_rows, img_cols)
     else:
-        x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
-        x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
-        input_shape = (img_rows, img_cols, 1)
+        raise ValueError('Unexpected image data format (expected "channels_first"): {}'
+                         .format(K.image_data_format()))
 
     x_train = x_train.astype('float32')
     x_test = x_test.astype('float32')

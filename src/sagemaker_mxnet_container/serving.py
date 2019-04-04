@@ -17,8 +17,9 @@ import logging
 import os
 
 import mxnet as mx
-from sagemaker_containers.beta.framework import (content_types, encoders, env, errors, modules,
-                                                 transformer, worker)
+from sagemaker_containers.beta.framework import (content_types, encoders, env, errors,
+                                                 logging as container_logging,
+                                                 modules, transformer, worker)
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +29,6 @@ DEFAULT_ENV_VARS = {
     'MXNET_CPU_WORKER_NTHREADS': '1',
     'MXNET_CPU_PRIORITY_NTHREADS': '1',
     'MXNET_KVSTORE_REDUCTION_NTHREADS': '1',
-    'MXNET_ENGINE_TYPE': 'NativeEngine',
     'OMP_NUM_THREADS': '1',
 }
 
@@ -41,9 +41,6 @@ DEFAULT_MODEL_FILENAMES = {
 
 
 def _context():
-    if os.environ.get(INFERENCE_ACCELERATOR_PRESENT_ENV) == 'true':
-        return mx.eia()
-
     # TODO mxnet ctx - better default, allow user control
     return mx.cpu()
 
@@ -72,7 +69,7 @@ def default_model_fn(model_dir, preferred_batch_size=1):
 
     sym, args, aux = mx.model.load_checkpoint(os.path.join(model_dir, DEFAULT_MODEL_NAME), 0)
 
-    ctx = _context()
+    ctx = mx.eia() if os.environ.get(INFERENCE_ACCELERATOR_PRESENT_ENV) == 'true' else _context()
 
     mod = mx.mod.Module(symbol=sym, context=ctx, data_names=data_names, label_names=None)
     mod.bind(for_training=False, data_shapes=data_shapes)
@@ -332,6 +329,7 @@ def main(environ, start_response):
     global app
     if app is None:
         serving_env = env.ServingEnv()
+        container_logging.configure_logger(serving_env.log_level)
         _update_mxnet_env_vars()
 
         user_module = modules.import_module(serving_env.module_dir, serving_env.module_name)

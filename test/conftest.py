@@ -21,6 +21,7 @@ import tempfile
 import boto3
 import pytest
 from sagemaker import LocalSession, Session
+from sagemaker.mxnet import MXNet
 
 logger = logging.getLogger(__name__)
 logging.getLogger('boto').setLevel(logging.INFO)
@@ -35,11 +36,12 @@ SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 def pytest_addoption(parser):
     parser.addoption('--docker-base-name', default='preprod-mxnet')
     parser.addoption('--region', default='us-west-2')
-    parser.addoption('--framework-version', default='1.3.0')
+    parser.addoption('--framework-version', default=MXNet.LATEST_VERSION)
     parser.addoption('--py-version', default='3', choices=['2', '3'])
     parser.addoption('--processor', default='cpu', choices=['gpu', 'cpu'])
     parser.addoption('--aws-id', default=None)
     parser.addoption('--instance-type', default=None)
+    parser.addoption('--accelerator-type', default=None)
     # If not specified, will default to {framework-version}-{processor}-py{py-version}
     parser.addoption('--tag', default=None)
 
@@ -83,8 +85,14 @@ def tag(request, framework_version, processor, py_version):
 
 @pytest.fixture(scope='session')
 def instance_type(request, processor):
-    return request.config.getoption('--instance-type') or \
-        'ml.c4.xlarge' if processor == 'cpu' else 'ml.p2.xlarge'
+    provided_instance_type = request.config.getoption('--instance-type')
+    default_instance_type = 'ml.c4.xlarge' if processor == 'cpu' else 'ml.p2.xlarge'
+    return provided_instance_type if provided_instance_type is not None else default_instance_type
+
+
+@pytest.fixture(scope='session')
+def accelerator_type(request):
+    return request.config.getoption('--accelerator-type')
 
 
 @pytest.fixture(scope='session')
