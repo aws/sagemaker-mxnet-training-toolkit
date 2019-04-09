@@ -4,8 +4,6 @@ env:
   variables:
     FRAMEWORK_VERSION: "1.3.0"
     ACCOUNT: "142577830533"
-    ECR_REPO: "sagemaker-framework-pull-request-integ"
-    PREPROD_IMAGE: "142577830533.dkr.ecr.us-west-2.amazonaws.com/sagemaker-framework-pull-request-integ"
     CPU_FRAMEWORK_BINARY: "https://files.pythonhosted.org/packages/71/64/49c5125befd5e0f0e17f115d55cb78080adacbead9d19f253afd0157656a/mxnet-1.3.0.post0-py2.py3-none-manylinux1_x86_64.whl"
     CPU_PY_VERSION: "2"
     CPU_INSTANCE_TYPE: "ml.c4.xlarge"
@@ -20,6 +18,9 @@ phases:
     commands:
       - start-dockerd
       - cp /usr/local/bin/remote_test.py .
+      - |
+        ACCOUNT="$(echo $CODEBUILD_BUILD_ARN | cut -d':' -f5)"
+        PREPROD_IMAGE="$ACCOUNT.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO"
 
 
   build:
