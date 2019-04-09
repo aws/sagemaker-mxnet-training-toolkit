@@ -4,72 +4,122 @@ env:
   variables:
     FRAMEWORK_VERSION: "1.3.0"
     ACCOUNT: "142577830533"
-    AWS_DEFAULT_REGION: "us-west-2"
     ECR_REPO: "sagemaker-framework-pull-request-integ"
     PREPROD_IMAGE: "142577830533.dkr.ecr.us-west-2.amazonaws.com/sagemaker-framework-pull-request-integ"
     CPU_FRAMEWORK_BINARY: "https://files.pythonhosted.org/packages/71/64/49c5125befd5e0f0e17f115d55cb78080adacbead9d19f253afd0157656a/mxnet-1.3.0.post0-py2.py3-none-manylinux1_x86_64.whl"
     CPU_PY_VERSION: "2"
     CPU_INSTANCE_TYPE: "ml.c4.xlarge"
+    GPU_FRAMEWORK_BINARY: "https://files.pythonhosted.org/packages/52/8b/3f9cfe199e592b0723617e5d1919b83022f05cc359bd1885f7d1e9ce4758/mxnet_cu90mkl-1.3.0.post0-py2.py3-none-manylinux1_x86_64.whl"
+    GPU_PY_VERSION: "3"
+    GPU_INSTANCE_TYPE: "ml.p2.xlarge"
+    GITHUB_REPO: "sagemaker-mxnet-container"
 
 
 phases:
   pre_build:
     commands:
       - start-dockerd
+      - cp /usr/local/bin/remote_test.py .
 
 
   build:
     commands:
       # install
-      - pip3 install -U .[test]
+      - pip3 install -U -e .
+      - pip3 install -U -e .[test]
 
       # run unit tests
       - pytest test/unit
 
-      # build cpu image
+      # Create tensorflow-container pip archive
       - |
         build_dir="docker/$FRAMEWORK_VERSION/final"
+        build_id="$(echo $CODEBUILD_BUILD_ID | sed -e 's/:/-/g')"
+        python3 setup.py sdist
+        # tar_name will be something like: sagemaker_mxnet_container-1.0.tar.gz
+        tar_name=$(ls dist)
+        cp dist/$tar_name $build_dir
+
+      # build cpu image
+      - |
         cpu_dockerfile="Dockerfile.cpu"
 
         # Download framework binary
         cpu_fw_binary=$(basename $CPU_FRAMEWORK_BINARY)
         wget -O $build_dir/$cpu_fw_binary $CPU_FRAMEWORK_BINARY
 
-        # Create tensorflow-container pip archive
-        python3 setup.py sdist
-        # tar_name will be something like: sagemaker_mxnet_container-1.0.tar.gz
-        tar_name=$(ls dist)
-        cp dist/$tar_name $build_dir
-
-        build_id="$(echo $CODEBUILD_BUILD_ID | sed -e 's/:/-/g')"
         CPU_TAG="$FRAMEWORK_VERSION-cpu-py$CPU_PY_VERSION-$build_id"
 
         cd $build_dir
         docker build -f $cpu_dockerfile --build-arg py_version=$CPU_PY_VERSION --build-arg framework_installable=$cpu_fw_binary -t $PREPROD_IMAGE:$CPU_TAG .
         cd ../../../
 
-      # run integration tests
+      # build gpu image
       - |
-        if has-matching-changes "test/" "tests/" "src/*.py" "docker/*"; then
-          pytest test/integration/local --docker-base-name $PREPROD_IMAGE --tag $CPU_TAG --framework-version $FRAMEWORK_VERSION --py-version $CPU_PY_VERSION --processor cpu
-        else
-          echo "skipping integration tests"
-        fi
+        gpu_dockerfile="Dockerfile.gpu"
 
-      # push image to ecr
+        # Download framework binary
+        gpu_fw_binary=$(basename $GPU_FRAMEWORK_BINARY)
+        wget -O $build_dir/$gpu_fw_binary $GPU_FRAMEWORK_BINARY
+
+        GPU_TAG="$FRAMEWORK_VERSION-gpu-py$GPU_PY_VERSION-$build_id"
+
+        cd $build_dir
+        docker build -f $gpu_dockerfile --build-arg py_version=$GPU_PY_VERSION --build-arg framework_installable=$gpu_fw_binary -t $PREPROD_IMAGE:$GPU_TAG .
+        cd ../../../
+
+
+      # push images to ecr
       - |
         $(aws ecr get-login --registry-ids $ACCOUNT --no-include-email --region $AWS_DEFAULT_REGION)
         docker push $PREPROD_IMAGE:$CPU_TAG
+        docker push $PREPROD_IMAGE:$GPU_TAG
 
-      # run sagemaker tests
+      # launch remote gpu instance
+      - |
+        prefix='ml.'
+        instance_type=${GPU_INSTANCE_TYPE#"$prefix"}
+      - create-key-pair
+      - launch-ec2-instance --instance-type $instance_type --ami-name dlami-ubuntu
+
+      # run gpu integration tests
       - |
         if has-matching-changes "test/" "tests/" "src/*.py" "docker/*"; then
-          pytest test/integration/sagemaker --docker-base-name $ECR_REPO --aws-id $ACCOUNT --tag $CPU_TAG --instance-type $CPU_INSTANCE_TYPE
+          python3 remote_test.py --github-repo $GITHUB_REPO --test-dir test/integration/local --docker-base-name $PREPROD_IMAGE --tag $GPU_TAG --framework-version $FRAMEWORK_VERSION --py-version $GPU_PY_VERSION --processor gpu
         else
-          echo "skipping sagemaker tests"
+          echo "skipping gpu integration tests"
+        fi
+
+      # run cpu integration tests
+      - |
+        if has-matching-changes "test/" "tests/" "src/*.py" "docker/*"; then
+          pytest test/integration/local --region $AWS_DEFAULT_REGION --docker-base-name $PREPROD_IMAGE --tag $CPU_TAG --framework-version $FRAMEWORK_VERSION --py-version $CPU_PY_VERSION --processor cpu
+        else
+          echo "skipping cpu integration tests"
+        fi
+
+      # run gpu sagemaker tests
+      - |
+        if has-matching-changes "test/" "tests/" "src/*.py" "docker/*"; then
+          pytest test/integration/sagemaker --region $AWS_DEFAULT_REGION --docker-base-name $ECR_REPO --aws-id $ACCOUNT --tag $GPU_TAG --instance-type $GPU_INSTANCE_TYPE
+        else
+          echo "skipping gpu sagemaker tests"
+        fi
+
+      # run cpu sagemaker tests
+      - |
+        if has-matching-changes "test/" "tests/" "src/*.py" "docker/*"; then
+          pytest test/integration/sagemaker --region $AWS_DEFAULT_REGION --docker-base-name $ECR_REPO --aws-id $ACCOUNT --tag $CPU_TAG --instance-type $CPU_INSTANCE_TYPE
+        else
+          echo "skipping cpu sagemaker tests"
         fi
 
     finally:
+      # shut down remote gpu instance
+      - cleanup-gpu-instances
+      - cleanup-key-pairs
+
       # remove ecr image
-      - aws ecr batch-delete-image --repository-name $ECR_REPO --region $AWS_DEFAULT_REGION --image-ids imageTag=$CPU_TAG
-  
+      - |
+        aws ecr batch-delete-image --repository-name $ECR_REPO --region $AWS_DEFAULT_REGION --image-ids imageTag=$CPU_TAG
+        aws ecr batch-delete-image --repository-name $ECR_REPO --region $AWS_DEFAULT_REGION --image-ids imageTag=$GPU_TAG
