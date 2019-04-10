@@ -19,7 +19,7 @@ phases:
       - start-dockerd
       - cp /usr/local/bin/remote_test.py .
       - |
-        ACCOUNT="$(echo $CODEBUILD_BUILD_ARN | cut -d':' -f5)"
+        ACCOUNT=$(aws sts get-caller-identity --query 'Account' --output text)
         PREPROD_IMAGE="$ACCOUNT.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO"
 
 
