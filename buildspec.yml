@@ -9,7 +9,7 @@ env:
     GPU_FRAMEWORK_BINARY: 'https://files.pythonhosted.org/packages/52/8b/3f9cfe199e592b0723617e5d1919b83022f05cc359bd1885f7d1e9ce4758/mxnet_cu90mkl-1.3.0.post0-py2.py3-none-manylinux1_x86_64.whl'
     GPU_PY_VERSION: '3'
     GPU_INSTANCE_TYPE: 'ml.p2.xlarge'
-    ECR_REPO: 'sagemaker-framework-pull-request-integ'
+    ECR_REPO: 'sagemaker-test'
     GITHUB_REPO: 'sagemaker-mxnet-container'
     SETUP_FILE: 'setup_cmds.sh'
     SETUP_CMDS: '#!/bin/bash\npip install --upgrade pip\npip install -U -e .\npip install -U -e .[test]'
