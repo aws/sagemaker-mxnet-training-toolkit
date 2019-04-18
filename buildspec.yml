@@ -2,15 +2,17 @@ version: 0.2
 
 env:
   variables:
-    FRAMEWORK_VERSION: "1.3.0"
-    CPU_FRAMEWORK_BINARY: "https://files.pythonhosted.org/packages/71/64/49c5125befd5e0f0e17f115d55cb78080adacbead9d19f253afd0157656a/mxnet-1.3.0.post0-py2.py3-none-manylinux1_x86_64.whl"
-    CPU_PY_VERSION: "2"
-    CPU_INSTANCE_TYPE: "ml.c4.xlarge"
-    GPU_FRAMEWORK_BINARY: "https://files.pythonhosted.org/packages/52/8b/3f9cfe199e592b0723617e5d1919b83022f05cc359bd1885f7d1e9ce4758/mxnet_cu90mkl-1.3.0.post0-py2.py3-none-manylinux1_x86_64.whl"
-    GPU_PY_VERSION: "3"
-    GPU_INSTANCE_TYPE: "ml.p2.xlarge"
-    ECR_REPO: "sagemaker-framework-pull-request-integ"
-    GITHUB_REPO: "sagemaker-mxnet-container"
+    FRAMEWORK_VERSION: '1.3.0'
+    CPU_FRAMEWORK_BINARY: 'https://files.pythonhosted.org/packages/71/64/49c5125befd5e0f0e17f115d55cb78080adacbead9d19f253afd0157656a/mxnet-1.3.0.post0-py2.py3-none-manylinux1_x86_64.whl'
+    CPU_PY_VERSION: '2'
+    CPU_INSTANCE_TYPE: 'ml.c4.xlarge'
+    GPU_FRAMEWORK_BINARY: 'https://files.pythonhosted.org/packages/52/8b/3f9cfe199e592b0723617e5d1919b83022f05cc359bd1885f7d1e9ce4758/mxnet_cu90mkl-1.3.0.post0-py2.py3-none-manylinux1_x86_64.whl'
+    GPU_PY_VERSION: '3'
+    GPU_INSTANCE_TYPE: 'ml.p2.xlarge'
+    ECR_REPO: 'sagemaker-framework-pull-request-integ'
+    GITHUB_REPO: 'sagemaker-mxnet-container'
+    SETUP_FILE: 'setup_cmds.sh'
+    SETUP_CMDS: '#!/bin/bash\npip install --upgrade pip\npip install -U -e .\npip install -U -e .[test]'
 
 
 phases:
@@ -21,6 +23,11 @@ phases:
       - |
         ACCOUNT=$(aws sts get-caller-identity --query 'Account' --output text)
         PREPROD_IMAGE="$ACCOUNT.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO"
+      # keep ssh connection alive when communicating with remote ec2 server during integ test
+      # largest connection idle time allowed: 30 seconds * 60 attempts = 30 minutes
+      - |
+        echo '  ServerAliveInterval 30' >> ~/.ssh/config
+        echo '  ServerAliveCountMax 60' >> ~/.ssh/config
 
 
   build:
@@ -86,7 +93,9 @@ phases:
       # run gpu integration tests
       - |
         if has-matching-changes "test/" "tests/" "src/*.py" "docker/*"; then
-          python3 remote_test.py --github-repo $GITHUB_REPO --test-dir test/integration/local --docker-base-name $PREPROD_IMAGE --tag $GPU_TAG --framework-version $FRAMEWORK_VERSION --py-version $GPU_PY_VERSION --processor gpu
+          printf "$SETUP_CMDS" > $SETUP_FILE
+          cmd="pytest test/integration/local --region $AWS_DEFAULT_REGION --docker-base-name $PREPROD_IMAGE --tag $GPU_TAG --framework-version $FRAMEWORK_VERSION --py-version $GPU_PY_VERSION --processor gpu"
+          python3 remote_test.py --github-repo $GITHUB_REPO --test-cmd "$cmd" --setup-file $SETUP_FILE
         else
           echo "skipping gpu integration tests"
         fi
