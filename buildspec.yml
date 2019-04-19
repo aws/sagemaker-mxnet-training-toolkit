@@ -38,7 +38,7 @@ phases:
       # run unit tests
       - pytest test/unit
 
-      # Create mxnet-container pip archive
+      # Create pip archive
       - |
         build_dir="docker/$FRAMEWORK_VERSION/final"
         build_id="$(echo $CODEBUILD_BUILD_ID | sed -e 's/:/-/g')"
@@ -94,7 +94,7 @@ phases:
         if has-matching-changes "test/" "tests/" "src/*.py" "docker/*"; then
           printf "$SETUP_CMDS" > $SETUP_FILE
           cmd="pytest test/integration/local --region $AWS_DEFAULT_REGION --docker-base-name $PREPROD_IMAGE --tag $GPU_TAG --framework-version $FRAMEWORK_VERSION --py-version $GPU_PY_VERSION --processor gpu"
-          remote_test --github-repo $GITHUB_REPO --test-cmd "$cmd" --setup-file $SETUP_FILE
+          remote-test --github-repo $GITHUB_REPO --test-cmd "$cmd" --setup-file $SETUP_FILE
         else
           echo "skipping gpu integration tests"
         fi
