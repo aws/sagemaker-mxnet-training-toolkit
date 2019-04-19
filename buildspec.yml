@@ -38,7 +38,7 @@ phases:
       # run unit tests
       - pytest test/unit
 
-      # Create tensorflow-container pip archive
+      # Create mxnet-containe pip archive
       - |
         build_dir="docker/$FRAMEWORK_VERSION/final"
         build_id="$(echo $CODEBUILD_BUILD_ID | sed -e 's/:/-/g')"
