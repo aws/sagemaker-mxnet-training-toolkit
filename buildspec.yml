@@ -19,7 +19,6 @@ phases:
   pre_build:
     commands:
       - start-dockerd
-      - cp /usr/local/bin/remote_test.py .
       - |
         ACCOUNT=$(aws sts get-caller-identity --query 'Account' --output text)
         PREPROD_IMAGE="$ACCOUNT.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO"
@@ -95,7 +94,7 @@ phases:
         if has-matching-changes "test/" "tests/" "src/*.py" "docker/*"; then
           printf "$SETUP_CMDS" > $SETUP_FILE
           cmd="pytest test/integration/local --region $AWS_DEFAULT_REGION --docker-base-name $PREPROD_IMAGE --tag $GPU_TAG --framework-version $FRAMEWORK_VERSION --py-version $GPU_PY_VERSION --processor gpu"
-          python3 remote_test.py --github-repo $GITHUB_REPO --test-cmd "$cmd" --setup-file $SETUP_FILE
+          remote_test --github-repo $GITHUB_REPO --test-cmd "$cmd" --setup-file $SETUP_FILE
         else
           echo "skipping gpu integration tests"
         fi
