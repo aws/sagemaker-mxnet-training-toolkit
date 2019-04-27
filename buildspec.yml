@@ -22,11 +22,13 @@ phases:
       - |
         ACCOUNT=$(aws sts get-caller-identity --query 'Account' --output text)
         PREPROD_IMAGE="$ACCOUNT.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO"
+        PR_NUM=$(echo $CODEBUILD_SOURCE_VERSION | grep -o '[0-9]\+')
+        echo "Pull request number: $PR_NUM. No value means this build is not from pull request."
       # keep ssh connection alive when communicating with remote ec2 server during integ test
-      # largest connection idle time allowed: 30 seconds * 60 attempts = 30 minutes
+      # largest connection idle time allowed: 10 seconds * 360 attempts = 60 minutes
       - |
-        echo '  ServerAliveInterval 30' >> ~/.ssh/config
-        echo '  ServerAliveCountMax 60' >> ~/.ssh/config
+        echo '  ServerAliveInterval 10' >> ~/.ssh/config
+        echo '  ServerAliveCountMax 360' >> ~/.ssh/config
 
 
   build:
@@ -91,17 +93,17 @@ phases:
 
       # run gpu integration tests
       - |
-        if has-matching-changes "test/" "tests/" "src/*.py" "docker/*"; then
+        if has-matching-changes "test/" "tests/" "src/*.py" "docker/*" "buildspec.yml"; then
           printf "$SETUP_CMDS" > $SETUP_FILE
           cmd="pytest test/integration/local --region $AWS_DEFAULT_REGION --docker-base-name $PREPROD_IMAGE --tag $GPU_TAG --framework-version $FRAMEWORK_VERSION --py-version $GPU_PY_VERSION --processor gpu"
-          remote-test --github-repo $GITHUB_REPO --test-cmd "$cmd" --setup-file $SETUP_FILE
+          remote-test --github-repo $GITHUB_REPO --test-cmd "$cmd" --setup-file $SETUP_FILE --pr-number "$PR_NUM"
         else
           echo "skipping gpu integration tests"
         fi
 
       # run cpu integration tests
       - |
-        if has-matching-changes "test/" "tests/" "src/*.py" "docker/*"; then
+        if has-matching-changes "test/" "tests/" "src/*.py" "docker/*" "buildspec.yml"; then
           pytest test/integration/local --region $AWS_DEFAULT_REGION --docker-base-name $PREPROD_IMAGE --tag $CPU_TAG --framework-version $FRAMEWORK_VERSION --py-version $CPU_PY_VERSION --processor cpu
         else
           echo "skipping cpu integration tests"
@@ -109,7 +111,7 @@ phases:
 
       # run gpu sagemaker tests
       - |
-        if has-matching-changes "test/" "tests/" "src/*.py" "docker/*"; then
+        if has-matching-changes "test/" "tests/" "src/*.py" "docker/*" "buildspec.yml"; then
           pytest test/integration/sagemaker --region $AWS_DEFAULT_REGION --docker-base-name $ECR_REPO --aws-id $ACCOUNT --tag $GPU_TAG --instance-type $GPU_INSTANCE_TYPE
         else
           echo "skipping gpu sagemaker tests"
@@ -117,7 +119,7 @@ phases:
 
       # run cpu sagemaker tests
       - |
-        if has-matching-changes "test/" "tests/" "src/*.py" "docker/*"; then
+        if has-matching-changes "test/" "tests/" "src/*.py" "docker/*" "buildspec.yml"; then
           pytest test/integration/sagemaker --region $AWS_DEFAULT_REGION --docker-base-name $ECR_REPO --aws-id $ACCOUNT --tag $CPU_TAG --instance-type $CPU_INSTANCE_TYPE
         else
           echo "skipping cpu sagemaker tests"
