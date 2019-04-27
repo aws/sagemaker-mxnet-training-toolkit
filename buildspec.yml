@@ -25,10 +25,10 @@ phases:
         PR_NUM=$(echo $CODEBUILD_SOURCE_VERSION | grep -o '[0-9]\+')
         echo "Pull request number: $PR_NUM. No value means this build is not from pull request."
       # keep ssh connection alive when communicating with remote ec2 server during integ test
-      # largest connection idle time allowed: 30 seconds * 60 attempts = 30 minutes
+      # largest connection idle time allowed: 10 seconds * 360 attempts = 60 minutes
       - |
-        echo '  ServerAliveInterval 30' >> ~/.ssh/config
-        echo '  ServerAliveCountMax 60' >> ~/.ssh/config
+        echo '  ServerAliveInterval 10' >> ~/.ssh/config
+        echo '  ServerAliveCountMax 360' >> ~/.ssh/config
 
 
   build:
