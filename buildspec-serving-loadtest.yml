@@ -1,0 +1,22 @@
+version: 0.2
+
+env:
+  variables:
+    ECR_IMAGE: '520713654638.dkr.ecr.us-west-2.amazonaws.com/sagemaker-mxnet:1.3.0-cpu-py3'
+    S3_MODEL_ARTIFACT: 's3://sagemaker-sample-data-us-west-2/mxnet/model/resnet/resnet_50.tar.gz'
+    SERVING_INPUT: 's3://142577830533-sagemaker-serving-lnputs/json/numpy_zeros_list_1_3_224_224'
+
+phases:
+  build:
+    commands:
+      - setup-serving-load-test-environment --arch cpu \
+                                            --ecr-image ${ECR_IMAGE} \
+                                            --s3-model-artifacts ${S3_MODEL_ARTIFACT}
+      - run-serving-load-test --concurrency 1000 \
+                              --requests 5000 \
+                              --input ${SERVING_INPUT} \
+                              --content-type application/json \
+                              --accept application/json
+    finally:
+      - cleanup-gpu-instances
+      - cleanup-key-pairs
