@@ -1,22 +1,17 @@
-# TODO: Update to cuda 10 when SageMaker platform supports it
-FROM nvidia/cuda:9.0-cudnn7-runtime-ubuntu16.04
+ARG py_version
+
+FROM nvidia/cuda:9.2-cudnn7-runtime-ubuntu16.04
 
 LABEL com.amazonaws.sagemaker.capabilities.accept-bind-to-port=true
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    software-properties-common \
-    build-essential \
-    libopencv-dev \
-    curl \
-    && add-apt-repository ppa:deadsnakes/ppa -y \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /
-
-ARG py_version
-
-RUN if [ $py_version -eq 3 ]; then PYTHON_VERSION=python3.6; else PYTHON_VERSION=python2.7; fi && \
-        apt-get update && apt-get install -y --no-install-recommends $PYTHON_VERSION-dev --allow-unauthenticated  && \
+RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common && \
+    add-apt-repository ppa:deadsnakes/ppa -y && \
+    apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        libopencv-dev \
+        curl && \
+    if [ $py_version -eq 3 ]; then PYTHON_VERSION=python3.6; else PYTHON_VERSION=python2.7; fi && \
+        apt-get update && apt-get install -y --no-install-recommends $PYTHON_VERSION-dev && \
         ln -s -f /usr/bin/$PYTHON_VERSION /usr/bin/python && \
     rm -rf /var/lib/apt/lists/*
 
@@ -25,14 +20,14 @@ RUN cd /tmp && \
     curl -O https://bootstrap.pypa.io/get-pip.py && \
     python get-pip.py 'pip<=18.1' && rm get-pip.py
 
-RUN pip install --no-cache mxnet-mkl==1.4.0.post0 \
-                           onnx==1.4.1 \
-                           keras-mxnet==2.2.4.1
+WORKDIR /
 
-# TODO: The name for the tar.gz binary may change
 COPY dist/sagemaker_mxnet_container-2.0.0.tar.gz /sagemaker_mxnet_container-2.0.0.tar.gz
 
-RUN pip install --no-cache /sagemaker_mxnet_container-2.0.0.tar.gz && \
+RUN pip install --no-cache mxnet-cu92mkl==1.4.0.post0 \
+                           keras-mxnet==2.2.4.1 \
+                           onnx==1.4.1 \
+                           /sagemaker_mxnet_container-2.0.0.tar.gz && \
     rm /sagemaker_mxnet_container-2.0.0.tar.gz
 
 # "channels first" is recommended for keras-mxnet
