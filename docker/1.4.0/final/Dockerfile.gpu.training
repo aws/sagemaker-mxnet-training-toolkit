@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends software-proper
 # Install pip
 RUN cd /tmp && \
     curl -O https://bootstrap.pypa.io/get-pip.py && \
-    python get-pip.py 'pip<=18.1' && rm get-pip.py
+    python get-pip.py 'pip==19.1' && rm get-pip.py
 
 WORKDIR /
 
