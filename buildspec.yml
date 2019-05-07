@@ -25,8 +25,8 @@ phases:
       - echo "Pull request number: $PR_NUM. No value means this build is not from pull request."
       # keep ssh connection alive when communicating with remote ec2 server during integ test
       # largest connection idle time allowed: 10 seconds * 360 attempts = 60 minutes
-      -  echo '  ServerAliveInterval 10' >> ~/.ssh/config
-      -  echo '  ServerAliveCountMax 360' >> ~/.ssh/config
+      - echo '  ServerAliveInterval 10' >> ~/.ssh/config
+      - echo '  ServerAliveCountMax 360' >> ~/.ssh/config
 
 
   build:
