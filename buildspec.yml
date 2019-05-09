@@ -14,7 +14,6 @@ env:
     SETUP_FILE: 'setup_cmds.sh'
     SETUP_CMDS: '#!/bin/bash\npip install --upgrade pip\npip install -U -e .\npip install -U -e .[test]'
 
-
 phases:
   pre_build:
     commands:
@@ -23,11 +22,6 @@ phases:
       - PREPROD_IMAGE="$ACCOUNT.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO"
       - PR_NUM=$(echo $CODEBUILD_SOURCE_VERSION | grep -o '[0-9]\+')
       - echo 'Pull request number:' $PR_NUM '. No value means this build is not from pull request.'
-      # keep ssh connection alive when communicating with remote ec2 server during integ test
-      # largest connection idle time allowed: 10 seconds * 360 attempts = 60 minutes
-      - echo '  ServerAliveInterval 10' >> ~/.ssh/config
-      - echo '  ServerAliveCountMax 360' >> ~/.ssh/config
-
 
   build:
     commands:
@@ -47,10 +41,9 @@ phases:
       - cp dist/$tar_name $build_dir
 
       # build cpu image
-
       - cpu_dockerfile="Dockerfile.cpu"
 
-        # Download framework binary
+      ## Download framework binary
       - cpu_fw_binary=$(basename $CPU_FRAMEWORK_BINARY)
       - wget -O $build_dir/$cpu_fw_binary $CPU_FRAMEWORK_BINARY
 
@@ -61,10 +54,9 @@ phases:
       - cd ../../../
 
       # build gpu image
-
       - gpu_dockerfile="Dockerfile.gpu"
 
-        # Download framework binary
+      ## Download framework binary
       - gpu_fw_binary=$(basename $GPU_FRAMEWORK_BINARY)
       - wget -O $build_dir/$gpu_fw_binary $GPU_FRAMEWORK_BINARY
 
@@ -73,7 +65,6 @@ phases:
       - cd $build_dir
       - docker build -f $gpu_dockerfile --build-arg py_version=$GPU_PY_VERSION --build-arg framework_installable=$gpu_fw_binary -t $PREPROD_IMAGE:$GPU_TAG .
       - cd ../../../
-
 
       # push images to ecr
       - $(aws ecr get-login --registry-ids $ACCOUNT --no-include-email --region $AWS_DEFAULT_REGION)
@@ -86,6 +77,14 @@ phases:
       - create-key-pair
       - launch-ec2-instance --instance-type $instance_type --ami-name dlami-ubuntu
 
+      # run cpu integration tests
+      - |
+        if has-matching-changes "test/" "tests/" "src/*.py" "docker/*" "buildspec.yml"; then
+          pytest test/integration/local --region $AWS_DEFAULT_REGION --docker-base-name $PREPROD_IMAGE --tag $CPU_TAG --framework-version $FRAMEWORK_VERSION --py-version $CPU_PY_VERSION --processor cpu
+        else
+          echo "skipping cpu integration tests"
+        fi
+
       # run gpu integration tests
       - |
         if has-matching-changes "test/" "tests/" "src/*.py" "docker/*" "buildspec.yml"; then
@@ -96,12 +95,12 @@ phases:
           echo "skipping gpu integration tests"
         fi
 
-      # run cpu integration tests
+      # run cpu sagemaker tests
       - |
         if has-matching-changes "test/" "tests/" "src/*.py" "docker/*" "buildspec.yml"; then
-          pytest test/integration/local --region $AWS_DEFAULT_REGION --docker-base-name $PREPROD_IMAGE --tag $CPU_TAG --framework-version $FRAMEWORK_VERSION --py-version $CPU_PY_VERSION --processor cpu
+          pytest test/integration/sagemaker --region $AWS_DEFAULT_REGION --docker-base-name $ECR_REPO --aws-id $ACCOUNT --tag $CPU_TAG --instance-type $CPU_INSTANCE_TYPE
         else
-          echo "skipping cpu integration tests"
+          echo "skipping cpu sagemaker tests"
         fi
 
       # run gpu sagemaker tests
@@ -110,14 +109,6 @@ phases:
           pytest test/integration/sagemaker --region $AWS_DEFAULT_REGION --docker-base-name $ECR_REPO --aws-id $ACCOUNT --tag $GPU_TAG --instance-type $GPU_INSTANCE_TYPE
         else
           echo "skipping gpu sagemaker tests"
-        fi
-
-      # run cpu sagemaker tests
-      - |
-        if has-matching-changes "test/" "tests/" "src/*.py" "docker/*" "buildspec.yml"; then
-          pytest test/integration/sagemaker --region $AWS_DEFAULT_REGION --docker-base-name $ECR_REPO --aws-id $ACCOUNT --tag $CPU_TAG --instance-type $CPU_INSTANCE_TYPE
-        else
-          echo "skipping cpu sagemaker tests"
         fi
 
     finally:
