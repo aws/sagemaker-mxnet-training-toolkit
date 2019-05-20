@@ -1,13 +1,11 @@
 FROM ubuntu:16.04
-ARG framework_installable
 ARG py_version
 ARG framework_support_installable=sagemaker_mxnet_container-2.0.0.tar.gz
 
 LABEL com.amazonaws.sagemaker.capabilities.accept-bind-to-port=true
 
 # Validate that arguments are specified
-RUN test $framework_installable || exit 1 && \
-    test $py_version || exit 1
+RUN test $py_version || exit 1
 
 WORKDIR /tmp
 
@@ -33,16 +31,13 @@ RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
     rm get-pip.py
 
 # Will install from pypi once packages are released there. For now, copy from local file system.
-COPY $framework_installable .
 COPY $framework_support_installable .
 
-RUN framework_installable_local=$(basename $framework_installable) && \
-    framework_support_installable_local=$(basename $framework_support_installable) && \
+RUN framework_support_installable_local=$(basename $framework_support_installable) && \
     \
-    pip install $framework_installable_local && \
+    pip install mxnet==1.3.0.post0 && \
     pip install $framework_support_installable_local && \
     \
-    rm $framework_installable_local && \
     rm $framework_support_installable_local
 
 RUN pip install onnx==1.2.1 \

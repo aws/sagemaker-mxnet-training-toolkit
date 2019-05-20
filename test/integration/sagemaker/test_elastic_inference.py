@@ -1,4 +1,4 @@
-#  Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#  Copyright 2018-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License").
 #  You may not use this file except in compliance with the License.
@@ -10,6 +10,7 @@
 #  on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
 #  express or implied. See the License for the specific language governing
 #  permissions and limitations under the License.
+from __future__ import absolute_import
 
 import logging
 import os
@@ -19,7 +20,7 @@ import pytest
 from sagemaker.mxnet import MXNetModel
 from sagemaker.utils import sagemaker_timestamp
 
-from test.integration import RESOURCE_PATH, EI_SUPPORTED_REGIONS
+from test.integration import EI_SUPPORTED_REGIONS, RESOURCE_PATH
 from timeout import timeout_and_delete_endpoint_by_name
 
 logger = logging.getLogger(__name__)
@@ -51,15 +52,16 @@ def pretrained_model_data(region):
 
 @pytest.mark.skip_if_non_supported_ei_region
 @pytest.mark.skip_if_no_accelerator
-def test_deploy_elastic_inference_with_pretrained_model(pretrained_model_data, ecr_image, sagemaker_session,
-                                                        instance_type, accelerator_type):
+def test_deploy_elastic_inference(pretrained_model_data, ecr_image, sagemaker_session,
+                                  instance_type, accelerator_type):
     default_handler_path = os.path.join(RESOURCE_PATH, 'default_handlers')
     endpoint_name = 'test-mxnet-ei-deploy-model-{}'.format(sagemaker_timestamp())
 
-    with timeout_and_delete_endpoint_by_name(endpoint_name=endpoint_name, sagemaker_session=sagemaker_session,
-                                             minutes=20):
+    with timeout_and_delete_endpoint_by_name(endpoint_name=endpoint_name,
+                                             sagemaker_session=sagemaker_session, minutes=20):
+        entry_script = os.path.join(default_handler_path, 'code', 'empty_module.py')
         model = MXNetModel(model_data=pretrained_model_data,
-                           entry_point=os.path.join(default_handler_path, 'code', 'empty_module.py'),
+                           entry_point=entry_script,
                            role='SageMakerRole',
                            image=ecr_image,
                            sagemaker_session=sagemaker_session)
