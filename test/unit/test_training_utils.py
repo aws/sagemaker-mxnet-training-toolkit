@@ -30,7 +30,7 @@ def test_save_single_machine(json_dump):
     model = Mock()
     model.data_shapes = []
 
-    with patch('six.moves.builtins.open', mock_open(read_data=Mock())):
+    with patch('six.moves.builtins.open', mock_open()):
         training_utils.save(MODEL_DIR, model)
 
     model.symbol.save.assert_called_with(os.path.join(MODEL_DIR, 'model-symbol.json'))
@@ -43,7 +43,7 @@ def test_save_distributed(json_dump):
     model = Mock()
     model.data_shapes = []
 
-    with patch('six.moves.builtins.open', mock_open(read_data=Mock())):
+    with patch('six.moves.builtins.open', mock_open()):
         training_utils.save(MODEL_DIR, model, current_host=SCHEDULER_HOST,
                             hosts=[SCHEDULER_HOST, WORKER_HOST])
 
