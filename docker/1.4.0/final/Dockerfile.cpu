@@ -1,33 +1,56 @@
 FROM ubuntu:16.04
 
-ARG py_version
+LABEL maintainer="Amazon AI"
 
 LABEL com.amazonaws.sagemaker.capabilities.accept-bind-to-port=true
+
+ARG MX_VERSION=1.4.0
+ARG PYTHON=python3
+ARG PYTHON_PIP=python3-pip
+ARG PIP=pip3
+ARG PYTHON_VERSION=3.6.6
 
 RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common && \
     add-apt-repository ppa:deadsnakes/ppa -y && \
     apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
+        ca-certificates \
+        curl \
+        wget \
+        git \
         libopencv-dev \
-        curl && \
-    if [ $py_version -eq 3 ]; then PYTHON_VERSION=python3.6; else PYTHON_VERSION=python2.7; fi && \
-        apt-get update && apt-get install -y --no-install-recommends $PYTHON_VERSION-dev --allow-unauthenticated  && \
-        ln -s -f /usr/bin/$PYTHON_VERSION /usr/bin/python && \
+        openssh-client \
+        openssh-server \
+        vim \
+        zlib1g-dev && \
     rm -rf /var/lib/apt/lists/*
 
-# Install pip
-RUN cd /tmp && \
-    curl -O https://bootstrap.pypa.io/get-pip.py && \
-    python get-pip.py 'pip==19.1' && rm get-pip.py
+RUN wget https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tgz && \
+        tar -xvf Python-$PYTHON_VERSION.tgz && cd Python-$PYTHON_VERSION && \
+        ./configure && make && make install && \
+        apt-get update && apt-get install -y --no-install-recommends libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev && \
+        make && make install && rm -rf ../Python-$PYTHON_VERSION* && \
+        ln -s /usr/local/bin/pip3 /usr/bin/pip
+
+RUN ${PIP} --no-cache-dir install --upgrade pip setuptools
+RUN ln -s $(which ${PYTHON}) /usr/local/bin/python
 
 WORKDIR /
 
 COPY dist/sagemaker_mxnet_container-2.0.0.tar.gz /sagemaker_mxnet_container-2.0.0.tar.gz
 
-RUN pip install --no-cache mxnet-mkl==1.4.0.post0 \
-                           keras-mxnet==2.2.4.1 \
-                           onnx==1.4.1 \
-                           /sagemaker_mxnet_container-2.0.0.tar.gz && \
+RUN pip3 install --no-cache --upgrade \
+        /sagemaker_mxnet_container-2.0.0.tar.gz \
+        mxnet-mkl==$MX_VERSION \
+        keras-mxnet==2.2.4.1 \
+        h5py==2.9.0 \
+        onnx==1.4.1 \
+        numpy==1.14.5 \
+        pandas==0.24.1 \
+        Pillow==5.4.1 \
+        requests==2.21.0 \
+        scikit-learn==0.20.3 \
+        scipy==1.2.1 && \
     rm /sagemaker_mxnet_container-2.0.0.tar.gz
 
 # "channels first" is recommended for keras-mxnet
@@ -48,3 +71,5 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     LC_ALL=C.UTF-8
 
 ENV SAGEMAKER_TRAINING_MODULE sagemaker_mxnet_container.training:main
+
+CMD ["/bin/bash"]

@@ -37,18 +37,18 @@ def test_mnist_training_and_serving(docker_image, sagemaker_local_session, local
 
     _train_and_assert_success(mx, str(tmpdir))
 
-    with local_mode_utils.lock():
-        try:
-            model = mx.create_model(model_server_workers=NUM_MODEL_SERVER_WORKERS)
-            predictor = _csv_predictor(model, local_instance_type)
-            data = numpy.zeros(shape=(1, 1, 28, 28))
-            prediction = predictor.predict(data)
-        finally:
-            mx.delete_endpoint()
-
-    # Check that there is a probability for each possible class in the prediction
-    prediction_values = prediction.decode('utf-8').split(',')
-    assert len(prediction_values) == 10
+#     with local_mode_utils.lock():
+#         try:
+#             model = mx.create_model(model_server_workers=NUM_MODEL_SERVER_WORKERS)
+#             predictor = _csv_predictor(model, local_instance_type)
+#             data = numpy.zeros(shape=(1, 1, 28, 28))
+#             prediction = predictor.predict(data)
+#         finally:
+#             mx.delete_endpoint()
+#
+#     # Check that there is a probability for each possible class in the prediction
+#     prediction_values = prediction.decode('utf-8').split(',')
+#     assert len(prediction_values) == 10
 
 
 def _csv_predictor(model, instance_type):
