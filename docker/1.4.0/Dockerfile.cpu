@@ -42,7 +42,6 @@ WORKDIR /
 COPY sagemaker_mxnet_container-2.0.0.tar.gz /sagemaker_mxnet_container-2.0.0.tar.gz
 
 RUN pip3 install --no-cache --upgrade \
-        /sagemaker_mxnet_container-2.0.0.tar.gz \
         mxnet-mkl==$MX_VERSION \
         keras-mxnet==2.2.4.1 \
         h5py==2.9.0 \
@@ -52,7 +51,8 @@ RUN pip3 install --no-cache --upgrade \
         Pillow==5.4.1 \
         requests==2.21.0 \
         scikit-learn==0.20.3 \
-        scipy==1.2.1 && \
+        scipy==1.2.1 \
+        /sagemaker_mxnet_container-2.0.0.tar.gz && \
     rm /sagemaker_mxnet_container-2.0.0.tar.gz
 
 # "channels first" is recommended for keras-mxnet
