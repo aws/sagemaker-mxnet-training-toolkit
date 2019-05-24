@@ -33,8 +33,6 @@ def _parse_args():
 args = _parse_args()
 
 build_dir = os.path.join('docker', args.version, 'final')
-prev_dir = os.getcwd()
-os.chdir(build_dir)
 
 # Run docker-login so we can pull the cached image
 login_cmd = subprocess.check_output(
@@ -47,22 +45,15 @@ for arch in ['cpu', 'gpu']:
         tag = '{}-{}-py{}'.format(args.version, arch, py_version)
         dest = '{}:{}'.format(args.repo, tag)
         prev_image_uri = '{}.dkr.ecr.{}.amazonaws.com/{}'.format(args.account, args.region, dest)
-        dockerfile = 'Dockerfile.{}'.format(arch)
-
-        tar_file = subprocess.check_output('ls sagemaker_mxnet_container*.tar.gz',
-                                           shell=True).strip().decode('ascii')
-        print('framework_support_installable: {}'.format(os.path.basename(tar_file)))
+        dockerfile = os.path.join(build_dir, 'Dockerfile.{}'.format(arch))
 
         build_cmd = [
             'docker', 'build',
             '-f', dockerfile,
             '--cache-from', prev_image_uri,
             '--build-arg', 'py_version={}'.format(py_version),
-            '--build-arg', 'framework_support_installable={}'.format(tar_file),
             '-t', dest,
             '.',
         ]
         print('Building docker image: {}'.format(' '.join(build_cmd)))
         subprocess.check_call(build_cmd)
-
-os.chdir(prev_dir)
