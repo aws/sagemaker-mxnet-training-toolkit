@@ -32,7 +32,7 @@ def read(fname):
 
 setup(
     name='sagemaker_mxnet_container',
-    version='2.0.0',
+    version='3.0.0',
     description='Open source library for creating MXNet containers to run on Amazon SageMaker.',
 
     packages=find_packages(where='src', exclude=('test',)),
