@@ -69,15 +69,10 @@ To create the SageMaker MXNet Container Python package:
 
 Once you have those binaries, you can then build the image.
 
-
-For MXNet versions 1.1.0-1.3.0, the Dockerfiles expect two build arguments:
+The Dockerfiles expect two build arguments:
 
 - ``py_version``: the Python version (2 or 3)
 - ``framework_installable``: the path to the MXNet binary
-
-For MXNet versions 1.4.0 and higher, the Dockerfiles expect one build argument:
-
-- ``py_version``: the Python version, including the minor version (2.7 or 3.6)
 
 To build an image:
 
@@ -104,10 +99,10 @@ Don't forget the period at the end of the command!
     # Example
 
     # CPU
-    docker build -t preprod-mxnet:1.1.0-cpu-py3 --build-arg py_version=3.6 -f Dockerfile.cpu .
+    docker build -t preprod-mxnet:1.1.0-cpu-py3 --build-arg py_version=3 -f Dockerfile.cpu .
 
     # GPU
-    docker build -t preprod-mxnet:1.1.0-gpu-py3 --build-arg py_version=3.6 -f Dockerfile.gpu .
+    docker build -t preprod-mxnet:1.1.0-gpu-py3 --build-arg py_version=3 -f Dockerfile.gpu .
 
 
 MXNet 0.12.1 and 1.0.0
