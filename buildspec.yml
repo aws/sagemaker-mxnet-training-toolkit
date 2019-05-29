@@ -47,7 +47,7 @@ phases:
       - gpu_dockerfile="Dockerfile.gpu"
       - GPU_TAG="$FRAMEWORK_VERSION-gpu-py$GPU_PY_VERSION-$build_id"
 
-      - docker build -f $build_dir/$gpu_dockerfile --build-arg py_version=$GPU_PY_VERSION --build-arg -t $PREPROD_IMAGE:$GPU_TAG .
+      - docker build -f $build_dir/$gpu_dockerfile --build-arg py_version=$GPU_PY_VERSION -t $PREPROD_IMAGE:$GPU_TAG .
 
       # push images to ecr
       - $(aws ecr get-login --registry-ids $ACCOUNT --no-include-email --region $AWS_DEFAULT_REGION)
