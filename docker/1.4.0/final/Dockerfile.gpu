@@ -24,7 +24,7 @@ WORKDIR /
 
 COPY dist/sagemaker_mxnet_container-3.0.0.tar.gz /sagemaker_mxnet_container-3.0.0.tar.gz
 
-RUN pip install --no-cache mxnet-cu92mkl==1.4.0.post0 \
+RUN pip install --no-cache mxnet-cu92mkl==1.4.0 \
                            keras-mxnet==2.2.4.1 \
                            onnx==1.4.1 \
                            /sagemaker_mxnet_container-3.0.0.tar.gz && \
