@@ -38,8 +38,8 @@ Building Images
 The Dockerfiles in this repository are intended to be used for building Docker images to run training jobs on `Amazon SageMaker <https://aws.amazon.com/documentation/sagemaker/>`__.
 
 The current master branch of this repository contains Dockerfiles and support code for MXNet versions 1.4.0 and higher.
-For MXNet version 1.3.0, check out v2.0.0 of this repository.
-For MXNet versions 0.12.1-1.2.1, check out v1.0.0 of this repository.
+For MXNet version 1.3.0, check out `v2.0.0 of this repository <https://github.com/aws/sagemaker-mxnet-container/releases/tag/v2.0.0>`__.
+For MXNet versions 0.12.1-1.2.1, check out `v1.0.0 of this repository <https://github.com/aws/sagemaker-mxnet-container/releases/tag/v1.0.0>`__.
 
 For each supported MXNet version, Dockerfiles can be found for each processor type (i.e. CPU and GPU).
 They install the SageMaker-specific support code found in this repository.
@@ -54,15 +54,12 @@ To create the SageMaker MXNet Container Python package:
     cd sagemaker-mxnet-container
     python setup.py sdist
 
-    # Copy your Python package to the appropriate "final" Dockerfile directory
-    cp dist/sagemaker_mxnet_container-<package_version>.tar.gz docker/<mxnet_version>/final
-
 Once you have those binaries, you can then build the image.
 
 The Dockerfiles expect one build argument: ``py_version``.
 This is the Python version (i.e. 2 or 3).
 
-The integration tests expect the Docker images to be tagged as ``preprod-mxnet:<tag>``, where ``<tag`` looks like <mxnet_version>-<processor>-<python_version> (e.g. 1.3.0-cpu-py3).
+The integration tests expect the Docker images to be tagged as ``preprod-mxnet:<tag>``, where ``<tag`` looks like <mxnet_version>-<processor>-<python_version> (e.g. 1.4.0-cpu-py3).
 
 To build an image:
 
