@@ -6,6 +6,9 @@ SageMaker MXNet Container is an open-source library for making Docker images for
 For serving images, see `SageMaker MXNet Serving Container <https://github.com/aws/sagemaker-mxnet-serving-container>`__.
 For information on running MXNet jobs on Amazon SageMaker, please refer to the `SageMaker Python SDK documentation <https://github.com/aws/sagemaker-python-sdk>`__.
 
+The information in this README is for MXNet versions 1.4.0 and higher.
+For versions 0.12.0-1.3.0 (including serving images), see `the previous version of this README <https://github.com/aws/sagemaker-mxnet-container/blob/4f4492ba71ab5210bb0594449d3996f0bc3e5807/README.rst>`__.
+
 -----------------
 Table of Contents
 -----------------
@@ -32,29 +35,16 @@ Recommended
 Building Images
 ---------------
 
-The Dockerfiles in this repository are intended to be used for building Docker images to run training jobs and inference endpoints on `Amazon SageMaker <https://aws.amazon.com/documentation/sagemaker/>`__.
+The Dockerfiles in this repository are intended to be used for building Docker images to run training jobs on `Amazon SageMaker <https://aws.amazon.com/documentation/sagemaker/>`__.
 
 The current master branch of this repository contains Dockerfiles and support code for MXNet versions 1.4.0 and higher.
 For MXNet version 1.3.0, check out v2.0.0 of this repository.
 For MXNet versions 0.12.1-1.2.1, check out v1.0.0 of this repository.
 
 For each supported MXNet version, Dockerfiles can be found for each processor type (i.e. CPU and GPU).
-For MXNet versions 0.12.1-1.3.0, the Dockerfiles produced images compatible for both training and serving.
-For MXNet versions 0.12.1 and 1.0.0, there are separate Dockerfiles for each Python version as well.
-
-All images are tagged with <mxnet_version>-<processor>-<python_version> (e.g. 1.3.0-cpu-py3).
-
-MXNet 1.1.0 and higher
-~~~~~~~~~~~~~~~~~~~~~~
-
-For these MXNet versions, there is one set of Dockerfiles for each version.
 They install the SageMaker-specific support code found in this repository.
 
-Before building these images, you need to have two files already saved locally.
-The first is a pip-installable binary of the MXNet library.
-This can be something you compile from source or `download from PyPI <https://pypi.org/project/mxnet/#files>`__.
-
-The second is a pip-installable binary of this repository.
+Before building these images, you need to have a pip-installable binary of this repository saved locally.
 To create the SageMaker MXNet Container Python package:
 
 ::
@@ -69,28 +59,26 @@ To create the SageMaker MXNet Container Python package:
 
 Once you have those binaries, you can then build the image.
 
-The Dockerfiles expect two build arguments:
+The Dockerfiles expect one build argument: ``py_version``.
+This is the Python version (i.e. 2 or 3).
 
-- ``py_version``: the Python version (2 or 3)
-- ``framework_installable``: the path to the MXNet binary
+The integration tests expect the Docker images to be tagged as ``preprod-mxnet:<tag>``, where ``<tag`` looks like <mxnet_version>-<processor>-<python_version> (e.g. 1.3.0-cpu-py3).
 
 To build an image:
 
 ::
 
-    # All build instructions assume you're building from the same directory as the Dockerfile.
+    # All build instructions assume you're building from the root directory of this repository
 
     # CPU
     docker build -t preprod-mxnet:<tag> \
                  --build-arg py_version=<python_version> \
-                 --build-arg framework_installable=<mxnet_binary> \  # only for versions 1.1.0-1.3.0
-                 -f Dockerfile.cpu .
+                 -f docker/<mxnet_version>/final/Dockerfile.cpu .
 
     # GPU
     docker build -t preprod-mxnet:<tag> \
                  --build-arg py_version=<python_version> \
-                 --build-arg framework_installable=<mxnet_binary> \  # only for versions 1.1.0-1.3.0
-                 -f Dockerfile.gpu .
+                 -f docker/<mxnet_version>/final/Dockerfile.gpu .
 
 Don't forget the period at the end of the command!
 
@@ -99,123 +87,11 @@ Don't forget the period at the end of the command!
     # Example
 
     # CPU
-    docker build -t preprod-mxnet:1.1.0-cpu-py3 --build-arg py_version=3 -f Dockerfile.cpu .
+    docker build -t preprod-mxnet:1.4.0-cpu-py3 --build-arg py_version=3 -f docker/1.4.0/final/Dockerfile.cpu .
 
     # GPU
-    docker build -t preprod-mxnet:1.1.0-gpu-py3 --build-arg py_version=3 -f Dockerfile.gpu .
+    docker build -t preprod-mxnet:1.4.0-gpu-py3 --build-arg py_version=3 -f docker/1.4.0/final/Dockerfile.gpu .
 
-
-MXNet 0.12.1 and 1.0.0
-~~~~~~~~~~~~~~~~~~~~~~
-
-For these MXNet versions, there are "base" and "final" Dockerfiles for each image.
-The "base" Dockerfile installs MXNet and its necessary dependencies.
-The "final" Dockerfile installs the SageMaker-specific support code found in this repository.
-
-Base Images
-^^^^^^^^^^^
-
-To build a "base" image:
-
-::
-
-    # All build instructions assume you're building from the same directory as the Dockerfile.
-
-    # CPU
-    docker build -t mxnet-base:<mxnet_version>-cpu-<python_version> -f Dockerfile.cpu .
-
-    # GPU
-    docker build -t mxnet-base:<mxnet_version>-gpu-<python_version> -f Dockerfile.gpu .
-
-::
-
-    # Example
-
-    # CPU
-    docker build -t mxnet-base:0.12.1-cpu-py2 -f Dockerfile.cpu .
-
-    # GPU
-    docker build -t mxnet-base:0.12.1-gpu-py2 -f Dockerfile.gpu .
-
-Final Images
-^^^^^^^^^^^^
-
-All "final" Dockerfiles assume the "base" image has already been built.
-Make sure the "base" image is named and tagged as expected by the "final" Dockerfile.
-
-In addition, the "final" Dockerfiles require a pip-installable binary of this repository.
-To create the SageMaker MXNet Container Python package:
-
-::
-
-    # Create the binary
-    git clone -b v1.0.0 https://github.com/aws/sagemaker-mxnet-container.git
-    cd sagemaker-mxnet-container
-    python setup.py sdist
-
-    # Copy your Python package to the appropriate "final" Dockerfile directory
-    cp dist/sagemaker_mxnet_container-<package_version>.tar.gz docker/<mxnet_version>/final
-
-To build a "final" image:
-
-::
-
-    # All build instructions assumes you're building from the same directory as the Dockerfile.
-
-    # CPU
-    docker build -t <image_name>:<tag> -f Dockerfile.cpu .
-
-    # GPU
-    docker build -t <image_name>:<tag> -f Dockerfile.gpu .
-
-::
-
-    # Example
-
-    # CPU
-    docker build -t preprod-mxnet:0.12.1-cpu-py2 -f Dockerfile.cpu .
-
-    # GPU
-    docker build -t preprod-mxnet:0.12.1-gpu-py2 -f Dockerfile.gpu .
-
-Amazon Elastic Inference with MXNet in SageMaker
-------------------------------------------------
-`Amazon Elastic Inference <https://aws.amazon.com/machine-learning/elastic-inference/>`__ allows you to to attach
-low-cost GPU-powered acceleration to Amazon EC2 and Amazon SageMaker instances to reduce the cost running deep
-learning inference by up to 75%. Currently, Amazon Elastic Inference supports TensorFlow, Apache MXNet, and ONNX
-models, with more frameworks coming soon.
-
-Support for using MXNet with Amazon Elastic Inference in SageMaker is supported in the public SageMaker MXNet containers.
-
-* For information on how to use the Python SDK to create an endpoint with Amazon Elastic Inference and MXNet in SageMaker, see `Deploying MXNet Models <https://github.com/aws/sagemaker-python-sdk/tree/master/src/sagemaker/mxnet#deploying-mxnet-models>`__.
-* For information on how Amazon Elastic Inference works, see `How EI Works <https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html#ei-how-it-works>`__.
-* For more information in regards to using Amazon Elastic Inference in SageMaker, see `Amazon SageMaker Elastic Inference <https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html>`__.
-* For notebook examples on how to use Amazon Elastic Inference with MXNet through the Python SDK in SageMaker, see `EI Sample Notebooks <https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html#ei-intro-sample-nb>`__.
-
-Building the SageMaker Elastic Inference MXNet container
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Amazon Elastic Inference is designed to be used with AWS enhanced versions of TensorFlow serving or Apache MXNet. These enhanced
-versions of the frameworks are automatically built into containers when you use the Amazon SageMaker Python SDK, or you can
-download them as binary files and import them into your own Docker containers. The enhanced MXNet binaries are available on Amazon S3 at https://s3.console.aws.amazon.com/s3/buckets/amazonei-apachemxnet.
-
-The SageMaker MXNet containers with Amazon Elastic Inference support were built utilizing the
-same instructions listed `above <https://github.com/aws/sagemaker-mxnet-container#building-images>`__ with the
-`CPU Dockerfile <https://github.com/aws/sagemaker-mxnet-container/blob/master/docker/1.3.0/final/Dockerfile.cpu>`__ for MXNet version 1.3.0.
-For MXNet versions 1.4.0 and above, see `SageMaker MXNet Serving Container <https://github.com/aws/sagemaker-mxnet-serving-container>`__.
-
-The only difference is that the enhanced version of MXNet was passed in for the ``framework_installable`` build-arg.
-
-::
-
-    # Example
-
-    # EI
-    docker build -t preprod-mxnet-ei:1.3.0-cpu-py3 --build-arg py_version=3 \
-    --build-arg framework_installable=amazonei_mxnet-1.3.0-py2.py3-none-manylinux1_x86_64.whl -f Dockerfile.cpu .
-
-
-* For information about downloading and installing the enhanced binary for Apache MXNet, see `Install Amazon EI Enabled Apache MXNet <https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ei-mxnet.html#ei-apache>`__.
-* For information on which versions of MXNet is supported for Elastic Inference within SageMaker, see `MXNet SageMaker Estimators <https://github.com/aws/sagemaker-python-sdk#mxnet-sagemaker-estimators>`__.
 
 Running the tests
 -----------------
@@ -231,7 +107,6 @@ Running the tests requires installation of the SageMaker MXNet Container code an
 Tests are defined in `test/ <https://github.com/aws/sagemaker-mxnet-containers/tree/master/test>`__ and include unit and integration tests.
 The integration tests include both running the Docker containers locally and running them on SageMaker.
 The tests are compatible with only the Docker images built by Dockerfiles in the current branch.
-If you want to run tests for MXNet versions 1.2.1 or below, please use the v1.0.0 tests.
 
 All test instructions should be run from the top level directory
 
@@ -274,9 +149,9 @@ To run local integration tests:
 
     # Example
     pytest test/integration/local --docker-base-name preprod-mxnet \
-                                  --tag 1.3.0-cpu-py3 \
+                                  --tag 1.4.0-cpu-py3 \
                                   --py-version 3 \
-                                  --framework-version 1.3.0 \
+                                  --framework-version 1.4.0 \
                                   --processor cpu
 
 SageMaker Integration Tests
@@ -310,20 +185,7 @@ To run SageMaker integration tests:
     pytest test/integration/sagemaker --aws-id 12345678910 \
                                       --docker-base-name preprod-mxnet \
                                       --instance-type ml.m4.xlarge \
-                                      --tag 1.3.0-cpu-py3
-
-If you want to run a SageMaker end to end test for your Elastic Inference container, you will need to provide an `accelerator_type` as an additional pytest argument.
-
-The `accelerator-type` is your specified `Amazon Elastic Inference Accelerator <https://aws.amazon.com/sagemaker/pricing/instance-types/>`__ type that will be attached to your instance type.
-
-::
-
-    # Example for running Elastic Inference SageMaker end to end test
-    pytest test/integration/sagemaker/test_elastic_inference.py --aws-id 12345678910 \
-                                                                --docker-base-name preprod-mxnet \
-                                                                --instance-type ml.m4.xlarge \
-                                                                --accelerator-type ml.eia1.medium \
-                                                                --tag 1.0
+                                      --tag 1.4.0-cpu-py3
 
 Contributing
 ------------
