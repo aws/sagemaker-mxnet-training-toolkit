@@ -1,22 +1,20 @@
-#  Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
-#  Licensed under the Apache License, Version 2.0 (the "License").
-#  You may not use this file except in compliance with the License.
-#  A copy of the License is located at
+# Licensed under the Apache License, Version 2.0 (the "License").
+# You may not use this file except in compliance with the License.
+# A copy of the License is located at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-#  or in the "license" file accompanying this file. This file is distributed
-#  on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-#  express or implied. See the License for the specific language governing
-#  permissions and limitations under the License.
+# or in the "license" file accompanying this file. This file is distributed
+# on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+# express or implied. See the License for the specific language governing
+# permissions and limitations under the License.
 from __future__ import absolute_import
 
 from contextlib import contextmanager
 import logging
 import signal
-
-from botocore.exceptions import ClientError
 
 LOGGER = logging.getLogger('timeout')
 
@@ -54,34 +52,3 @@ def timeout(seconds=0, minutes=0, hours=0):
         yield
     finally:
         signal.alarm(0)
-
-
-@contextmanager
-def timeout_and_delete_endpoint(estimator, seconds=0, minutes=0, hours=0):
-    with timeout(seconds=seconds, minutes=minutes, hours=hours) as t:
-        try:
-            yield [t]
-        finally:
-            try:
-                estimator.delete_endpoint()
-                LOGGER.info('deleted endpoint')
-            except ClientError as ce:
-                if ce.response['Error']['Code'] == 'ValidationException':
-                    # avoids the inner exception to be overwritten
-                    pass
-
-
-@contextmanager
-def timeout_and_delete_endpoint_by_name(endpoint_name, sagemaker_session, seconds=0, minutes=0,
-                                        hours=0):
-    with timeout(seconds=seconds, minutes=minutes, hours=hours) as t:
-        try:
-            yield [t]
-        finally:
-            try:
-                sagemaker_session.delete_endpoint(endpoint_name)
-                LOGGER.info('deleted endpoint {}'.format(endpoint_name))
-            except ClientError as ce:
-                if ce.response['Error']['Code'] == 'ValidationException':
-                    # avoids the inner exception to be overwritten
-                    pass

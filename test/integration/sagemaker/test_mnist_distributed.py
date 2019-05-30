@@ -1,25 +1,24 @@
-#  Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# Copyright 2018-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
-#  Licensed under the Apache License, Version 2.0 (the "License").
-#  You may not use this file except in compliance with the License.
-#  A copy of the License is located at
+# Licensed under the Apache License, Version 2.0 (the "License").
+# You may not use this file except in compliance with the License.
+# A copy of the License is located at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-#  or in the "license" file accompanying this file. This file is distributed
-#  on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-#  express or implied. See the License for the specific language governing
-#  permissions and limitations under the License.
+# or in the "license" file accompanying this file. This file is distributed
+# on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+# express or implied. See the License for the specific language governing
+# permissions and limitations under the License.
 from __future__ import absolute_import
 
 import os
 
-import numpy as np
 from sagemaker.mxnet.estimator import MXNet
 from sagemaker.utils import sagemaker_timestamp
 
 from test.integration import RESOURCE_PATH
-from timeout import timeout, timeout_and_delete_endpoint
+from timeout import timeout
 
 
 def test_mxnet_distributed(sagemaker_session, ecr_image, instance_type, framework_version):
@@ -40,9 +39,3 @@ def test_mxnet_distributed(sagemaker_session, ecr_image, instance_type, framewor
                                                       key_prefix=prefix + '/test')
 
         mx.fit({'train': train_input, 'test': test_input})
-
-    with timeout_and_delete_endpoint(estimator=mx, minutes=30):
-        predictor = mx.deploy(initial_instance_count=1, instance_type=instance_type)
-
-        data = np.zeros(shape=(1, 1, 28, 28))
-        predictor.predict(data)

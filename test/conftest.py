@@ -1,22 +1,19 @@
-#  Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# Copyright 2018-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
-#  Licensed under the Apache License, Version 2.0 (the "License").
-#  You may not use this file except in compliance with the License.
-#  A copy of the License is located at
+# Licensed under the Apache License, Version 2.0 (the "License").
+# You may not use this file except in compliance with the License.
+# A copy of the License is located at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-#  or in the "license" file accompanying this file. This file is distributed
-#  on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-#  express or implied. See the License for the specific language governing
-#  permissions and limitations under the License.
+# or in the "license" file accompanying this file. This file is distributed
+# on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+# express or implied. See the License for the specific language governing
+# permissions and limitations under the License.
 from __future__ import absolute_import
 
 import logging
 import os
-import platform
-import shutil
-import tempfile
 
 import boto3
 import pytest
@@ -41,7 +38,6 @@ def pytest_addoption(parser):
     parser.addoption('--processor', default='cpu', choices=['gpu', 'cpu'])
     parser.addoption('--aws-id', default=None)
     parser.addoption('--instance-type', default=None)
-    parser.addoption('--accelerator-type', default=None)
     # If not specified, will default to {framework-version}-{processor}-py{py-version}
     parser.addoption('--tag', default=None)
 
@@ -91,11 +87,6 @@ def instance_type(request, processor):
 
 
 @pytest.fixture(scope='session')
-def accelerator_type(request):
-    return request.config.getoption('--accelerator-type')
-
-
-@pytest.fixture(scope='session')
 def docker_image(docker_base_name, tag):
     return '{}:{}'.format(docker_base_name, tag)
 
@@ -118,16 +109,3 @@ def sagemaker_local_session(region):
 @pytest.fixture(scope='session')
 def local_instance_type(processor):
     return 'local' if processor == 'cpu' else 'local_gpu'
-
-
-@pytest.fixture
-def opt_ml():
-    tmp = tempfile.mkdtemp()
-    os.mkdir(os.path.join(tmp, 'output'))
-
-    # Docker cannot mount Mac OS /var folder properly see
-    # https://forums.docker.com/t/var-folders-isnt-mounted-properly/9600
-    opt_ml_dir = '/private{}'.format(tmp) if platform.system() == 'Darwin' else tmp
-    yield opt_ml_dir
-
-    shutil.rmtree(tmp, True)
