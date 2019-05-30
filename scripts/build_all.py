@@ -47,11 +47,16 @@ for arch in ['cpu', 'gpu']:
         prev_image_uri = '{}.dkr.ecr.{}.amazonaws.com/{}'.format(args.account, args.region, dest)
         dockerfile = os.path.join(build_dir, 'Dockerfile.{}'.format(arch))
 
+        ls_tar_cmd = 'ls {}'.format(os.path.join('dist', 'sagemaker_mxnet_container*.tar.gz'))
+        tar_file = subprocess.check_output(ls_tar_cmd, shell=True).strip().decode('ascii')
+        print('framework_support_installable: {}'.format(os.path.basename(tar_file)))
+
         build_cmd = [
             'docker', 'build',
             '-f', dockerfile,
             '--cache-from', prev_image_uri,
             '--build-arg', 'py_version={}'.format(py_version),
+            '--build-arg', 'framework_support_installable={}'.format(tar_file),
             '-t', dest,
             '.',
         ]
