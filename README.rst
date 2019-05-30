@@ -2,7 +2,8 @@
 SageMaker MXNet Container
 =========================
 
-SageMaker MXNet Container is an open-source library for making Docker images for using MXNet on Amazon SageMaker.
+SageMaker MXNet Container is an open-source library for making Docker images for using MXNet to train models on Amazon SageMaker.
+For serving images, see `SageMaker MXNet Serving Container <https://github.com/aws/sagemaker-mxnet-serving-container>`__.
 For information on running MXNet jobs on Amazon SageMaker, please refer to the `SageMaker Python SDK documentation <https://github.com/aws/sagemaker-python-sdk>`__.
 
 -----------------
@@ -33,10 +34,12 @@ Building Images
 
 The Dockerfiles in this repository are intended to be used for building Docker images to run training jobs and inference endpoints on `Amazon SageMaker <https://aws.amazon.com/documentation/sagemaker/>`__.
 
-The current master branch of this repository contains Dockerfiles and support code for MXNet versions 1.3.0 and higher.
+The current master branch of this repository contains Dockerfiles and support code for MXNet versions 1.4.0 and higher.
+For MXNet version 1.3.0, check out v2.0.0 of this repository.
 For MXNet versions 0.12.1-1.2.1, check out v1.0.0 of this repository.
 
 For each supported MXNet version, Dockerfiles can be found for each processor type (i.e. CPU and GPU).
+For MXNet versions 0.12.1-1.3.0, the Dockerfiles produced images compatible for both training and serving.
 For MXNet versions 0.12.1 and 1.0.0, there are separate Dockerfiles for each Python version as well.
 
 All images are tagged with <mxnet_version>-<processor>-<python_version> (e.g. 1.3.0-cpu-py3).
@@ -65,9 +68,10 @@ To create the SageMaker MXNet Container Python package:
     cp dist/sagemaker_mxnet_container-<package_version>.tar.gz docker/<mxnet_version>/final
 
 Once you have those binaries, you can then build the image.
+
 The Dockerfiles expect two build arguments:
 
-- ``py_version``: the Python version.
+- ``py_version``: the Python version (2 or 3)
 - ``framework_installable``: the path to the MXNet binary
 
 To build an image:
@@ -79,13 +83,13 @@ To build an image:
     # CPU
     docker build -t preprod-mxnet:<tag> \
                  --build-arg py_version=<python_version> \
-                 --build-arg framework_installable=<mxnet_binary> \
+                 --build-arg framework_installable=<mxnet_binary> \  # only for versions 1.1.0-1.3.0
                  -f Dockerfile.cpu .
 
     # GPU
     docker build -t preprod-mxnet:<tag> \
                  --build-arg py_version=<python_version> \
-                 --build-arg framework_installable=<mxnet_binary> \
+                 --build-arg framework_installable=<mxnet_binary> \  # only for versions 1.1.0-1.3.0
                  -f Dockerfile.gpu .
 
 Don't forget the period at the end of the command!
@@ -95,12 +99,10 @@ Don't forget the period at the end of the command!
     # Example
 
     # CPU
-    docker build -t preprod-mxnet:1.1.0-cpu-py3 --build-arg py_version=3 \
-    --build-arg framework_installable=mxnet-1.1.0-py2.py3-none-manylinux1_x86_64.whl -f Dockerfile.cpu .
+    docker build -t preprod-mxnet:1.1.0-cpu-py3 --build-arg py_version=3 -f Dockerfile.cpu .
 
     # GPU
-    docker build -t preprod-mxnet:1.1.0-gpu-py3 --build-arg py_version=3 \
-    --build-arg framework_installable=mxnet-1.1.0-py2.py3-none-manylinux1_x86_64.whl -f Dockerfile.gpu .
+    docker build -t preprod-mxnet:1.1.0-gpu-py3 --build-arg py_version=3 -f Dockerfile.gpu .
 
 
 MXNet 0.12.1 and 1.0.0
@@ -198,7 +200,8 @@ download them as binary files and import them into your own Docker containers. T
 
 The SageMaker MXNet containers with Amazon Elastic Inference support were built utilizing the
 same instructions listed `above <https://github.com/aws/sagemaker-mxnet-container#building-images>`__ with the
-`CPU Dockerfile <https://github.com/aws/sagemaker-mxnet-container/blob/master/docker/1.3.0/final/Dockerfile.cpu>`__ starting at MXNet version 1.3.0 and above.
+`CPU Dockerfile <https://github.com/aws/sagemaker-mxnet-container/blob/master/docker/1.3.0/final/Dockerfile.cpu>`__ for MXNet version 1.3.0.
+For MXNet versions 1.4.0 and above, see `SageMaker MXNet Serving Container <https://github.com/aws/sagemaker-mxnet-serving-container>`__.
 
 The only difference is that the enhanced version of MXNet was passed in for the ``framework_installable`` build-arg.
 
