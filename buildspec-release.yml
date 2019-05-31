@@ -46,13 +46,12 @@ phases:
       - create-key-pair
       - launch-ec2-instance --instance-type $GPU_INSTANCE_TYPE --ami-name dlami-ubuntu
 
-      # TODO: enable these tests
       # run gpu integration tests
       - printf "$SETUP_CMDS" > $SETUP_FILE
       - ecr_image="$ACCOUNT.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO"
       - cmd="IGNORE_COVERAGE=- tox -e py36 -- test/integration/local --processor gpu --framework-version $FRAMEWORK_VERSION --region $AWS_DEFAULT_REGION --docker-base-name $ecr_image"
-      # - remote-test --test-cmd "$cmd --py-version 3" --github-repo $GITHUB_REPO --branch master --setup-file $SETUP_FILE
-      # - remote-test --test-cmd "$cmd --py-version 2" --github-repo $GITHUB_REPO --branch master --skip-setup
+      - remote-test --test-cmd "$cmd --py-version 3" --github-repo $GITHUB_REPO --branch master --setup-file $SETUP_FILE
+      - remote-test --test-cmd "$cmd --py-version 2" --github-repo $GITHUB_REPO --branch master --skip-setup
 
       # run cpu sagemaker tests
       - IGNORE_COVERAGE=- tox -e py36 -- test/integration/sagemaker -n auto --py-version 3 --processor cpu --region $AWS_DEFAULT_REGION --docker-base-name $ECR_REPO --aws-id $ACCOUNT --framework-version $FRAMEWORK_FULL_VERSION
