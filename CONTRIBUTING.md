@@ -23,11 +23,11 @@ reported the issue. Please try to include as much information as you can. Detail
 ## Contributing via Pull Requests
 Contributions via pull requests are much appreciated.
 
-You can use the following commands to setup your developing and testing environment after you fork sagemaker-python-sdk repository:
+You can use the following commands to setup your developing and testing environment after you fork sagemaker-mxnet-container repository:
 
 ```bash
-git clone git@github.com:<your-github-username>/sagemaker-python-sdk.git
-cd sagemaker-python-sdk
+git clone git@github.com:<your-github-username>/sagemaker-mxnet-container.git
+cd sagemaker-mxnet-container
 pip install -U .
 pip install -U .[test]
 ```
