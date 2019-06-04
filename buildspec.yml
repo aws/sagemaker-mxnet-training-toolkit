@@ -33,6 +33,7 @@ phases:
       # Create pip archive in dist/
       # tar_name will be something like: sagemaker_mxnet_container-3.0.0.tar.gz
       - python3 setup.py sdist
+      - tar_name=$(ls dist/sagemaker_mxnet_container*.tar.gz)
 
       - build_dir="docker/$FRAMEWORK_VERSION/final"
       - build_id="$(echo $CODEBUILD_BUILD_ID | sed -e 's/:/-/g')"
@@ -41,13 +42,13 @@ phases:
       - cpu_dockerfile="Dockerfile.cpu"
       - CPU_TAG="$FRAMEWORK_VERSION-cpu-py$CPU_PY_VERSION-$build_id"
 
-      - docker build -f $build_dir/$cpu_dockerfile --build-arg py_version=$CPU_PY_VERSION -t $PREPROD_IMAGE:$CPU_TAG .
+      - docker build -f $build_dir/$cpu_dockerfile --build-arg py_version=$CPU_PY_VERSION --build-arg framework_support_installable=$tar_name -t $PREPROD_IMAGE:$CPU_TAG .
 
       # build gpu image
       - gpu_dockerfile="Dockerfile.gpu"
       - GPU_TAG="$FRAMEWORK_VERSION-gpu-py$GPU_PY_VERSION-$build_id"
 
-      - docker build -f $build_dir/$gpu_dockerfile --build-arg py_version=$GPU_PY_VERSION -t $PREPROD_IMAGE:$GPU_TAG .
+      - docker build -f $build_dir/$gpu_dockerfile --build-arg py_version=$GPU_PY_VERSION --build-arg framework_support_installable=$tar_name -t $PREPROD_IMAGE:$GPU_TAG .
 
       # push images to ecr
       - $(aws ecr get-login --registry-ids $ACCOUNT --no-include-email --region $AWS_DEFAULT_REGION)
