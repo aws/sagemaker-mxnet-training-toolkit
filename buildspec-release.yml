@@ -49,7 +49,7 @@ phases:
       # run gpu integration tests
       - printf "$SETUP_CMDS" > $SETUP_FILE
       - ecr_image="$ACCOUNT.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO"
-      - cmd="IGNORE_COVERAGE=- tox -e py36 -- test/integration/local --processor gpu --framework-version $FRAMEWORK_VERSION --region $AWS_DEFAULT_REGION --docker-base-name $ecr_image"
+      - cmd="IGNORE_COVERAGE=- tox -e py36 -- test/integration/local --processor gpu --framework-version $FRAMEWORK_FULL_VERSION --region $AWS_DEFAULT_REGION --docker-base-name $ecr_image"
       - remote-test --test-cmd "$cmd --py-version 3" --github-repo $GITHUB_REPO --branch master --setup-file $SETUP_FILE
       - remote-test --test-cmd "$cmd --py-version 2" --github-repo $GITHUB_REPO --branch master --skip-setup
 
