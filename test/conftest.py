@@ -20,6 +20,8 @@ import pytest
 from sagemaker import LocalSession, Session
 from sagemaker.mxnet import MXNet
 
+from test.integration import NO_P2_REGIONS
+
 logger = logging.getLogger(__name__)
 logging.getLogger('boto').setLevel(logging.INFO)
 logging.getLogger('botocore').setLevel(logging.INFO)
@@ -109,3 +111,9 @@ def sagemaker_local_session(region):
 @pytest.fixture(scope='session')
 def local_instance_type(processor):
     return 'local' if processor == 'cpu' else 'local_gpu'
+
+
+@pytest.fixture(autouse=True)
+def skip_gpu_instance_restricted_regions(region, instance_type):
+    if region in NO_P2_REGIONS and instance_type.startswith('ml.p2'):
+        pytest.skip('Skipping GPU test in region {} to avoid insufficient capacity'.format(region))
