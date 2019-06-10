@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.0.2 (2019-06-10)
+
+### Bug fixes and other changes
+
+ * skip GPU test in regions with limited p2s
+
 ## v3.0.1 (2019-06-07)
 
 ### Bug fixes and other changes
