@@ -1,5 +1,14 @@
 # Changelog
 
+## v3.0.1 (2019-06-07)
+
+### Bug fixes and other changes
+
+ * use correct variable name in release buildspec
+ * adjust parallelism in buildspec-release.yml
+ * Add release buildspec
+ * Remove outdated information from README
+
 ## v3.0.0
 
 Compatible with MXNet version 1.4.0.
