@@ -3,8 +3,8 @@ dist
 **/__pycache__
 .pytest_cache
 **/*.pyc
-**/*.py~
 .tox/*
 .coverage
 test/resources/local_mode_lock
 .idea/*
+*~
