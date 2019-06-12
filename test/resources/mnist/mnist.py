@@ -1,15 +1,15 @@
-#  Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# Copyright 2018-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
-#  Licensed under the Apache License, Version 2.0 (the "License").
-#  You may not use this file except in compliance with the License.
-#  A copy of the License is located at
+# Licensed under the Apache License, Version 2.0 (the "License").
+# You may not use this file except in compliance with the License.
+# A copy of the License is located at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-#  or in the "license" file accompanying this file. This file is distributed
-#  on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-#  express or implied. See the License for the specific language governing
-#  permissions and limitations under the License.
+# or in the "license" file accompanying this file. This file is distributed
+# on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+# express or implied. See the License for the specific language governing
+# permissions and limitations under the License.
 import argparse
 import gzip
 import json
@@ -24,11 +24,11 @@ from sagemaker_mxnet_container.training_utils import scheduler_host
 
 
 def load_data(path):
-    with gzip.open(find_file(path, "labels.gz")) as flbl:
-        struct.unpack(">II", flbl.read(8))
+    with gzip.open(find_file(path, 'labels.gz')) as flbl:
+        struct.unpack('>II', flbl.read(8))
         labels = np.fromstring(flbl.read(), dtype=np.int8)
-    with gzip.open(find_file(path, "images.gz")) as fimg:
-        _, _, rows, cols = struct.unpack(">IIII", fimg.read(16))
+    with gzip.open(find_file(path, 'images.gz')) as fimg:
+        _, _, rows, cols = struct.unpack('>IIII', fimg.read(16))
         images = np.fromstring(fimg.read(), dtype=np.uint8).reshape(len(labels), rows, cols)
         images = images.reshape(images.shape[0], 1, 28, 28).astype(np.float32) / 255
     return labels, images
@@ -44,9 +44,9 @@ def build_graph():
     data = mx.sym.var('data')
     data = mx.sym.flatten(data=data)
     fc1 = mx.sym.FullyConnected(data=data, num_hidden=128)
-    act1 = mx.sym.Activation(data=fc1, act_type="relu")
+    act1 = mx.sym.Activation(data=fc1, act_type='relu')
     fc2 = mx.sym.FullyConnected(data=act1, num_hidden=64)
-    act2 = mx.sym.Activation(data=fc2, act_type="relu")
+    act2 = mx.sym.Activation(data=fc2, act_type='relu')
     fc3 = mx.sym.FullyConnected(data=act2, num_hidden=10)
     return mx.sym.SoftmaxOutput(data=fc3, name='softmax')
 
