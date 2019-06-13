@@ -14,9 +14,8 @@ from __future__ import absolute_import
 
 import os
 
-import pytest
-from sagemaker.mxnet.estimator import MXNet
 from sagemaker import utils
+from sagemaker.mxnet.estimator import MXNet
 
 from test.integration import RESOURCE_PATH
 from timeout import timeout
@@ -25,16 +24,7 @@ DATA_PATH = os.path.join(RESOURCE_PATH, 'mnist')
 SCRIPT_PATH = os.path.join(DATA_PATH, 'mnist.py')
 
 
-@pytest.mark.deployment_test
-def test_single_machine(sagemaker_session, ecr_image, instance_type):
-    _fit_estimator(1, instance_type, sagemaker_session, ecr_image)
-
-
-def test_distributed(sagemaker_session, ecr_image, instance_type):
-    _fit_estimator(2, instance_type, sagemaker_session, ecr_image)
-
-
-def _fit_estimator(instance_count, instance_type, sagemaker_session, image):
+def test_training(sagemaker_session, ecr_image, instance_type, instance_count):
     hyperparameters = {'sagemaker_parameter_server_enabled': True} if instance_count > 1 else {}
     hyperparameters['epochs'] = 1
 
@@ -43,7 +33,7 @@ def _fit_estimator(instance_count, instance_type, sagemaker_session, image):
                train_instance_count=instance_count,
                train_instance_type=instance_type,
                sagemaker_session=sagemaker_session,
-               image_name=image,
+               image_name=ecr_image,
                hyperparameters=hyperparameters)
 
     with timeout(minutes=15):
