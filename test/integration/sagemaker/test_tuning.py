@@ -13,7 +13,6 @@
 from __future__ import absolute_import
 
 import os
-import time
 
 from sagemaker import utils
 from sagemaker.mxnet.estimator import MXNet
@@ -44,7 +43,7 @@ def test_tuning(sagemaker_session, ecr_image, instance_type):
                                 objective_metric_name,
                                 hyperparameter_ranges,
                                 metric_definitions,
-                                max_jobs=1,
+                                max_jobs=2,
                                 max_parallel_jobs=2)
 
     with timeout(minutes=20):
@@ -56,5 +55,4 @@ def test_tuning(sagemaker_session, ecr_image, instance_type):
 
         job_name = utils.unique_name_from_base('test-mxnet-image', max_length=32)
         tuner.fit({'train': train_input, 'test': test_input}, job_name=job_name)
-        time.sleep(15)
         tuner.wait()
