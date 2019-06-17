@@ -39,7 +39,7 @@ WORKDIR /
 
 # Docker container build should happen in a fresh environment with context for this build.
 # All the needed artifacts should be setup before docker build command.
-COPY sagemaker_mxnet_container-2.0.0.tar.gz /sagemaker_mxnet_container-2.0.0.tar.gz
+COPY sagemaker_mxnet_container-3.0.0.tar.gz /sagemaker_mxnet_container-3.0.0.tar.gz
 
 RUN pip3 install --no-cache --upgrade \
         mxnet-mkl==$MX_VERSION \
@@ -52,8 +52,8 @@ RUN pip3 install --no-cache --upgrade \
         requests==2.21.0 \
         scikit-learn==0.20.3 \
         scipy==1.2.1 \
-        /sagemaker_mxnet_container-2.0.0.tar.gz && \
-    rm /sagemaker_mxnet_container-2.0.0.tar.gz
+        /sagemaker_mxnet_container-3.0.0.tar.gz && \
+    rm /sagemaker_mxnet_container-3.0.0.tar.gz
 
 # "channels first" is recommended for keras-mxnet
 # https://github.com/awslabs/keras-apache-mxnet/blob/master/docs/mxnet_backend/performance_guide.md#channels-first-image-data-format-for-cnn

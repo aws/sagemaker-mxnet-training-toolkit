@@ -1,5 +1,5 @@
 # Note: We do not need install nccl or cudnn, which were already installed in runtime container.
-FROM nvidia/cuda:9.2-cudnn7-runtime-ubuntu16.04
+FROM nvidia/cuda:10.0-cudnn7-runtime-ubuntu16.04
 
 LABEL maintainer="Amazon AI"
 
@@ -16,12 +16,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends software-proper
     apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
         ca-certificates \
-        cuda-command-line-tools-9-2 \
-        cuda-cublas-9-2 \
-        cuda-cufft-9-2 \
-        cuda-curand-9-2 \
-        cuda-cusolver-9-2 \
-        cuda-cusparse-9-2 \
+        cuda-command-line-tools-10-0 \
+        cuda-cublas-10-0 \
+        cuda-cufft-10-0 \
+        cuda-curand-10-0 \
+        cuda-cusolver-10-0 \
+        cuda-cusparse-10-0 \
         curl \
         git \
         libatlas-base-dev \
@@ -49,10 +49,10 @@ WORKDIR /
 
 # Docker container build should happen in a fresh environment with context for this build.
 # All the needed artifacts should be setup before docker build command.
-COPY sagemaker_mxnet_container-2.0.0.tar.gz /sagemaker_mxnet_container-2.0.0.tar.gz
+COPY sagemaker_mxnet_container-3.0.0.tar.gz /sagemaker_mxnet_container-3.0.0.tar.gz
 
 RUN pip install --no-cache --upgrade \
-        mxnet-cu92mkl==$MX_VERSION \
+        mxnet-cu100mkl==$MX_VERSION \
         keras-mxnet==2.2.4.1 \
         h5py==2.9.0 \
         numpy==1.14.5 \
@@ -62,8 +62,8 @@ RUN pip install --no-cache --upgrade \
         requests==2.21.0 \
         scikit-learn==0.20.3 \
         scipy==1.2.1 \
-        /sagemaker_mxnet_container-2.0.0.tar.gz && \
-    rm /sagemaker_mxnet_container-2.0.0.tar.gz
+        /sagemaker_mxnet_container-3.0.0.tar.gz && \
+    rm /sagemaker_mxnet_container-3.0.0.tar.gz
 
 # "channels first" is recommended for keras-mxnet
 # https://github.com/awslabs/keras-apache-mxnet/blob/master/docs/mxnet_backend/performance_guide.md#channels-first-image-data-format-for-cnn
