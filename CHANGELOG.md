@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.0.4 (2019-06-19)
+
+### Bug fixes and other changes
+
+ * pin sagemaker in test dependencies
+
 ## v3.0.3 (2019-06-18)
 
 ### Bug fixes and other changes
