@@ -56,7 +56,7 @@ setup(
 
     # We don't declare our dependency on mxnet here because we build with
     # different packages for different variants (e.g. mxnet-mkl and mxnet-cu90).
-    install_requires=['sagemaker-containers>=2.2.5', 'retrying==1.3.3'],
+    install_requires=['sagemaker-containers==2.4.11', 'retrying==1.3.3'],
     extras_require={
         'test': ['tox', 'pluggy==0.11', 'flake8', 'pytest==4.5.0', 'pytest-cov', 'pytest-xdist',
                  'mock', 'sagemaker==1.28.1', 'docker-compose', 'boto3>=1.9.169']
