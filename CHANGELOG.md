@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.0.5 (2019-06-24)
+
+### Bug fixes and other changes
+
+ * Updating SageMaker Containers to the latest version
+
 ## v3.0.4 (2019-06-19)
 
 ### Bug fixes and other changes
