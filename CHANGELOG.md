@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.0.6 (2019-06-24)
+
+### Bug fixes and other changes
+
+ * remove JSON syntax error from buildspec-release.yml
+
 ## v3.0.5 (2019-06-24)
 
 ### Bug fixes and other changes
