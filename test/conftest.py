@@ -35,13 +35,28 @@ SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 def pytest_addoption(parser):
     parser.addoption('--docker-base-name', default='preprod-mxnet')
     parser.addoption('--region', default='us-west-2')
+    parser.addoption('--instance-count', default='1,2', choices=['1', '2', '1,2'])
     parser.addoption('--framework-version', default=MXNet.LATEST_VERSION)
-    parser.addoption('--py-version', default='3', choices=['2', '3'])
-    parser.addoption('--processor', default='cpu', choices=['gpu', 'cpu'])
+    parser.addoption('--py-version', default='3', choices=['2', '3', '2,3'])
+    parser.addoption('--processor', default='cpu', choices=['gpu', 'cpu', 'cpu,gpu'])
     parser.addoption('--aws-id', default=None)
     parser.addoption('--instance-type', default=None)
     # If not specified, will default to {framework-version}-{processor}-py{py-version}
     parser.addoption('--tag', default=None)
+
+
+def pytest_generate_tests(metafunc):
+    if 'instance_count' in metafunc.fixturenames:
+        ic_params = [int(x) for x in metafunc.config.getoption('--instance-count').split(',')]
+        metafunc.parametrize('instance_count', ic_params, scope='session')
+
+    if 'py_version' in metafunc.fixturenames:
+        py_version_params = ['py' + v for v in metafunc.config.getoption('--py-version').split(',')]
+        metafunc.parametrize('py_version', py_version_params, scope='session')
+
+    if 'processor' in metafunc.fixturenames:
+        processor_params = metafunc.config.getoption('--processor').split(',')
+        metafunc.parametrize('processor', processor_params, scope='session')
 
 
 @pytest.fixture(scope='session')
@@ -60,16 +75,6 @@ def framework_version(request):
 
 
 @pytest.fixture(scope='session')
-def py_version(request):
-    return int(request.config.getoption('--py-version'))
-
-
-@pytest.fixture(scope='session')
-def processor(request):
-    return request.config.getoption('--processor')
-
-
-@pytest.fixture(scope='session')
 def aws_id(request):
     return request.config.getoption('--aws-id')
 
@@ -77,7 +82,7 @@ def aws_id(request):
 @pytest.fixture(scope='session')
 def tag(request, framework_version, processor, py_version):
     provided_tag = request.config.getoption('--tag')
-    default_tag = '{}-{}-py{}'.format(framework_version, processor, py_version)
+    default_tag = '{}-{}-{}'.format(framework_version, processor, py_version)
     return provided_tag if provided_tag is not None else default_tag
 
 

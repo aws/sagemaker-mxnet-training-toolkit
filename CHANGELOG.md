@@ -1,5 +1,27 @@
 # Changelog
 
+## v3.0.5 (2019-06-24)
+
+### Bug fixes and other changes
+
+ * Updating SageMaker Containers to the latest version
+
+## v3.0.4 (2019-06-19)
+
+### Bug fixes and other changes
+
+ * pin sagemaker in test dependencies
+
+## v3.0.3 (2019-06-18)
+
+### Bug fixes and other changes
+
+ * fix local GPU test command in buildspec-release.yml
+ * explicitly set lower bound for botocore version
+ * parametrize Python version and processor type in integ tests
+ * add hyperparameter tuning integ test
+ * flesh out SageMaker training integ tests
+
 ## v3.0.2 (2019-06-10)
 
 ### Bug fixes and other changes
