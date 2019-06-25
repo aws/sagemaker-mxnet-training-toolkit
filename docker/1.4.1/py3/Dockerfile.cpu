@@ -39,7 +39,7 @@ WORKDIR /
 
 # Docker container build should happen in a fresh environment with context for this build.
 # All the needed artifacts should be setup before docker build command.
-COPY sagemaker_mxnet_container-3.0.0.tar.gz /sagemaker_mxnet_container-3.0.0.tar.gz
+COPY sagemaker_mxnet_container.tar.gz /sagemaker_mxnet_container-3.0.0.tar.gz
 
 RUN pip3 install --no-cache --upgrade \
         mxnet-mkl==$MX_VERSION \
