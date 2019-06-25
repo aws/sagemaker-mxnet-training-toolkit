@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    FRAMEWORK_FULL_VERSION: '1.4.0'
+    FRAMEWORK_FULL_VERSION: '1.4.1'
     FRAMEWORK_SHORT_VERSION: '1.4'
     AWS_DEFAULT_REGION: 'us-west-2'
     ECR_REPO: 'sagemaker-mxnet'
@@ -31,6 +31,7 @@ phases:
 
       # create pip archive (tar name will be something like sagemaker_mxnet_container-3.0.0.tar.gz)
       - python3 setup.py sdist
+      - cp $(ls dist/sagemaker_mxnet_container-*.tar.gz docker/$FRAMEWORK_FULL_VERSION/py3/sagemaker_mxnet_container.tar.gz)
 
       # build images
       - python3 scripts/build_all.py --version $FRAMEWORK_FULL_VERSION --account $ACCOUNT --repo $ECR_REPO
