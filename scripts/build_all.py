@@ -31,7 +31,7 @@ def _parse_args():
 
 
 def _build_image(build_dir, arch, prev_image_uri, py_version):
-    if py_version == 'py2':
+    if py_version == '2':
         ls_tar_cmd = 'ls {}'.format(os.path.join('dist', 'sagemaker_mxnet_container*.tar.gz'))
         tar_file = subprocess.check_output(ls_tar_cmd, shell=True).strip().decode('ascii')
         print('framework_support_installable: {}'.format(os.path.basename(tar_file)))
@@ -71,7 +71,7 @@ def _build_image(build_dir, arch, prev_image_uri, py_version):
 
 args = _parse_args()
 
-build_dir = os.path.join('docker', args.version, 'final')
+root_build_dir = os.path.join('docker', args.version)
 
 # Run docker-login so we can pull the cached image
 login_cmd = subprocess.check_output(
@@ -85,4 +85,5 @@ for arch in ['cpu', 'gpu']:
         dest = '{}:{}'.format(args.repo, tag)
         prev_image_uri = '{}.dkr.ecr.{}.amazonaws.com/{}'.format(args.account, args.region, dest)
 
-        _build_image(build_dir, arch, prev_image_uri, py_version)
+        build_dir = os.path.join(root_build_dir, 'py{}'.format(py_version))
+        _build_image(root_build_dir, arch, prev_image_uri, py_version)
