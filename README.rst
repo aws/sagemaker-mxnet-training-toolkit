@@ -56,39 +56,34 @@ To create the SageMaker MXNet Container Python package:
 
 Once you have those binaries, you can then build the image.
 
-The Dockerfiles expect one build argument: ``py_version``.
-This is the Python version (i.e. 2 or 3).
+If you are building images for Python 3 with MXNet 1.4.1, the Dockerfiles don't require any build arguments.
+You do need to copy the pip-installable binary from above to ``docker/1.4.1/py3``.
 
-The integration tests expect the Docker images to be tagged as ``preprod-mxnet:<tag>``, where ``<tag`` looks like <mxnet_version>-<processor>-<python_version> (e.g. 1.4.0-cpu-py3).
+If you are building images for Python 2 or Python 3 with MXNet 1.4.0 or lower, the Dockerfiles expect two build arguments:
 
-To build an image:
+- ``py_version``: the Python version (i.e. 2 or 3).
+- ``framework_support_installable``: the pip-installable binary created with the command above
+
+The integration tests expect the Docker images to be tagged as ``preprod-mxnet:<tag>``, where ``<tag>`` looks like <mxnet_version>-<processor>-<python_version> (e.g. 1.4.0-cpu-py3).
+
+Example commands for building images:
 
 ::
 
-    # All build instructions assume you're building from the root directory of this repository
+    # All build instructions assume you're starting from the root directory of this repository
 
-    # CPU
-    docker build -t preprod-mxnet:<tag> \
-                 --build-arg py_version=<python_version> \
-                 -f docker/<mxnet_version>/final/Dockerfile.cpu .
+    # MXNet 1.4.1, Python 3, CPU
+    $ cp dist/sagemaker-mxnet-container-*.tar.gz docker/1.4.1/py3/.
+    $ cd docker/1.4.1/py3/
+    $ docker build -t preprod-mxnet:1.4.1-cpu-py3 -f Dockerfile.cpu .
 
-    # GPU
-    docker build -t preprod-mxnet:<tag> \
-                 --build-arg py_version=<python_version> \
-                 -f docker/<mxnet_version>/final/Dockerfile.gpu .
+    # MXNet 1.4.1, Python 2, GPU
+    $ docker build -t preprod-mxnet:1.4.1-gpu-py2 \
+                   --build-arg py_version=2 \
+                   --build-arg framework_support_installable=dist/sagemaker-mxnet-container-3.0.0.tar.gz \
+                   -f docker/1.4.1/final/Dockerfile.gpu .
 
 Don't forget the period at the end of the command!
-
-::
-
-    # Example
-
-    # CPU
-    docker build -t preprod-mxnet:1.4.0-cpu-py3 --build-arg py_version=3 -f docker/1.4.0/final/Dockerfile.cpu .
-
-    # GPU
-    docker build -t preprod-mxnet:1.4.0-gpu-py3 --build-arg py_version=3 -f docker/1.4.0/final/Dockerfile.gpu .
-
 
 Running the tests
 -----------------
@@ -100,6 +95,8 @@ Running the tests requires installation of the SageMaker MXNet Container code an
     git clone https://github.com/aws/sagemaker-mxnet-container.git
     cd sagemaker-mxnet-container
     pip install -e .[test]
+
+Alternatively, instead of pip installing the dependencies yourself, you can use `tox <https://tox.readthedocs.io/en/latest>`__.
 
 Tests are defined in `test/ <https://github.com/aws/sagemaker-mxnet-containers/tree/master/test>`__ and include unit and integration tests.
 The integration tests include both running the Docker containers locally and running them on SageMaker.
@@ -114,7 +111,7 @@ To run unit tests:
 
 ::
 
-    pytest test/unit
+    tox test/unit
 
 Local Integration Tests
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -136,7 +133,7 @@ To run local integration tests:
 
 ::
 
-    pytest test/integration/local --docker-base-name <your_docker_image> \
+    tox -- test/integration/local --docker-base-name <your_docker_image> \
                                   --tag <your_docker_image_tag> \
                                   --py-version <2_or_3> \
                                   --framework-version <mxnet_version> \
@@ -145,7 +142,7 @@ To run local integration tests:
 ::
 
     # Example
-    pytest test/integration/local --docker-base-name preprod-mxnet \
+    tox -- test/integration/local --docker-base-name preprod-mxnet \
                                   --tag 1.4.0-cpu-py3 \
                                   --py-version 3 \
                                   --framework-version 1.4.0 \
@@ -155,6 +152,7 @@ SageMaker Integration Tests
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 SageMaker integration tests require your Docker image to be within an `Amazon ECR repository <https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_Console_Repositories.html>`__.
+They also require that you have the setup described under "Integration Tests" at https://github.com/aws/sagemaker-python-sdk#running-tests.
 
 SageMaker integration tests use the following pytest arguments:
 
@@ -171,7 +169,7 @@ To run SageMaker integration tests:
 
 ::
 
-    pytest test/integration/sagmaker --aws-id <your_aws_id> \
+    tox -- test/integration/sagmaker --aws-id <your_aws_id> \
                                      --docker-base-name <your_docker_image> \
                                      --instance-type <amazon_sagemaker_instance_type> \
                                      --tag <your_docker_image_tag> \
@@ -179,7 +177,7 @@ To run SageMaker integration tests:
 ::
 
     # Example
-    pytest test/integration/sagemaker --aws-id 12345678910 \
+    tox -- test/integration/sagemaker --aws-id 12345678910 \
                                       --docker-base-name preprod-mxnet \
                                       --instance-type ml.m4.xlarge \
                                       --tag 1.4.0-cpu-py3

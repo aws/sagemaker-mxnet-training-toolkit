@@ -8,3 +8,4 @@ dist
 test/resources/local_mode_lock
 .idea/*
 *~
+*.DS_Store

@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    FRAMEWORK_VERSION: '1.4.0'
+    FRAMEWORK_VERSION: '1.4.1'
     CPU_PY_VERSION: '2'
     CPU_INSTANCE_TYPE: 'ml.c4.xlarge'
     GPU_PY_VERSION: '3'
@@ -34,21 +34,25 @@ phases:
       # tar_name will be something like: sagemaker_mxnet_container-3.0.0.tar.gz
       - python3 setup.py sdist
       - tar_name=$(ls dist/sagemaker_mxnet_container*.tar.gz)
+      - cp $tar_name docker/$FRAMEWORK_VERSION/py3/sagemaker_mxnet_container.tar.gz
 
-      - build_dir="docker/$FRAMEWORK_VERSION/final"
+      - build_dir="docker/$FRAMEWORK_VERSION"
       - build_id="$(echo $CODEBUILD_BUILD_ID | sed -e 's/:/-/g')"
 
       # build cpu image
       - cpu_dockerfile="Dockerfile.cpu"
       - CPU_TAG="$FRAMEWORK_VERSION-cpu-py$CPU_PY_VERSION-$build_id"
 
-      - docker build -f $build_dir/$cpu_dockerfile --build-arg py_version=$CPU_PY_VERSION --build-arg framework_support_installable=$tar_name -t $PREPROD_IMAGE:$CPU_TAG .
+      - docker build -f $build_dir/py$CPU_PY_VERSION/$cpu_dockerfile --build-arg framework_support_installable=$tar_name -t $PREPROD_IMAGE:$CPU_TAG .
 
       # build gpu image
       - gpu_dockerfile="Dockerfile.gpu"
       - GPU_TAG="$FRAMEWORK_VERSION-gpu-py$GPU_PY_VERSION-$build_id"
 
-      - docker build -f $build_dir/$gpu_dockerfile --build-arg py_version=$GPU_PY_VERSION --build-arg framework_support_installable=$tar_name -t $PREPROD_IMAGE:$GPU_TAG .
+      - prev_dir=$(pwd)
+      - cd "$build_dir/py$GPU_PY_VERSION"
+      - docker build -f $gpu_dockerfile -t $PREPROD_IMAGE:$GPU_TAG .
+      - cd $prev_dir
 
       # push images to ecr
       - $(aws ecr get-login --registry-ids $ACCOUNT --no-include-email --region $AWS_DEFAULT_REGION)
