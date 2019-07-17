@@ -1,5 +1,16 @@
 # Changelog
 
+## v3.1.0 (2019-07-17)
+
+### Features
+
+ * add MXNet 1.4.1 Dockerfiles
+
+### Bug fixes and other changes
+
+ * fix build directory in scripts/build_all.py
+ * fix copy command in buildspec-release.yml
+
 ## v3.0.6 (2019-06-24)
 
 ### Bug fixes and other changes
