@@ -86,4 +86,4 @@ for arch in ['cpu', 'gpu']:
         prev_image_uri = '{}.dkr.ecr.{}.amazonaws.com/{}'.format(args.account, args.region, dest)
 
         build_dir = os.path.join(root_build_dir, 'py{}'.format(py_version))
-        _build_image(root_build_dir, arch, prev_image_uri, py_version)
+        _build_image(build_dir, arch, prev_image_uri, py_version)
