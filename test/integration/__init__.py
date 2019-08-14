@@ -17,7 +17,16 @@ import os
 RESOURCE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'resources'))
 
 # these regions have some p2 instances, but not enough for automated testing
-NO_P2_REGIONS = ['ca-central-1', 'eu-central-1', 'eu-west-2', 'us-west-1']
+NO_P2_REGIONS = [
+    'ca-central-1',
+    'eu-central-1',
+    'eu-west-2',
+    'us-west-1',
+    'eu-west-3',
+    'eu-north-1',
+    'sa-east-1',
+    'ap-east-1'
+]
 
 MODEL_SUCCESS_FILES = {
     'output': ['success'],
