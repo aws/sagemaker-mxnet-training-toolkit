@@ -1,5 +1,13 @@
 # Changelog
 
+## v3.1.1 (2019-08-16)
+
+### Bug fixes and other changes
+
+ * add flake8 in buildspec.yml and fix flake8.
+ * fix placeholder name cpu-instance-type in buildspec-release.yml
+ * Add eu-west-3, eu-north-1, sa-east-1 and ap-east-1 to the no-p2 regions.
+
 ## v3.1.0 (2019-07-17)
 
 ### Features
