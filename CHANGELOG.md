@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.1.2 (2019-08-17)
+
+### Bug fixes and other changes
+
+ * split cpu and gpu test commands.
+
 ## v3.1.1 (2019-08-16)
 
 ### Bug fixes and other changes
