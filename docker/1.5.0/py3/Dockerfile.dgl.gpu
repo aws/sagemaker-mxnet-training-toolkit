@@ -62,8 +62,7 @@ WORKDIR /
 COPY sagemaker_mxnet_container.tar.gz /sagemaker_mxnet_container-3.0.0.tar.gz
 
 RUN pip install --no-cache --upgrade \
-        dgl \
-        mxnet \
+        dgl==0.3.1 \
         mxnet-cu100mkl==$MX_VERSION \
         keras-mxnet==2.2.4.1 \
         h5py==2.9.0 \
