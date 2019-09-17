@@ -85,4 +85,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 ENV SAGEMAKER_TRAINING_MODULE sagemaker_mxnet_container.training:main
 
+RUN pip install nose
+
+COPY cpu_dgl_0_3_1_test.sh /cpu_dgl_0_3_1_test.sh
+COPY cpu_dgl_exampletest.sh /cpu_dgl_exampletest.sh
+COPY cpu_dgl_unitest.sh /cpu_dgl_unitest.s
+
 CMD ["/bin/bash"]

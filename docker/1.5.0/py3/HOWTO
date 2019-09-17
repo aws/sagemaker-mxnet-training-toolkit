@@ -1,0 +1,5 @@
+Run GPU Test:
+sudo nvidia-docker run -it dgl-gpu:0.3.1 /gpu_dgl_0_3_1_test.sh
+
+Run CPU Test:
+sudo nvidia-docker run -it dgl-cpu:0.3.1 /cpu_dgl_0_3_1_test.sh
