@@ -25,7 +25,8 @@ NO_P2_REGIONS = [
     'eu-west-3',
     'eu-north-1',
     'sa-east-1',
-    'ap-east-1'
+    'ap-east-1',
+    'me-south-1'
 ]
 
 MODEL_SUCCESS_FILES = {
