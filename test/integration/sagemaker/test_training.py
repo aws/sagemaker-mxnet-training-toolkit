@@ -23,6 +23,8 @@ from timeout import timeout
 DATA_PATH = os.path.join(RESOURCE_PATH, 'mnist')
 SCRIPT_PATH = os.path.join(DATA_PATH, 'mnist.py')
 
+DGL_DATA_PATH = os.path.join(RESOURCE_PATH, 'dgl-gcn')
+DGL_SCRIPT_PATH = os.path.join(DATA_PATH, 'gcn.py')
 
 def test_training(sagemaker_session, ecr_image, instance_type, instance_count):
     hyperparameters = {'sagemaker_parameter_server_enabled': True} if instance_count > 1 else {}
@@ -45,3 +47,14 @@ def test_training(sagemaker_session, ecr_image, instance_type, instance_count):
 
         job_name = utils.unique_name_from_base('test-mxnet-image')
         mx.fit({'train': train_input, 'test': test_input}, job_name=job_name)
+
+    dgl = MXNet(entry_point=DGL_SCRIPT_PATH,
+               role='SageMakerRole',
+               train_instance_count=1,
+               train_instance_type=instance_type,
+               sagemaker_session=sagemaker_session,
+               image_name=ecr_image)
+
+    with timeout(minutes=15):
+        job_name = utils.unique_name_from_base('test-mxnet-dgl-image')
+        dgl.fit(job_name=job_name)
