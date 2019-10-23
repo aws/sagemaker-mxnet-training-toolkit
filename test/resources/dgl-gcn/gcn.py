@@ -153,7 +153,7 @@ Arguments = collections.namedtuple('Args', ['dataset',
                                             'n_layers',
                                             'weight_decay',
                                             'self_loop'])
-args = Arguments('cora', 0.5, 0, 1e-2, 200, 16, 1, 5e-4, True)
+args = Arguments('cora', 0.5, 0, 1e-2, 200, 16, 1, 5e-4, False)
 print(args)
 
 main(args)

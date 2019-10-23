@@ -62,11 +62,11 @@ WORKDIR /
 COPY sagemaker_mxnet_container.tar.gz /sagemaker_mxnet_container-3.0.0.tar.gz
 
 RUN pip install --no-cache --upgrade \
-        dgl-cu100==0.3.1 \
+        dgl-cu100==0.4.0 \
         mxnet-cu100mkl==$MX_VERSION \
         keras-mxnet==2.2.4.1 \
         h5py==2.9.0 \
-        numpy==1.14.5 \
+        numpy==1.16.0 \
         onnx==1.4.1 \
         pandas==0.24.1 \
         Pillow==5.4.1 \
@@ -94,11 +94,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     LC_ALL=C.UTF-8
 
 ENV SAGEMAKER_TRAINING_MODULE sagemaker_mxnet_container.training:main
+ENV DGLBACKEND mxnet
 
 RUN pip install nose
-
-COPY gpu_dgl_0_3_1_test.sh /gpu_dgl_0_3_1_test.sh
-COPY gpu_dgl_exampletest.sh /gpu_dgl_exampletest.sh
-COPY gpu_dgl_unitest.sh /gpu_dgl_unitest.sh
 
 CMD ["/bin/bash"]
