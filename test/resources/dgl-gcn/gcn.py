@@ -9,6 +9,8 @@ References:
 """
 import mxnet as mx
 from mxnet import gluon
+import os
+import argparse
 import dgl
 from dgl.nn.mxnet import GraphConv
 
@@ -144,16 +146,38 @@ def main(args):
     acc = evaluate(model, features, labels, test_mask)
     print("Test accuracy {:.2%}".format(acc))
 
-Arguments = collections.namedtuple('Args', ['dataset',
-                                            'dropout',
-                                            'gpu',
-                                            'lr',
-                                            'n_epochs',
-                                            'n_hidden',
-                                            'n_layers',
-                                            'weight_decay',
-                                            'self_loop'])
-args = Arguments('cora', 0.5, 0, 1e-2, 200, 16, 1, 5e-4, False)
-print(args)
+def parse_args():
+    parser = argparse.ArgumentParser(description='GCN')
+    register_data_args(parser)
+    parser.add_argument("--dropout", type=float, default=0.5,
+            help="dropout probability")
+    parser.add_argument("--gpu", type=int, default=-1,
+            help="gpu")
+    parser.add_argument("--lr", type=float, default=3e-2,
+            help="learning rate")
+    parser.add_argument("--n-epochs", type=int, default=200,
+            help="number of training epochs")
+    parser.add_argument("--n-hidden", type=int, default=16,
+            help="number of hidden gcn units")
+    parser.add_argument("--n-layers", type=int, default=1,
+            help="number of hidden gcn layers")
+    parser.add_argument("--weight-decay", type=float, default=5e-4,
+            help="Weight for L2 loss")
+    parser.add_argument("--self-loop", action='store_true',
+            help="graph self-loop (default=False)")
+    parser.set_defaults(self_loop=False)
 
-main(args)
+    return parser.parse_args()
+
+if __name__ == '__main__':
+    num_gpus = int(os.environ['SM_NUM_GPUS'])
+    if num_gpus > 0:
+        gpu = 0
+    else:
+        gpu = -1
+    args = parse_args()
+    args.gpu = gpu
+    args.dataset = 'cora'
+    print(args)
+
+    main(args)
