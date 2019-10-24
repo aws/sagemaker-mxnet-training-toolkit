@@ -1,4 +1,4 @@
-# Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# Copyright 2018-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the 'License'). You
 # may not use this file except in compliance with the License. A copy of
@@ -74,8 +74,12 @@ def train(env):
         _run_mxnet_process('server', env.hosts, ps_port, ps_verbose)
         os.environ.update(_env_vars_for_role('worker', env.hosts, ps_port, ps_verbose))
 
-    framework.modules.run_module(env.module_dir, env.to_cmd_args(),
-                                 env.to_env_vars(), env.module_name)
+    framework.modules.download_and_install(env.module_dir)
+    framework.entry_point.run(env.module_dir,
+                              env.user_entry_point,
+                              env.to_cmd_args(),
+                              env.to_env_vars(),
+                              runner=framework.runner.ProcessRunnerType)
 
 
 def main():
