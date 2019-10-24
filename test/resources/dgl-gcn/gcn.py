@@ -175,6 +175,7 @@ if __name__ == '__main__':
         gpu = 0
     else:
         gpu = -1
+
     args = parse_args()
     args.gpu = gpu
     args.dataset = 'cora'
