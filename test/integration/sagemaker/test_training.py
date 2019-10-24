@@ -13,6 +13,7 @@
 from __future__ import absolute_import
 
 import os
+import pytest
 
 from sagemaker import utils
 from sagemaker.mxnet.estimator import MXNet
@@ -26,6 +27,7 @@ SCRIPT_PATH = os.path.join(DATA_PATH, 'mnist.py')
 DGL_DATA_PATH = os.path.join(RESOURCE_PATH, 'dgl-gcn')
 DGL_SCRIPT_PATH = os.path.join(DATA_PATH, 'gcn.py')
 
+@pytest.mark.skip
 def test_training(sagemaker_session, ecr_image, instance_type, instance_count):
     hyperparameters = {'sagemaker_parameter_server_enabled': True} if instance_count > 1 else {}
     hyperparameters['epochs'] = 1

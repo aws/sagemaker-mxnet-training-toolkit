@@ -29,7 +29,7 @@ def test_training(sagemaker_session, ecr_image, instance_type, instance_count):
     #ecr_image="397262719838.dkr.ecr.us-east-2.amazonaws.com/dgl-gpu-dlc:mxnet-1.5.0_dgl-0.4-sagemaker"
     #ecr_image="397262719838.dkr.ecr.us-east-2.amazonaws.com/dgl-cpu-dlc:mxnet-1.5.0_dgl-0.4-sagemaker"
     dgl = MXNet(entry_point=DGL_SCRIPT_PATH,
-               role='SageMakerRole'
+               role='SageMakerRole',
                train_instance_count=1,
                train_instance_type=instance_type,
                sagemaker_session=sagemaker_session,
