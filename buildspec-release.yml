@@ -16,7 +16,7 @@ phases:
     commands:
       - start-dockerd
 
-      - ACCOUNT=$(aws sts get-caller-identity --query 'Account' --output text)
+      - ACCOUNT=$(aws --region $AWS_DEFAULT_REGION sts --endpoint-url https://sts.$AWS_DEFAULT_REGION.amazonaws.com get-caller-identity --query 'Account' --output text)
 
   build:
     commands:
