@@ -59,6 +59,6 @@ setup(
     install_requires=['sagemaker-containers==2.4.10.post0', 'retrying==1.3.3'],
     extras_require={
         'test': ['tox', 'pluggy==0.11', 'flake8', 'pytest==4.5.0', 'pytest-cov', 'pytest-xdist',
-                 'mock', 'sagemaker==1.28.1', 'docker-compose', 'boto3>=1.9.169']
+                 'mock', 'sagemaker==1.28.1', 'docker-compose', 'boto3>=1.10.1']
     },
 )
