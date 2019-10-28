@@ -1,5 +1,12 @@
 # Changelog
 
+## v3.1.4 (2019-10-28)
+
+### Bug fixes and other changes
+
+ * use SageMaker Containers' ProcessRunner for executing the entry point
+ * use regional endpoint for STS in builds
+
 ## v3.1.3 (2019-10-22)
 
 ### Bug fixes and other changes
