@@ -13,8 +13,8 @@
 from __future__ import absolute_import
 
 import os
-import pytest
 
+import pytest
 from sagemaker import utils
 from sagemaker.mxnet.estimator import MXNet
 
@@ -27,8 +27,10 @@ SCRIPT_PATH = os.path.join(DATA_PATH, 'mnist_gluon_basic_hook_demo.py')
 
 @pytest.mark.skip_py2_containers
 def test_training(sagemaker_session, ecr_image, instance_type, instance_count):
-    hyperparameters = {'random_seed': True, 'num_steps': 50, 'smdebug_path': '/opt/ml/output/tensors',
-                       'epochs' : 1}
+    hyperparameters = {'random_seed': True,
+                       'num_steps': 50,
+                       'smdebug_path': '/opt/ml/output/tensors',
+                       'epochs': 1}
 
     mx = MXNet(entry_point=SCRIPT_PATH,
                role='SageMakerRole',
