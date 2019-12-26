@@ -10,6 +10,8 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
+from __future__ import absolute_import
+
 import json
 import logging
 import re
@@ -21,7 +23,7 @@ def _validate_instance_id(instance_id):
     """
     Validate instance ID
     """
-    instance_id_regex = '^(i-\S{17})'
+    instance_id_regex = r'^(i-\S{17})'
     compiled_regex = re.compile(instance_id_regex)
     match = compiled_regex.match(instance_id)
 
