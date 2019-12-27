@@ -38,6 +38,7 @@ phases:
       - python3 setup.py sdist
       - tar_name=$(ls dist/sagemaker_mxnet_container*.tar.gz)
       - cp $tar_name docker/$FRAMEWORK_VERSION/py3/sagemaker_mxnet_container.tar.gz
+      - cp $tar_name docker/$FRAMEWORK_VERSION/py2/sagemaker_mxnet_container.tar.gz
 
       - build_dir="docker/$FRAMEWORK_VERSION"
       - build_id="$(echo $CODEBUILD_BUILD_ID | sed -e 's/:/-/g')"
