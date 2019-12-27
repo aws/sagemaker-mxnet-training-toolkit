@@ -38,6 +38,8 @@ phases:
       - python3 setup.py sdist
       - tar_name=$(ls dist/sagemaker_mxnet_container*.tar.gz)
       - cp $tar_name sagemaker_mxnet_container.tar.gz
+      - cp docker/$FRAMEWORK_VERSION/py3/dockerd-entrypoint.py dockerd-entrypoint.py
+      - cp src/sagemaker_mxnet_container/deep_learning_container.py deep_learning_container.py
 
       - build_dir="docker/$FRAMEWORK_VERSION"
       - build_id="$(echo $CODEBUILD_BUILD_ID | sed -e 's/:/-/g')"
