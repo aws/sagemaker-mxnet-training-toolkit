@@ -38,7 +38,6 @@ RUN pip --no-cache-dir install --upgrade \
 
 WORKDIR /
 
-# Docker container build should happen in a fresh environment with context for this build.
 # All the needed artifacts should be setup before docker build command.
 COPY sagemaker_mxnet_container.tar.gz /sagemaker_mxnet_container.tar.gz
 
