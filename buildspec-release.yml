@@ -2,8 +2,8 @@ version: 0.2
 
 env:
   variables:
-    FRAMEWORK_FULL_VERSION: '1.4.1'
-    FRAMEWORK_SHORT_VERSION: '1.4'
+    FRAMEWORK_FULL_VERSION: '1.6.0'
+    FRAMEWORK_SHORT_VERSION: '1.6'
     AWS_DEFAULT_REGION: 'us-west-2'
     ECR_REPO: 'sagemaker-mxnet'
     GITHUB_REPO: 'sagemaker-mxnet-container'

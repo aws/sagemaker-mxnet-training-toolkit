@@ -22,13 +22,15 @@ from test.integration import RESOURCE_PATH
 from timeout import timeout
 
 DATA_PATH = os.path.join(RESOURCE_PATH, 'mnist')
-SCRIPT_PATH = os.path.join(DATA_PATH, 'mnist.py')
+SCRIPT_PATH = os.path.join(DATA_PATH, 'mnist_gluon_basic_hook_demo.py')
 
 
-@pytest.mark.skip_test_in_region
+@pytest.mark.skip_py2_containers
 def test_training(sagemaker_session, ecr_image, instance_type, instance_count):
-    hyperparameters = {'sagemaker_parameter_server_enabled': True} if instance_count > 1 else {}
-    hyperparameters['epochs'] = 1
+    hyperparameters = {'random_seed': True,
+                       'num_steps': 50,
+                       'smdebug_path': '/opt/ml/output/tensors',
+                       'epochs': 1}
 
     mx = MXNet(entry_point=SCRIPT_PATH,
                role='SageMakerRole',
@@ -39,7 +41,7 @@ def test_training(sagemaker_session, ecr_image, instance_type, instance_count):
                hyperparameters=hyperparameters)
 
     with timeout(minutes=15):
-        prefix = 'mxnet_mnist/{}'.format(utils.sagemaker_timestamp())
+        prefix = 'mxnet_mnist_gluon_basic_hook_demo/{}'.format(utils.sagemaker_timestamp())
         train_input = mx.sagemaker_session.upload_data(path=os.path.join(DATA_PATH, 'train'),
                                                        key_prefix=prefix + '/train')
         test_input = mx.sagemaker_session.upload_data(path=os.path.join(DATA_PATH, 'test'),

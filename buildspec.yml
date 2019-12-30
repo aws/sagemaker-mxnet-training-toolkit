@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    FRAMEWORK_VERSION: '1.4.1'
+    FRAMEWORK_VERSION: '1.6.0'
     CPU_PY_VERSION: '2'
     CPU_INSTANCE_TYPE: 'ml.c4.xlarge'
     GPU_PY_VERSION: '3'
@@ -37,7 +37,9 @@ phases:
       # tar_name will be something like: sagemaker_mxnet_container-3.0.0.tar.gz
       - python3 setup.py sdist
       - tar_name=$(ls dist/sagemaker_mxnet_container*.tar.gz)
-      - cp $tar_name docker/$FRAMEWORK_VERSION/py3/sagemaker_mxnet_container.tar.gz
+      - cp $tar_name sagemaker_mxnet_container.tar.gz
+      - cp docker/$FRAMEWORK_VERSION/py3/dockerd-entrypoint.py dockerd-entrypoint.py
+      - cp src/sagemaker_mxnet_container/deep_learning_container.py deep_learning_container.py
 
       - build_dir="docker/$FRAMEWORK_VERSION"
       - build_id="$(echo $CODEBUILD_BUILD_ID | sed -e 's/:/-/g')"
@@ -52,10 +54,7 @@ phases:
       - gpu_dockerfile="Dockerfile.gpu"
       - GPU_TAG="$FRAMEWORK_VERSION-gpu-py$GPU_PY_VERSION-$build_id"
 
-      - prev_dir=$(pwd)
-      - cd "$build_dir/py$GPU_PY_VERSION"
-      - docker build -f $gpu_dockerfile -t $PREPROD_IMAGE:$GPU_TAG .
-      - cd $prev_dir
+      - docker build -f $build_dir/py$GPU_PY_VERSION/$gpu_dockerfile -t $PREPROD_IMAGE:$GPU_TAG .
 
       # push images to ecr
       - $(aws ecr get-login --registry-ids $ACCOUNT --no-include-email --region $AWS_DEFAULT_REGION)

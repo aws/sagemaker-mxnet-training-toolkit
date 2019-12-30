@@ -16,6 +16,7 @@ import json
 import logging
 import os
 import struct
+import sys
 
 import mxnet as mx
 import numpy as np
@@ -90,9 +91,21 @@ def train(batch_size, epochs, learning_rate, num_gpus, training_channel, testing
                   eval_metric='acc',
                   batch_end_callback=mx.callback.Speedometer(batch_size, 100),
                   num_epoch=epochs)
-
     if current_host == scheduler_host(hosts):
         save(model_dir, mlp_model)
+        assert_can_track_sagemaker_experiments()
+
+
+def assert_can_track_sagemaker_experiments():
+    in_sagemaker_training = 'TRAINING_JOB_ARN' in os.environ
+    in_python_three = sys.version_info[0] == 3
+
+    if in_sagemaker_training and in_python_three:
+        import smexperiments.tracker
+
+        with smexperiments.tracker.Tracker.load() as tracker:
+            tracker.log_parameter('param', 1)
+            tracker.log_metric('metric', 1.0)
 
 
 def save(model_dir, model):
