@@ -40,7 +40,6 @@ phases:
       - build_dir="docker/$FRAMEWORK_VERSION"
       - cp $tar_name $build_dir/sagemaker_mxnet_container.tar.gz
       - cp docker/artifacts/*.py $build_dir
-      - cp src/sagemaker_mxnet_container/deep_learning_container.py deep_learning_container.py
 
       - build_id="$(echo $CODEBUILD_BUILD_ID | sed -e 's/:/-/g')"
 
