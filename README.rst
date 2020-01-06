@@ -72,16 +72,11 @@ Example commands for building images:
 
     # All build instructions assume you're starting from the root directory of this repository
 
-    # MXNet 1.4.1, Python 3, CPU
-    $ cp dist/sagemaker-mxnet-container-*.tar.gz docker/1.4.1/py3/.
-    $ cd docker/1.4.1/py3/
-    $ docker build -t preprod-mxnet:1.4.1-cpu-py3 -f Dockerfile.cpu .
-
-    # MXNet 1.4.1, Python 2, GPU
-    $ docker build -t preprod-mxnet:1.4.1-gpu-py2 \
-                   --build-arg py_version=2 \
-                   --build-arg framework_support_installable=dist/sagemaker-mxnet-container-3.0.0.tar.gz \
-                   -f docker/1.4.1/final/Dockerfile.gpu .
+    # MXNet 1.6.0, Python 3, CPU
+    $ cp dist/sagemaker-mxnet-container-*.tar.gz docker/1.6.0/.
+    $ cp docker/artifacts/* docker/1.6.0/
+    $ cd docker/1.6.0/
+    $ docker build -t preprod-mxnet:1.6.0-cpu-py3 -f py3/Dockerfile.cpu .
 
 Don't forget the period at the end of the command!
 
@@ -145,7 +140,7 @@ To run local integration tests:
     tox -- test/integration/local --docker-base-name preprod-mxnet \
                                   --tag 1.4.0-cpu-py3 \
                                   --py-version 3 \
-                                  --framework-version 1.4.0 \
+                                  --framework-version 1.6.0 \
                                   --processor cpu
 
 SageMaker Integration Tests
@@ -180,7 +175,7 @@ To run SageMaker integration tests:
     tox -- test/integration/sagemaker --aws-id 12345678910 \
                                       --docker-base-name preprod-mxnet \
                                       --instance-type ml.m4.xlarge \
-                                      --tag 1.4.0-cpu-py3
+                                      --tag 1.6.0-cpu-py3
 
 Contributing
 ------------
