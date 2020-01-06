@@ -56,15 +56,15 @@ To create the SageMaker MXNet Container Python package:
 
 Once you have those binaries, you can then build the image.
 
-If you are building images for Python 3 with MXNet 1.4.1, the Dockerfiles don't require any build arguments.
-You do need to copy the pip-installable binary from above to ``docker/1.4.1/py3``.
+If you are building images for Python 3 with MXNet 1.6.0, the Dockerfiles don't require any build arguments.
+You do need to copy the pip-installable binary from above to ``docker/1.6.0/``.
 
 If you are building images for Python 2 or Python 3 with MXNet 1.4.0 or lower, the Dockerfiles expect two build arguments:
 
 - ``py_version``: the Python version (i.e. 2 or 3).
 - ``framework_support_installable``: the pip-installable binary created with the command above
 
-The integration tests expect the Docker images to be tagged as ``preprod-mxnet:<tag>``, where ``<tag>`` looks like <mxnet_version>-<processor>-<python_version> (e.g. 1.4.0-cpu-py3).
+The integration tests expect the Docker images to be tagged as ``preprod-mxnet:<tag>``, where ``<tag>`` looks like <mxnet_version>-<processor>-<python_version> (e.g. 1.6.0-cpu-py3).
 
 Example commands for building images:
 
@@ -138,7 +138,7 @@ To run local integration tests:
 
     # Example
     tox -- test/integration/local --docker-base-name preprod-mxnet \
-                                  --tag 1.4.0-cpu-py3 \
+                                  --tag 1.6.0-cpu-py3 \
                                   --py-version 3 \
                                   --framework-version 1.6.0 \
                                   --processor cpu
