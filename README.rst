@@ -56,15 +56,15 @@ To create the SageMaker MXNet Container Python package:
 
 Once you have those binaries, you can then build the image.
 
-If you are building images for Python 3 with MXNet 1.4.1, the Dockerfiles don't require any build arguments.
-You do need to copy the pip-installable binary from above to ``docker/1.4.1/py3``.
+If you are building images for Python 3 with MXNet 1.6.0, the Dockerfiles don't require any build arguments.
+You do need to copy the pip-installable binary from above to ``docker/1.6.0/``.
 
 If you are building images for Python 2 or Python 3 with MXNet 1.4.0 or lower, the Dockerfiles expect two build arguments:
 
 - ``py_version``: the Python version (i.e. 2 or 3).
 - ``framework_support_installable``: the pip-installable binary created with the command above
 
-The integration tests expect the Docker images to be tagged as ``preprod-mxnet:<tag>``, where ``<tag>`` looks like <mxnet_version>-<processor>-<python_version> (e.g. 1.4.0-cpu-py3).
+The integration tests expect the Docker images to be tagged as ``preprod-mxnet:<tag>``, where ``<tag>`` looks like <mxnet_version>-<processor>-<python_version> (e.g. 1.6.0-cpu-py3).
 
 Example commands for building images:
 
@@ -72,16 +72,11 @@ Example commands for building images:
 
     # All build instructions assume you're starting from the root directory of this repository
 
-    # MXNet 1.4.1, Python 3, CPU
-    $ cp dist/sagemaker-mxnet-container-*.tar.gz docker/1.4.1/py3/.
-    $ cd docker/1.4.1/py3/
-    $ docker build -t preprod-mxnet:1.4.1-cpu-py3 -f Dockerfile.cpu .
-
-    # MXNet 1.4.1, Python 2, GPU
-    $ docker build -t preprod-mxnet:1.4.1-gpu-py2 \
-                   --build-arg py_version=2 \
-                   --build-arg framework_support_installable=dist/sagemaker-mxnet-container-3.0.0.tar.gz \
-                   -f docker/1.4.1/final/Dockerfile.gpu .
+    # MXNet 1.6.0, Python 3, CPU
+    $ cp dist/sagemaker-mxnet-container-*.tar.gz docker/1.6.0/.
+    $ cp -r docker/artifacts/* docker/1.6.0/py3
+    $ cd docker/1.6.0/py3
+    $ docker build -t preprod-mxnet:1.6.0-cpu-py3 -f Dockerfile.cpu .
 
 Don't forget the period at the end of the command!
 
@@ -143,9 +138,9 @@ To run local integration tests:
 
     # Example
     tox -- test/integration/local --docker-base-name preprod-mxnet \
-                                  --tag 1.4.0-cpu-py3 \
+                                  --tag 1.6.0-cpu-py3 \
                                   --py-version 3 \
-                                  --framework-version 1.4.0 \
+                                  --framework-version 1.6.0 \
                                   --processor cpu
 
 SageMaker Integration Tests
@@ -180,7 +175,7 @@ To run SageMaker integration tests:
     tox -- test/integration/sagemaker --aws-id 12345678910 \
                                       --docker-base-name preprod-mxnet \
                                       --instance-type ml.m4.xlarge \
-                                      --tag 1.4.0-cpu-py3
+                                      --tag 1.6.0-cpu-py3
 
 Contributing
 ------------

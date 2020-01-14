@@ -1,4 +1,4 @@
-# Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# Copyright 2018-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the 'License'). You
 # may not use this file except in compliance with the License. A copy of
@@ -14,10 +14,9 @@ from __future__ import absolute_import
 
 import unittest
 
+from docker.artifacts import deep_learning_container as deep_learning_container_to_test
 import pytest
 import requests
-
-from sagemaker_mxnet_container import deep_learning_container as deep_learning_container_to_test
 
 
 @pytest.fixture(name='fixture_valid_instance_id')
