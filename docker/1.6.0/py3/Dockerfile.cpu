@@ -57,7 +57,7 @@ RUN wget https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSIO
  && rm -rf /var/lib/apt/lists/*
 
 RUN ${PIP} --no-cache-dir install --upgrade \
-    pip \
+    pip==19.3.1 \
     setuptools
 
 WORKDIR /

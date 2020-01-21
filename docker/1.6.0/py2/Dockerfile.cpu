@@ -33,7 +33,7 @@ RUN apt-get update \
  && ln -s $(which python) /usr/local/bin/python
 
 RUN pip --no-cache-dir install --upgrade \
-    pip \
+    pip==19.3.1 \
     setuptools
 
 WORKDIR /
