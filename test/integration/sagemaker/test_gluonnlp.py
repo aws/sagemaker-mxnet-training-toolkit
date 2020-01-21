@@ -19,7 +19,6 @@ from sagemaker import utils
 from sagemaker.mxnet.estimator import MXNet
 
 from test.integration import RESOURCE_PATH
-from timeout import timeout
 
 NLP_DATA_PATH = os.path.join(RESOURCE_PATH, 'nlp')
 NLP_SCRIPT_PATH = os.path.join(NLP_DATA_PATH, 'word_embedding.py')
@@ -33,8 +32,8 @@ def test_nlp_training(sagemaker_session, ecr_image, instance_type):
                 train_instance_count=1,
                 train_instance_type=instance_type,
                 sagemaker_session=sagemaker_session,
-                image_name=ecr_image)
+                image_name=ecr_image,
+                train_max_run=5 * 60)
 
-    with timeout(minutes=5):
-        job_name = utils.unique_name_from_base('test-nlp-image')
-        nlp.fit(job_name=job_name)
+    job_name = utils.unique_name_from_base('test-nlp-image')
+    nlp.fit(job_name=job_name)
