@@ -89,7 +89,7 @@ RUN ${PIP} install --no-cache --upgrade \
     PyYAML==5.1.2 \
     /sagemaker_mxnet_container.tar.gz \
     ${MX_URL} \
-    awscli==1.17.1 \
+    awscli \
  && rm /sagemaker_mxnet_container.tar.gz
 
 # "channels first" is recommended for keras-mxnet
