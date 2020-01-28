@@ -80,8 +80,9 @@ phases:
       - execute-command-if-has-matching-changes "$test_cmd" "test/" "src/*.py" "setup.py" "setup.cfg" "docker/*" "buildspec.yml"
 
       # run gpu integration tests
+      - printf \"$SETUP_CMDS\" > $SETUP_FILE
       - pytest_cmd="pytest test/integration/local --region $AWS_DEFAULT_REGION --docker-base-name $PREPROD_IMAGE --tag $GPU_TAG --framework-version $FRAMEWORK_VERSION --py-version $GPU_PY_VERSION --processor gpu"
-      - test_cmd="printf \"$SETUP_CMDS\" > $SETUP_FILE; remote-test --github-repo $GITHUB_REPO --test-cmd \"$pytest_cmd\" --setup-file $SETUP_FILE --pr-number \"$PR_NUM\""
+      - test_cmd="remote-test --github-repo $GITHUB_REPO --test-cmd \"$pytest_cmd\" --setup-file $SETUP_FILE --pr-number \"$PR_NUM\""
       - execute-command-if-has-matching-changes "$test_cmd" "test/" "src/*.py" "setup.py" "setup.cfg" "docker/*" "buildspec.yml"
 
       # run cpu sagemaker tests
