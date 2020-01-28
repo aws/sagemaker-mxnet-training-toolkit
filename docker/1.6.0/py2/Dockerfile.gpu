@@ -1,4 +1,4 @@
-# Note: We need to install nccl, cudnn, and cuda libraries since we are using base container.
+# Note: We need to install NCCL, cuDNN, and CUDA libraries since we are using base container.
 FROM nvidia/cuda:10.1-base-ubuntu16.04
 
 LABEL maintainer="Amazon AI"
@@ -47,16 +47,26 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/* \
  && ln -s $(which python) /usr/local/bin/python
 
-RUN wget https://developer.nvidia.com/compute/cuda/10.1/Prod/local_installers/cuda-repo-ubuntu1604-10-1-local-10.1.105-418.39_1.0-1_amd64.deb \
- && dpkg -i cuda-repo-ubuntu1604-10-1-local-10.1.105-418.39_1.0-1_amd64.deb \
- && apt-key add /var/cuda-repo-10-1-local-10.1.105-418.39/7fa2af80.pub \
- && apt-get update \
- && apt-get install -y libcublas10=10.2.1.243-1 \
- && apt-get install -y libcublas-dev=10.2.1.243-1 \
- && apt-get install -y cuda-curand-dev-10-1 \
- && apt-get install -y cuda-cusolver-dev-10-1 \
- && apt-get install -y cuda-nvrtc-dev-10-1 \
- && rm cuda-repo-ubuntu1604-10-1-local-10.1.105-418.39_1.0-1_amd64.deb
+# Install cuda-dev libraries as a dependency for Horovod with MXNet backend
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/libcublas10_10.2.1.243-1_amd64.deb \
+    https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/libcublas-dev_10.2.1.243-1_amd64.deb \
+    https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-curand-dev-10-1_10.1.243-1_amd64.deb \
+    https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-cusolver-dev-10-1_10.1.243-1_amd64.deb \
+    https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-nvrtc-10-1_10.1.243-1_amd64.deb \
+    https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-nvrtc-dev-10-1_10.1.243-1_amd64.deb \
+ && dpkg -i libcublas10_10.2.1.243-1_amd64.deb \
+    libcublas-dev_10.2.1.243-1_amd64.deb \
+    cuda-curand-dev-10-1_10.1.243-1_amd64.deb \
+    cuda-cusolver-dev-10-1_10.1.243-1_amd64.deb \
+    cuda-nvrtc-10-1_10.1.243-1_amd64.deb \
+    cuda-nvrtc-dev-10-1_10.1.243-1_amd64.deb \
+ && apt-get install -f \
+ && rm libcublas10_10.2.1.243-1_amd64.deb \
+    libcublas-dev_10.2.1.243-1_amd64.deb \
+    cuda-curand-dev-10-1_10.1.243-1_amd64.deb \
+    cuda-cusolver-dev-10-1_10.1.243-1_amd64.deb \
+    cuda-nvrtc-10-1_10.1.243-1_amd64.deb \
+    cuda-nvrtc-dev-10-1_10.1.243-1_amd64.deb
 
 ###########################################################################
 # Horovod dependencies
