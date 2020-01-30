@@ -135,6 +135,7 @@ RUN pip install --no-cache-dir --upgrade \
     urllib3==1.24 \
     python-dateutil==2.8.0 \
     mpi4py==3.0.2 \
+    gluoncv==0.6.0 \
     ${MX_URL} \
     /sagemaker_mxnet_container.tar.gz \
  && rm /sagemaker_mxnet_container.tar.gz
