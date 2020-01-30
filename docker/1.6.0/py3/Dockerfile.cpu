@@ -56,8 +56,11 @@ RUN wget https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSIO
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
+
+# MXNet requires pip 19.3.1 due to being backwards compatible
+# with python2
 RUN ${PIP} --no-cache-dir install --upgrade \
-    pip \
+    pip==19.3.1 \
     setuptools
 
 WORKDIR /
@@ -86,7 +89,7 @@ RUN ${PIP} install --no-cache --upgrade \
     PyYAML==5.1.2 \
     /sagemaker_mxnet_container.tar.gz \
     ${MX_URL} \
-    awscli==1.17.1 \
+    awscli \
  && rm /sagemaker_mxnet_container.tar.gz
 
 # "channels first" is recommended for keras-mxnet
