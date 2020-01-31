@@ -75,4 +75,5 @@ RUN ln -s /dev/null /dev/raw1394
 
 RUN curl -o /license.txt https://aws-dlc-licenses.s3.amazonaws.com/mxnet/license.txt
 
+ENTRYPOINT []
 CMD ["/bin/bash"]
