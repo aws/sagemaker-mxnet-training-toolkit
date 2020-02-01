@@ -18,7 +18,7 @@ ENV LANG=C.UTF-8 \
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-    # build-essential needed to pip install sagemaker_mxnet_container
+    # build-essential needed to pip install sagemaker_mxnet_training_toolkit
     build-essential \
     ca-certificates \
     cuda-command-line-tools-10-1 \
@@ -31,12 +31,12 @@ RUN apt-get update \
     libgomp1 \
     libopencv-dev \
     python \
-    # python-dev needed to pip install mxnet and sagemaker_mxnet_container
+    # python-dev needed to pip install mxnet and sagemaker_mxnet_training_toolkit
     python-dev \
     python-pip \
     vim \
     wget \
-    # zlib1g-dev needed to pip install sagemaker_mxnet_container
+    # zlib1g-dev needed to pip install sagemaker_mxnet_training_toolkit
     zlib1g-dev \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* \
@@ -49,7 +49,7 @@ RUN pip --no-cache-dir install --upgrade \
 WORKDIR /
 
 # All the needed artifacts should be setup before docker build command.
-COPY sagemaker_mxnet_container.tar.gz /sagemaker_mxnet_container.tar.gz
+COPY sagemaker_mxnet_training_toolkit.tar.gz /sagemaker_mxnet_training_toolkit.tar.gz
 
 # python-dateutil==2.8.0 to satisfy botocore
 RUN pip install --no-cache-dir --upgrade \
@@ -68,8 +68,8 @@ RUN pip install --no-cache-dir --upgrade \
     urllib3==1.24 \
     python-dateutil==2.8.0 \
     ${MX_URL} \
-    /sagemaker_mxnet_container.tar.gz \
- && rm /sagemaker_mxnet_container.tar.gz
+    /sagemaker_mxnet_training_toolkit.tar.gz \
+ && rm /sagemaker_mxnet_training_toolkit.tar.gz
 
 # "channels first" is recommended for keras-mxnet
 # https://github.com/awslabs/keras-apache-mxnet/blob/master/docs/mxnet_backend/performance_guide.md#channels-first-image-data-format-for-cnn
