@@ -74,7 +74,6 @@ def train(env):
         _run_mxnet_process('server', env.hosts, ps_port, ps_verbose)
         os.environ.update(_env_vars_for_role('worker', env.hosts, ps_port, ps_verbose))
 
-    framework.modules.download_and_install(env.module_dir)
     framework.entry_point.run(env.module_dir,
                               env.user_entry_point,
                               env.to_cmd_args(),
