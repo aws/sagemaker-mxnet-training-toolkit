@@ -19,14 +19,16 @@ from sagemaker import utils
 from sagemaker.mxnet.estimator import MXNet
 
 from test.integration import RESOURCE_PATH
+from timeout import timeout
 
 CV_DATA_PATH = os.path.join(RESOURCE_PATH, 'cv')
 CV_SCRIPT_PATH = os.path.join(CV_DATA_PATH, 'train_cifar.py')
 
+
 @pytest.mark.skip_py2_containers
 def test_cv_training(sagemaker_session, ecr_image, instance_type):
 
-    nlp = MXNet(entry_point=CV_SCRIPT_PATH,
+    cv = MXNet(entry_point=CV_SCRIPT_PATH,
                 role='SageMakerRole',
                 train_instance_count=1,
                 train_instance_type=instance_type,
@@ -35,4 +37,4 @@ def test_cv_training(sagemaker_session, ecr_image, instance_type):
 
     with timeout(minutes=5):
         job_name = utils.unique_name_from_base('test-cv-image')
-        nlp.fit(job_name=job_name)
+        cv.fit(job_name=job_name)
