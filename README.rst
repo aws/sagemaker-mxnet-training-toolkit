@@ -73,7 +73,7 @@ Example commands for building images:
     # All build instructions assume you're starting from the root directory of this repository
 
     # MXNet 1.6.0, Python 3, CPU
-    $ cp dist/sagemaker-mxnet-container-*.tar.gz docker/1.6.0/.
+    $ cp dist/sagemaker_mxnet_container*.tar.gz docker/1.6.0/sagemaker_mxnet_container.tar.gz
     $ cp -r docker/artifacts/* docker/1.6.0/py3
     $ cd docker/1.6.0/py3
     $ docker build -t preprod-mxnet:1.6.0-cpu-py3 -f Dockerfile.cpu .
