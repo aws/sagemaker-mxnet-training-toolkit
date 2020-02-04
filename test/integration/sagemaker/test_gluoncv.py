@@ -29,11 +29,11 @@ CV_SCRIPT_PATH = os.path.join(CV_DATA_PATH, 'train_cifar.py')
 def test_cv_training(sagemaker_session, ecr_image, instance_type):
 
     cv = MXNet(entry_point=CV_SCRIPT_PATH,
-                role='SageMakerRole',
-                train_instance_count=1,
-                train_instance_type=instance_type,
-                sagemaker_session=sagemaker_session,
-                image_name=ecr_image)
+               role='SageMakerRole',
+               train_instance_count=1,
+               train_instance_type=instance_type,
+               sagemaker_session=sagemaker_session,
+               image_name=ecr_image)
 
     with timeout(minutes=5):
         job_name = utils.unique_name_from_base('test-cv-image')
