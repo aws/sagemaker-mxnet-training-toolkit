@@ -97,6 +97,7 @@ RUN ${PIP} install --no-cache --upgrade \
     scikit-learn==0.20.4 \
     scipy==1.2.2 \
     dgl-cu101==0.4.1 \
+    git+git://github.com/dmlc/gluon-nlp.git@f19ace982075ea009af81f5e9f687cc2276f50ea \
     urllib3==1.24 \
     python-dateutil==2.8.0 \
     tqdm==4.39.0 \
