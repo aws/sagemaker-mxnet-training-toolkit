@@ -94,7 +94,7 @@ RUN ${PIP} --no-cache-dir install --upgrade \
 WORKDIR /
 
 # All the needed artifacts should be setup before docker build command.
-COPY sagemaker_mxnet_container.tar.gz /sagemaker_mxnet_container.tar.gz
+COPY sagemaker_mxnet_training.tar.gz /sagemaker_mxnet_training.tar.gz
 
 # install PyYAML==5.1.2 to avoid conflict with latest awscli
 # python-dateutil==2.8.0 to satisfy botocore associated with latest awscli
@@ -118,12 +118,12 @@ RUN ${PIP} install --no-cache --upgrade \
     PyYAML==5.1.2 \
     mpi4py==3.0.2 \
     gluoncv==0.6.0 \
-    /sagemaker_mxnet_container.tar.gz \
+    /sagemaker_mxnet_training.tar.gz \
     ${MX_URL} \
     awscli \
  && pip install --force-reinstall --no-cache-dir -U \
     horovod==0.19.0 \
- && rm /sagemaker_mxnet_container.tar.gz
+  && rm /sagemaker_mxnet_training.tar.gz
 
 # Allow OpenSSH to talk to containers without asking for confirmation
 RUN cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_config.new \
