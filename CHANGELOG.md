@@ -1,5 +1,42 @@
 # Changelog
 
+## v3.1.5 (2020-02-05)
+
+### Bug Fixes and Other Changes
+
+ * Merge branch 'release-test' of github.com:aws/sagemaker-mxnet-container into release-test
+ * Remove toolkit from the package name.
+ * Merge branch 'master' into release-test
+ * Add GluonNLP
+ * Update AWS-MXNet version to 1.6.0 - official release of 1.6
+ * Update build artifacts
+ * Misspelling of sagemaker_mxnet_container_*.tar.gz
+ * Downgrade pip version and unpin awscli
+ * Add GluonNLP
+ * Update AWS-MXNet version to 1.6.0 - official release of 1.6
+ * Add extra line at the end.
+ * Use sagemaker_mxnet_training_toolkit in dockerfiles in PR buildspec.
+ * Update build artifacts
+ * Misspelling of sagemaker_mxnet_container_*.tar.gz
+ * Downgrade pip version and unpin awscli
+ * Add automated release to PyPI.
+ * Revert "Add GluonNLP 0.9 pre-release (#116)"
+ * Add GluonNLP 0.9 pre-release
+ * update smdebug version to 0.5.0.post0
+ * update: Constrain package versions in 1.6.0 dockerfiles
+ * Build context changes based on new requirements
+ * Update README for 1.6.0 release
+ * update copyright year in license header
+ * Change build context for building MX Training Dockerfiles
+ * Release 1.6.0 Dockerfiles
+
+### Testing and Release Infrastructure
+
+ * properly fail build if has-matching-changes fails
+ * properly fail build if has-matching-changes fails
+ * properly fail build if has-matching-changes fails
+ * properly fail build if has-matching-changes fails
+
 ## v3.1.4 (2019-10-28)
 
 ### Bug fixes and other changes
