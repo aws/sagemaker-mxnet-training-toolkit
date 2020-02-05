@@ -14,14 +14,14 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-    # build-essential needed to pip install sagemaker_mxnet_training
+    # build-essential needed to pip install user's dependencies (e.g. requirements.txt)
     build-essential \
     ca-certificates \
     curl \
     git \
     libopencv-dev \
     python \
-    # python-dev needed to pip install mxnet and sagemaker_mxnet_training
+    # python-dev needed to pip install mxnet and user's dependencies (e.g. requirements.txt)
     python-dev \
     python-pip \
     vim \
@@ -40,9 +40,6 @@ RUN pip --no-cache-dir install --upgrade \
 
 WORKDIR /
 
-# All the needed artifacts should be setup before docker build command.
-COPY sagemaker_mxnet_training.tar.gz /sagemaker_mxnet_training.tar.gz
-
 # python-dateutil==2.8.0 to satisfy botocore
 RUN pip install --no-cache --upgrade \
     keras-mxnet==2.2.4.2 \
@@ -60,8 +57,7 @@ RUN pip install --no-cache --upgrade \
     urllib3==1.24 \
     python-dateutil==2.8.0 \
     ${MX_URL} \
-    /sagemaker_mxnet_training.tar.gz \
- && rm /sagemaker_mxnet_training.tar.gz
+    sagemaker-mxnet-training==3.1.6
 
 # "channels first" is recommended for keras-mxnet
 # https://github.com/awslabs/keras-apache-mxnet/blob/master/docs/mxnet_backend/performance_guide.md#channels-first-image-data-format-for-cnn
