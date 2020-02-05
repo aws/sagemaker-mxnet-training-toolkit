@@ -34,14 +34,14 @@ phases:
       - pytest test/unit
 
       # Create pip archive in dist/
-      # tar_name will be something like: sagemaker_mxnet_training_toolkit-3.0.0.tar.gz
+      # tar_name will be something like: sagemaker_mxnet_training-3.0.0.tar.gz
       - python3 setup.py sdist
-      - tar_name=$(ls dist/sagemaker_mxnet_training_toolkit*.tar.gz)
+      - tar_name=$(ls dist/sagemaker_mxnet_training*.tar.gz)
       - framework_dir="docker/$FRAMEWORK_VERSION"
       - cpu_dir=$framework_dir/py$CPU_PY_VERSION
       - gpu_dir=$framework_dir/py$GPU_PY_VERSION
-      - cp $tar_name $cpu_dir/sagemaker_mxnet_training_toolkit.tar.gz
-      - cp $tar_name $gpu_dir/sagemaker_mxnet_training_toolkit.tar.gz
+      - cp $tar_name $cpu_dir/sagemaker_mxnet_training.tar.gz
+      - cp $tar_name $gpu_dir/sagemaker_mxnet_training.tar.gz
       - cp -r docker/artifacts/* $cpu_dir
       - cp -r docker/artifacts/* $gpu_dir
 

@@ -31,7 +31,7 @@ def read(fname):
 
 
 setup(
-    name='sagemaker_mxnet_training_toolkit',
+    name='sagemaker_mxnet_training',
     version=read('VERSION').strip(),
     description='Open source library for creating MXNet containers to run on Amazon SageMaker.',
 
