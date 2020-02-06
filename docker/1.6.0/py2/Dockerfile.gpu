@@ -18,7 +18,7 @@ ENV LANG=C.UTF-8 \
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-    # build-essential needed to pip install sagemaker_mxnet_training
+    # build-essential needed to pip install user's dependencies (e.g. requirements.txt)
     build-essential \
     ca-certificates \
     libcudnn7=${CUDNN_VERSION} \
@@ -34,7 +34,7 @@ RUN apt-get update \
     libnccl-dev=${NCCL_VERSION} \
     libopencv-dev \
     python \
-    # python-dev needed to pip install mxnet and sagemaker_mxnet_training
+    # python-dev needed to pip install mxnet and user's dependencies (e.g. requirements.txt)
     python-dev \
     python-pip \
     openssh-client \
@@ -115,9 +115,6 @@ RUN pip --no-cache-dir install --upgrade \
 
 WORKDIR /
 
-# All the needed artifacts should be setup before docker build command.
-COPY sagemaker_mxnet_training.tar.gz /sagemaker_mxnet_training.tar.gz
-
 # python-dateutil==2.8.0 to satisfy botocore
 RUN pip install --no-cache-dir --upgrade \
     h5py==2.10.0 \
@@ -137,8 +134,7 @@ RUN pip install --no-cache-dir --upgrade \
     mpi4py==3.0.2 \
     gluoncv==0.6.0 \
     ${MX_URL} \
-    /sagemaker_mxnet_training.tar.gz \
- && rm /sagemaker_mxnet_training.tar.gz
+    sagemaker_mxnet_training==3.1.6
 
 # Install Horovod, temporarily using CUDA stubs
 RUN ldconfig /usr/local/cuda/targets/x86_64-linux/lib/stubs \

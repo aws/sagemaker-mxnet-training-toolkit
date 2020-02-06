@@ -133,9 +133,6 @@ RUN ${PIP} --no-cache-dir install --upgrade \
 
 WORKDIR /
 
-# All the needed artifacts should be setup before docker build command.
-COPY sagemaker_mxnet_training.tar.gz /sagemaker_mxnet_training.tar.gz
-
 # install PyYAML==5.1.2 to avoid conflict with latest awscli
 # python-dateutil==2.8.0 to satisfy botocore associated with latest awscli
 RUN ${PIP} install --no-cache --upgrade \
@@ -158,10 +155,9 @@ RUN ${PIP} install --no-cache --upgrade \
     PyYAML==5.1.2 \
     mpi4py==3.0.2 \
     gluoncv==0.6.0 \
-    /sagemaker_mxnet_training.tar.gz \
+    sagemaker_mxnet_training==3.1.6 \
     ${MX_URL} \
-    awscli \
- && rm /sagemaker_mxnet_training.tar.gz
+    awscli
 
 # Install Horovod, temporarily using CUDA stubs
 RUN ldconfig /usr/local/cuda-10.1/targets/x86_64-linux/lib/stubs \
