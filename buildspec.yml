@@ -33,6 +33,7 @@ phases:
       # run unit tests
       - pytest test/unit
 
+      - framework_dir="docker/$FRAMEWORK_VERSION"
       - cpu_dir=$framework_dir/py$CPU_PY_VERSION
       - gpu_dir=$framework_dir/py$GPU_PY_VERSION
       - cp -r docker/artifacts/* $cpu_dir
