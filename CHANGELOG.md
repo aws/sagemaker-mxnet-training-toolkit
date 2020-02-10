@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.1.7 (2020-02-10)
+
+### Bug Fixes and Other Changes
+
+ * Use sagemaker-mxnet-training package from pypi.
+
 ## v3.1.6 (2020-02-05)
 
 ### Bug Fixes and Other Changes
