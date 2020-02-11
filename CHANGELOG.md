@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.1.8 (2020-02-11)
+
+### Bug Fixes and Other Changes
+
+ * Use GluonNLP stable release tag
+
 ## v3.1.7 (2020-02-10)
 
 ### Bug Fixes and Other Changes
