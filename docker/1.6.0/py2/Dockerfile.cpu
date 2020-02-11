@@ -89,9 +89,10 @@ RUN pip install --no-cache --upgrade \
     mpi4py==3.0.2 \
     gluoncv==0.6.0 \
     ${MX_URL} \
-    sagemaker-mxnet-training==3.1.6 \
- && pip install --no-cache-dir -U \
-    horovod==0.19.0 
+    sagemaker-mxnet-training==3.1.6
+
+# Install Horovod
+RUN pip install --force-reinstall --no-cache-dir -U horovod==0.19.0
 
 # Allow OpenSSH to talk to containers without asking for confirmation
 RUN cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_config.new \

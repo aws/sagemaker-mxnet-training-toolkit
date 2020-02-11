@@ -117,9 +117,10 @@ RUN ${PIP} install --no-cache --upgrade \
     gluoncv==0.6.0 \
     sagemaker_mxnet_training==3.1.6 \
     ${MX_URL} \
-    awscli \
- && pip install --force-reinstall --no-cache-dir -U \
-    horovod==0.19.0 
+    awscli
+
+# Install Horovod
+RUN ${PIP} install --force-reinstall --no-cache-dir -U horovod==0.19.0
 
 # Allow OpenSSH to talk to containers without asking for confirmation
 RUN cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_config.new \
