@@ -155,7 +155,6 @@ RUN ${PIP} install --no-cache --upgrade \
     sagemaker-experiments==0.1.3 \
     PyYAML==5.1.2 \
     mpi4py==3.0.2 \
-    gluoncv==0.6.0 \
     sagemaker_mxnet_training==3.1.6 \
     ${MX_URL} \
     awscli
