@@ -1,5 +1,17 @@
 # Changelog
 
+## v3.1.8 (2020-02-11)
+
+### Bug Fixes and Other Changes
+
+ * Use GluonNLP stable release tag
+
+## v3.1.7 (2020-02-10)
+
+### Bug Fixes and Other Changes
+
+ * Use sagemaker-mxnet-training package from pypi.
+
 ## v3.1.6 (2020-02-05)
 
 ### Bug Fixes and Other Changes
