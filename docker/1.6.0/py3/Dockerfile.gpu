@@ -8,16 +8,16 @@ ARG PIP=pip3
 ARG PYTHON_VERSION=3.6.8
 ARG MX_URL=https://aws-mxnet-pypi.s3-us-west-2.amazonaws.com/1.6.0/aws_mxnet_cu101mkl-1.6.0-py2.py3-none-manylinux1_x86_64.whl
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib"
-ENV PYTHONIOENCODING=UTF-8
-ENV LANG=C.UTF-8
-ENV LC_ALL=C.UTF-8
-ENV SAGEMAKER_TRAINING_MODULE sagemaker_mxnet_container.training:main
-ENV DGLBACKEND=mxnet
-ENV CUDNN_VERSION=7.6.0.64-1+cuda10.1
-ENV NCCL_VERSION=2.4.8-1+cuda10.1
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib" \
+    PYTHONIOENCODING=UTF-8 \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    SAGEMAKER_TRAINING_MODULE=sagemaker_mxnet_container.training:main \
+    DGLBACKEND=mxnet \
+    CUDNN_VERSION=7.6.0.64-1+cuda10.1 \
+    NCCL_VERSION=2.4.8-1+cuda10.1
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
@@ -168,8 +168,8 @@ RUN ldconfig /usr/local/cuda-10.1/targets/x86_64-linux/lib/stubs \
 
 # Allow OpenSSH to talk to containers without asking for confirmation
 RUN cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_config.new \
-    && echo "    StrictHostKeyChecking no" >> /etc/ssh/ssh_config.new \
-    && mv /etc/ssh/ssh_config.new /etc/ssh/ssh_config
+ && echo "    StrictHostKeyChecking no" >> /etc/ssh/ssh_config.new \
+ && mv /etc/ssh/ssh_config.new /etc/ssh/ssh_config
 
 # "channels first" is recommended for keras-mxnet
 # https://github.com/awslabs/keras-apache-mxnet/blob/master/docs/mxnet_backend/performance_guide.md#channels-first-image-data-format-for-cnn
