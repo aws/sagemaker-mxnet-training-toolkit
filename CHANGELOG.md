@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.1.9 (2020-02-13)
+
+### Bug Fixes and Other Changes
+
+ * update: Horovod Support with MXNet backend on DLC for MXNet 1.6.0
+
 ## v3.1.8 (2020-02-11)
 
 ### Bug Fixes and Other Changes
