@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.1.10 (2020-02-17)
+
+### Bug Fixes and Other Changes
+
+ * update: Update license URL
+
 ## v3.1.9 (2020-02-13)
 
 ### Bug Fixes and Other Changes
