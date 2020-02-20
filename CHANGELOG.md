@@ -1,5 +1,12 @@
 # Changelog
 
+## v3.1.11 (2020-02-20)
+
+### Bug Fixes and Other Changes
+
+ * copy all tests to test-toolkit folder.
+ * Fix issue in installation of sagemaker-containers
+
 ## v3.1.10 (2020-02-17)
 
 ### Bug Fixes and Other Changes
