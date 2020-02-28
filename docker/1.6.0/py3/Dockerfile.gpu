@@ -157,6 +157,7 @@ RUN ${PIP} install --no-cache --upgrade \
     mpi4py==3.0.2 \
     sagemaker_mxnet_training==3.1.6 \
     ${MX_URL} \
+    sagemaker==1.50.17 \
     awscli
 
 # Install Horovod, temporarily using CUDA stubs
