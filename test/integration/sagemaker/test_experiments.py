@@ -16,6 +16,7 @@ import os
 import time
 from time import sleep
 
+import pytest
 from sagemaker import utils
 from sagemaker.mxnet.estimator import MXNet
 from smexperiments.experiment import Experiment
@@ -29,11 +30,12 @@ DATA_PATH = os.path.join(RESOURCE_PATH, "mnist")
 SCRIPT_PATH = os.path.join(DATA_PATH, "mnist_gluon_basic_hook_demo.py")
 
 
+@pytest.mark.skip_py2_containers
 def test_training(sagemaker_session, ecr_image, instance_type, instance_count):
 
     sm_client = sagemaker_session.sagemaker_client
 
-    experiment_name = f"mxnet-container-integ-test-{int(time.time())}"
+    experiment_name = "mxnet-container-integ-test-{}".format(int(time.time()))
 
     experiment = Experiment.create(
         experiment_name=experiment_name,
@@ -41,7 +43,7 @@ def test_training(sagemaker_session, ecr_image, instance_type, instance_count):
         sagemaker_boto_client=sm_client,
     )
 
-    trial_name = f"mxnet-container-integ-test-{int(time.time())}"
+    trial_name = "mxnet-container-integ-test-{}".format(int(time.time()))
     trial = Trial.create(
         experiment_name=experiment_name, trial_name=trial_name, sagemaker_boto_client=sm_client
     )
