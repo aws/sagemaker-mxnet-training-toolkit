@@ -27,8 +27,11 @@ DATA_PATH = os.path.join(RESOURCE_PATH, "mnist")
 SCRIPT_PATH = os.path.join(DATA_PATH, "mnist_gluon_basic_hook_demo.py")
 
 
-@pytest.mark.skip_py2_containers
-def test_training(sagemaker_session, ecr_image, instance_type, instance_count):
+def test_training(sagemaker_session, ecr_image, instance_type, instance_count, py_version):
+
+    if py_version is None or '2' in py_version:
+        pytest.skip('Skipping python2 {}'.format(py_version))
+        return
 
     from smexperiments.experiment import Experiment
     from smexperiments.trial import Trial
