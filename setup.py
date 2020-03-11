@@ -61,6 +61,7 @@ setup(
         'test': ['tox', 'pluggy==0.11', 'flake8', 'pytest==4.5.0', 'pytest-cov', 'pytest-xdist',
                  'mock', 'sagemaker==1.28.1', 'docker-compose', 'boto3==1.10.32', 'six==1.13.0',
                  'python-dateutil>=2.1,<2.8.1', 'botocore==1.13.32', 'awscli==1.16.278',
-                 'requests_mock==1.7.0', 'sagemaker-experiments==0.1.7']
+                 'requests_mock==1.7.0'],
+        ':python_version=="3.6"': ['sagemaker-experiments==0.1.7']
     },
 )
