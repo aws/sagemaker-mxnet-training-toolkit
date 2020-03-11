@@ -19,9 +19,6 @@ from time import sleep
 import pytest
 from sagemaker import utils
 from sagemaker.mxnet.estimator import MXNet
-from smexperiments.experiment import Experiment
-from smexperiments.trial import Trial
-from smexperiments.trial_component import TrialComponent
 
 from test.integration import RESOURCE_PATH
 from timeout import timeout
@@ -32,6 +29,10 @@ SCRIPT_PATH = os.path.join(DATA_PATH, "mnist_gluon_basic_hook_demo.py")
 
 @pytest.mark.skip_py2_containers
 def test_training(sagemaker_session, ecr_image, instance_type, instance_count):
+
+    from smexperiments.experiment import Experiment
+    from smexperiments.trial import Trial
+    from smexperiments.trial_component import TrialComponent
 
     sm_client = sagemaker_session.sagemaker_client
 
