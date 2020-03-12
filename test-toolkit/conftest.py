@@ -144,6 +144,11 @@ def instance_type(request, processor):
     return provided_instance_type if provided_instance_type is not None else default_instance_type
 
 
+@pytest.fixture(name='docker_registry', scope='session')
+def fixture_docker_registry(aws_id, region):
+    return '{}.dkr.ecr.{}.amazonaws.com'.format(aws_id, region) if aws_id else None
+
+
 @pytest.fixture(name='image_uri', scope='session')
 def fixture_image_uri(docker_registry, docker_base_name, tag):
     if docker_registry:
