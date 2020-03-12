@@ -1,5 +1,21 @@
 # Changelog
 
+## v3.1.13 (2020-03-12)
+
+### Bug Fixes and Other Changes
+
+ * install sm experiments on any python version 3.5 or above
+
+## v3.1.12 (2020-03-11)
+
+### Bug Fixes and Other Changes
+
+ * Update smdebug to 0.7.0
+ * move experiments import statements after python version check
+ * install experiments sdk only for python 3.6
+ * install SageMaker Python SDK into Python 3 images
+ * Upgrade to latest version of sagemaker-experiments
+
 ## v3.1.11 (2020-02-20)
 
 ### Bug Fixes and Other Changes
