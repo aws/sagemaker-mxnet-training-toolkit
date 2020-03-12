@@ -18,7 +18,6 @@ import os
 import boto3
 import pytest
 from sagemaker import LocalSession, Session
-from sagemaker.mxnet import MXNet
 
 from utils import image_utils
 
@@ -55,7 +54,7 @@ def pytest_addoption(parser):
     parser.addoption('--docker-base-name', default='preprod-mxnet')
     parser.addoption('--region', default='us-west-2')
     parser.addoption('--instance-count', default='1,2', choices=['1', '2', '1,2'])
-    parser.addoption('--framework-version', default=MXNet.LATEST_VERSION)
+    parser.addoption('--framework-version', default="1.6.0")
     parser.addoption('--py-version', default='3', choices=['2', '3', '2,3'])
     parser.addoption('--processor', default='cpu', choices=['gpu', 'cpu', 'cpu,gpu'])
     parser.addoption('--aws-id', default=None)
