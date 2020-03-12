@@ -1,0 +1,9 @@
+FROM mxnet/python:latest_cpu_py3
+
+COPY dist/sagemaker_mxnet_training-*.tar.gz /sagemaker_mxnet_training.tar.gz
+RUN pip install --no-cache-dir /sagemaker_mxnet_training.tar.gz && \
+    rm /sagemaker_mxnet_training.tar.gz
+
+ENV SAGEMAKER_TRAINING_MODULE=sagemaker_mxnet_container.training:main
+
+WORKDIR /
