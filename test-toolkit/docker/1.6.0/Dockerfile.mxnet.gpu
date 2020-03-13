@@ -1,5 +1,8 @@
 FROM nvidia/cuda:10.1-base-ubuntu18.04
 
+ENV SAGEMAKER_TRAINING_MODULE=sagemaker_mxnet_container.training:main \
+    CUDNN_VERSION=7.6.0.64-1+cuda10.1
+
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
     software-properties-common \
@@ -7,15 +10,17 @@ RUN apt-get update \
     ca-certificates \
     curl \
     git \
+    libcudnn7=${CUDNN_VERSION} \
     openssh-client \
     openssh-server \
+    python3-dev \
     vim \
     wget \
-    python3-dev \
-    && ln -s -f /usr/bin/python3 /usr/bin/python \
-    && ln -s /usr/local/bin/pip3 /usr/bin/pip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+RUN ln -s -f /usr/bin/python3 /usr/bin/python \
+    && ln -s /usr/local/bin/pip3 /usr/bin/pip
 
 # MXNet requires pip 19.3.1 due to being backwards compatible
 # with python2
@@ -28,7 +33,5 @@ RUN pip install --no-cache 'mxnet-cu101>=1.6<1.7'
 COPY dist/sagemaker_mxnet_training-*.tar.gz /sagemaker_mxnet_training.tar.gz
 RUN pip install --no-cache-dir /sagemaker_mxnet_training.tar.gz && \
     rm /sagemaker_mxnet_training.tar.gz
-
-ENV SAGEMAKER_TRAINING_MODULE=sagemaker_mxnet_container.training:main
 
 WORKDIR /
