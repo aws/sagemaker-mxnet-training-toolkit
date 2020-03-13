@@ -48,7 +48,7 @@ def pytest_addoption(parser):
     parser.addoption('--build-image', '-B', action='store_true')
     parser.addoption('--push-image', '-P', action='store_true')
     parser.addoption('--dockerfile-type', '-T',
-                     choices=['dlc.cpu', 'dlc.gpu', 'mxnet.cpu', 'mxnet.gpu'],
+                     choices=['dlc.cpu', 'dlc.gpu', 'mxnet.cpu'],
                      default='mxnet')
     parser.addoption('--dockerfile', '-D', default=None)
     parser.addoption('--docker-base-name', default='preprod-mxnet')
