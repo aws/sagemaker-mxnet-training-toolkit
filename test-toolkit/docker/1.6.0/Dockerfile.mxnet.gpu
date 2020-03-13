@@ -1,12 +1,19 @@
 FROM nvidia/cuda:10.1-base-ubuntu18.04
 
-ENV SAGEMAKER_TRAINING_MODULE=sagemaker_mxnet_container.training:main
+ENV SAGEMAKER_TRAINING_MODULE=sagemaker_mxnet_container.training:main \
+    CUDNN_VERSION=7.6.0.64-1+cuda10.1
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
     software-properties-common \
     build-essential \
     ca-certificates \
+    libcudnn7=${CUDNN_VERSION} \
+    cuda-command-line-tools-10-1 \
+    cuda-cufft-10-1 \
+    cuda-curand-10-1 \
+    cuda-cusolver-10-1 \
+    cuda-cusparse-10-1 \
     curl \
     git \
     openssh-client \
