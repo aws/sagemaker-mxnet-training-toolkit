@@ -18,20 +18,20 @@ from sagemaker import utils
 from sagemaker.mxnet.estimator import MXNet
 from sagemaker.tuner import ContinuousParameter, HyperparameterTuner
 
-from test.integration import RESOURCE_PATH
+from integration import RESOURCE_PATH
 from timeout import timeout
 
 DATA_PATH = os.path.join(RESOURCE_PATH, 'mnist')
 SCRIPT_PATH = os.path.join(DATA_PATH, 'mnist.py')
 
 
-def test_tuning(sagemaker_session, ecr_image, instance_type):
+def test_tuning(sagemaker_session, image_uri, instance_type):
     mx = MXNet(entry_point=SCRIPT_PATH,
                role='SageMakerRole',
                train_instance_count=1,
                train_instance_type=instance_type,
                sagemaker_session=sagemaker_session,
-               image_name=ecr_image,
+               image_name=image_uri,
                hyperparameters={'epochs': 1})
 
     hyperparameter_ranges = {'learning-rate': ContinuousParameter(0.01, 0.2)}
