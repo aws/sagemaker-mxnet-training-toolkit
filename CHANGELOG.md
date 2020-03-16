@@ -1,5 +1,17 @@
 # Changelog
 
+## v3.1.14 (2020-03-16)
+
+### Bug Fixes and Other Changes
+
+ * update smdebug
+ * update container build instructions with correct tar file name
+ * Switch to pypi gluonnlp package
+
+### Testing and Release Infrastructure
+
+ * refactor toolkit tests.
+
 ## v3.1.13 (2020-03-12)
 
 ### Bug Fixes and Other Changes
