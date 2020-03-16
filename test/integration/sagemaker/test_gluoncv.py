@@ -35,6 +35,6 @@ def test_cv_training(sagemaker_session, ecr_image, instance_type):
                sagemaker_session=sagemaker_session,
                image_name=ecr_image)
 
-    with timeout(minutes=5):
+    with timeout(minutes=10):
         job_name = utils.unique_name_from_base('test-cv-image')
         cv.fit(job_name=job_name)

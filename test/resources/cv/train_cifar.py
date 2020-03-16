@@ -202,8 +202,6 @@ def main():
         if save_period and save_dir:
             net.save_parameters('%s/cifar10-%s-%d.params'%(save_dir, model_name, epochs-1))
 
-
-
     if opt.mode == 'hybrid':
         net.hybridize()
     train(opt.num_epochs, context)
