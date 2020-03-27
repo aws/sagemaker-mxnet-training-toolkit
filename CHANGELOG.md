@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.1.15 (2020-03-23)
+
+### Bug Fixes and Other Changes
+
+ * upgrade sagemaker-containers to 2.8.2
+
 ## v3.1.14.post0 (2020-03-18)
 
 ### Testing and Release Infrastructure
