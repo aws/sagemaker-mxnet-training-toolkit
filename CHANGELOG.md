@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.1.16 (2020-03-30)
+
+### Bug Fixes and Other Changes
+
+ * use sagemaker_mxnet_training<4 in Dockerfiles instead of pinning the version
+
 ## v3.1.15 (2020-03-23)
 
 ### Bug Fixes and Other Changes
