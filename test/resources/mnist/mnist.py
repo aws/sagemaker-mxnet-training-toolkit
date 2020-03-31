@@ -15,6 +15,7 @@ import gzip
 import json
 import logging
 import os
+from packaging.version import Version
 import struct
 import sys
 
@@ -99,10 +100,9 @@ def train(batch_size, epochs, learning_rate, num_gpus, training_channel, testing
 def assert_can_track_sagemaker_experiments():
     in_sagemaker_training = 'TRAINING_JOB_ARN' in os.environ
     in_python_three = sys.version_info[0] == 3
-    mx_version = mxnet.__version__
-    minimum_version = ["1", "6"]
+    mx_version = Version(mx.__version__)
 
-    if mx_version.split(".")[:-1] >= minimum_version and in_sagemaker_training and in_python_three:
+    if mx_version >= Version("1.6.0") and in_sagemaker_training and in_python_three:
         import smexperiments.tracker
 
         with smexperiments.tracker.Tracker.load() as tracker:

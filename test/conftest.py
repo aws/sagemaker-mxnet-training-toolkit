@@ -16,6 +16,7 @@ import logging
 import os
 
 import boto3
+import botocore
 import pytest
 from sagemaker import LocalSession, Session
 from sagemaker.mxnet import MXNet
@@ -100,7 +101,10 @@ def docker_image(docker_base_name, tag):
 
 @pytest.fixture(scope='session')
 def ecr_image(aws_id, docker_base_name, tag, region):
-    return '{}.dkr.ecr.{}.amazonaws.com/{}:{}'.format(aws_id, region, docker_base_name, tag)
+    loader = botocore.loaders.create_loader()
+    endpoint_resolver = botocore.regions.EndpointResolver(loader.load_data("endpoints"))
+    endpoint_data = endpoint_resolver.construct_endpoint("ecr", region)
+    return '{}.dkr.{}/{}:{}'.format(aws_id, endpoint_data["hostname"], docker_base_name, tag)
 
 
 @pytest.fixture(scope='session')
