@@ -15,7 +15,7 @@ import gzip
 import json
 import logging
 import os
-from packaging.version import Version
+from pkg_resources._vendor.packaging.version import Version
 import struct
 import sys
 
