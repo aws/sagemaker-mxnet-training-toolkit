@@ -152,7 +152,7 @@ RUN ${PIP} install --no-cache --upgrade \
     urllib3==1.24 \
     python-dateutil==2.8.0 \
     tqdm==4.39.0 \
-    smdebug==0.7.1 \
+    smdebug==0.7.2 \
     sagemaker-experiments==0.1.7 \
     PyYAML==5.1.2 \
     mpi4py==3.0.2 \
