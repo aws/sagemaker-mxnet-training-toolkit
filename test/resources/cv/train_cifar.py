@@ -138,12 +138,14 @@ def main():
             ctx = [ctx]
         net.initialize(mx.init.Xavier(), ctx=ctx)
 
+        train_c = batch_size * 4
         train_data = gluon.data.DataLoader(
-            gluon.data.vision.CIFAR10(train=True).take(256).transform_first(transform_train),
+            gluon.data.vision.CIFAR10(train=True).take(train_c).transform_first(transform_train),
             batch_size=batch_size, shuffle=True, last_batch='discard', num_workers=num_workers)
 
+        val_c = batch_size * 2
         val_data = gluon.data.DataLoader(
-            gluon.data.vision.CIFAR10(train=False).take(64).transform_first(transform_test),
+            gluon.data.vision.CIFAR10(train=False).take(val_c).transform_first(transform_test),
             batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
         trainer = gluon.Trainer(net.collect_params(), optimizer,

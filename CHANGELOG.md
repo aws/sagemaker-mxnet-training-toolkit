@@ -1,5 +1,17 @@
 # Changelog
 
+## v3.1.18 (2020-04-02)
+
+### Bug Fixes and Other Changes
+
+ * upgrade pillow etc. to fix safety issues
+
+## v3.1.17 (2020-04-01)
+
+### Bug Fixes and Other Changes
+
+ * Add gluoncv
+
 ## v3.1.16 (2020-03-30)
 
 ### Bug Fixes and Other Changes
