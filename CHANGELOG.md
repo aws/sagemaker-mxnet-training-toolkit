@@ -1,5 +1,29 @@
 # Changelog
 
+## v3.1.19 (2020-04-06)
+
+### Bug Fixes and Other Changes
+
+ * fix for too many gpus
+
+## v3.1.18 (2020-04-02)
+
+### Bug Fixes and Other Changes
+
+ * upgrade pillow etc. to fix safety issues
+
+## v3.1.17 (2020-04-01)
+
+### Bug Fixes and Other Changes
+
+ * Add gluoncv
+
+## v3.1.16 (2020-03-30)
+
+### Bug Fixes and Other Changes
+
+ * use sagemaker_mxnet_training<4 in Dockerfiles instead of pinning the version
+
 ## v3.1.15 (2020-03-23)
 
 ### Bug Fixes and Other Changes
