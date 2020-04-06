@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.1.19 (2020-04-06)
+
+### Bug Fixes and Other Changes
+
+ * fix for too many gpus
+
 ## v3.1.18 (2020-04-02)
 
 ### Bug Fixes and Other Changes
