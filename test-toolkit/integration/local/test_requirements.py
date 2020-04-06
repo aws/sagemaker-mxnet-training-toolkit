@@ -23,7 +23,7 @@ SOURCE_PATH = os.path.join(RESOURCE_PATH, 'requirements')
 
 
 def test_requirements_file(
-        image_uri, sagemaker_local_session, local_instance_type, framework_version, tmpdir
+    image_uri, sagemaker_local_session, local_instance_type, framework_version, tmpdir
 ):
     mx = MXNet(
         entry_point='entry.py',
@@ -34,6 +34,7 @@ def test_requirements_file(
         image_name=image_uri,
         framework_version=framework_version,
         output_path='file://{}'.format(tmpdir),
+        sagemaker_session=sagemaker_local_session,
     )
 
     mx.fit()
