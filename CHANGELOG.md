@@ -1,5 +1,15 @@
 # Changelog
 
+## v3.1.20 (2020-04-07)
+
+### Bug Fixes and Other Changes
+
+ * update smdebug version
+
+### Testing and Release Infrastructure
+
+ * add requirements.txt integ test
+
 ## v3.1.19 (2020-04-06)
 
 ### Bug Fixes and Other Changes
