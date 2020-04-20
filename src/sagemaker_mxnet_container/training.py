@@ -18,7 +18,7 @@ import socket
 import subprocess
 
 from retrying import retry
-import sagemaker_containers.beta.framework as framework
+from sagemaker_training import entry_point, environment, runner
 
 from sagemaker_mxnet_container.training_utils import scheduler_host
 
@@ -74,13 +74,12 @@ def train(env):
         _run_mxnet_process('server', env.hosts, ps_port, ps_verbose)
         os.environ.update(_env_vars_for_role('worker', env.hosts, ps_port, ps_verbose))
 
-    framework.modules.download_and_install(env.module_dir)
-    framework.entry_point.run(env.module_dir,
-                              env.user_entry_point,
-                              env.to_cmd_args(),
-                              env.to_env_vars(),
-                              runner=framework.runner.ProcessRunnerType)
+    entry_point.run(uri=env.module_dir,
+                    user_entry_point=env.user_entry_point,
+                    args=env.to_cmd_args(),
+                    env_vars=env.to_env_vars(),
+                    runner_type=runner.ProcessRunnerType)
 
 
 def main():
-    train(framework.training_env())
+    train(environment.Environment())
