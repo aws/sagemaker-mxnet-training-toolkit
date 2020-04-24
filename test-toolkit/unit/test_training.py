@@ -14,7 +14,7 @@ from __future__ import absolute_import
 
 from mock import call, MagicMock, patch
 import pytest
-import sagemaker_containers.beta.framework as framework
+from sagemaker_training import runner
 
 from sagemaker_mxnet_container import training
 
@@ -71,9 +71,8 @@ def distributed_training_env():
 @patch('subprocess.Popen')
 @patch('sagemaker_mxnet_container.training._host_lookup')
 @patch('sagemaker_mxnet_container.training._verify_hosts')
-@patch('sagemaker_containers.beta.framework.modules.download_and_install')
-@patch('sagemaker_containers.beta.framework.entry_point.run')
-def test_train_for_distributed_scheduler(run_entry_point, download_and_install, verify_hosts,
+@patch('sagemaker_training.entry_point.run')
+def test_train_for_distributed_scheduler(run_entry_point, verify_hosts,
                                          host_lookup, popen, distributed_training_env):
     host_lookup.return_value = IP_ADDRESS
 
@@ -93,21 +92,19 @@ def test_train_for_distributed_scheduler(run_entry_point, download_and_install, 
 
     popen.assert_has_calls(calls)
 
-    download_and_install.assert_called_with(MODULE_DIR)
-    run_entry_point.assert_called_with(MODULE_DIR,
-                                       MODULE_NAME,
-                                       distributed_training_env.to_cmd_args(),
-                                       distributed_training_env.to_env_vars(),
-                                       runner=framework.runner.ProcessRunnerType)
+    run_entry_point.assert_called_with(uri=MODULE_DIR,
+                                       user_entry_point=MODULE_NAME,
+                                       args=distributed_training_env.to_cmd_args(),
+                                       env_vars=distributed_training_env.to_env_vars(),
+                                       runner_type=runner.ProcessRunnerType)
 
 
 @patch('os.environ', {})
 @patch('subprocess.Popen')
 @patch('sagemaker_mxnet_container.training._host_lookup')
 @patch('sagemaker_mxnet_container.training._verify_hosts')
-@patch('sagemaker_containers.beta.framework.modules.download_and_install')
-@patch('sagemaker_containers.beta.framework.entry_point.run')
-def test_train_for_distributed_worker(run_entry_point, download_and_install, verify_hosts,
+@patch('sagemaker_training.entry_point.run')
+def test_train_for_distributed_worker(run_entry_point, verify_hosts,
                                       host_lookup, popen, distributed_training_env):
     host_lookup.return_value = IP_ADDRESS
 
@@ -121,29 +118,26 @@ def test_train_for_distributed_worker(run_entry_point, download_and_install, ver
 
     popen.assert_called_once_with(MXNET_COMMAND, shell=True, env=server_env)
 
-    download_and_install.assert_called_with(MODULE_DIR)
-    run_entry_point.assert_called_with(MODULE_DIR,
-                                       MODULE_NAME,
-                                       distributed_training_env.to_cmd_args(),
-                                       distributed_training_env.to_env_vars(),
-                                       runner=framework.runner.ProcessRunnerType)
+    run_entry_point.assert_called_with(uri=MODULE_DIR,
+                                       user_entry_point=MODULE_NAME,
+                                       args=distributed_training_env.to_cmd_args(),
+                                       env_vars=distributed_training_env.to_env_vars(),
+                                       runner_type=runner.ProcessRunnerType)
 
 
-@patch('sagemaker_containers.beta.framework.modules.download_and_install')
-@patch('sagemaker_containers.beta.framework.entry_point.run')
-def test_train_for_single_machine(run_entry_point, download_and_install,
+@patch('sagemaker_training.entry_point.run')
+def test_train_for_single_machine(run_entry_point,
                                   single_machine_training_env):
     training.train(single_machine_training_env)
-    download_and_install.assert_called_with(MODULE_DIR)
-    run_entry_point.assert_called_with(MODULE_DIR,
-                                       MODULE_NAME,
-                                       single_machine_training_env.to_cmd_args(),
-                                       single_machine_training_env.to_env_vars(),
-                                       runner=framework.runner.ProcessRunnerType)
+    run_entry_point.assert_called_with(uri=MODULE_DIR,
+                                       user_entry_point=MODULE_NAME,
+                                       args=single_machine_training_env.to_cmd_args(),
+                                       env_vars=single_machine_training_env.to_env_vars(),
+                                       runner_type=runner.ProcessRunnerType)
 
 
 @patch('sagemaker_mxnet_container.training.train')
-@patch('sagemaker_containers.beta.framework.training_env')
+@patch('sagemaker_training.environment.Environment')
 def test_main(env, train, single_machine_training_env):
     env.return_value = single_machine_training_env
 
