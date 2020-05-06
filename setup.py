@@ -60,12 +60,13 @@ setup(
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python",
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
 
     # We don't declare our dependency on mxnet here because we build with
     # different packages for different variants (e.g. mxnet-mkl and mxnet-cu90).
-    install_requires=['sagemaker-training>=3.4.2', 'retrying==1.3.3'],
+    install_requires=['sagemaker-training>=3.5.0', 'retrying==1.3.3'],
     extras_require={
         'test': test_dependencies
     },
