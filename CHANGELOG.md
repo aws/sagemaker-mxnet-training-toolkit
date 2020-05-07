@@ -1,5 +1,11 @@
 # Changelog
 
+## v4.1.0 (2020-05-07)
+
+### Features
+
+ * add Python 3.7 support
+
 ## v4.0.0.post0 (2020-04-30)
 
 ### Testing and Release Infrastructure
