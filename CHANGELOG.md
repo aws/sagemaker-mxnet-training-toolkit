@@ -1,5 +1,15 @@
 # Changelog
 
+## v4.1.1 (2020-05-12)
+
+### Bug Fixes and Other Changes
+
+ * Bump version of sagemaker-training for typing fix
+
+### Testing and Release Infrastructure
+
+ * remove unused scripts.
+
 ## v4.1.0 (2020-05-07)
 
 ### Features
