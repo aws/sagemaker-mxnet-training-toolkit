@@ -18,9 +18,8 @@ import os
 import boto3
 import pytest
 from sagemaker import LocalSession, Session
-from sagemaker.mxnet import MXNet
 
-from test.integration import NO_P2_REGIONS
+from utils import image_utils
 
 logger = logging.getLogger(__name__)
 logging.getLogger('boto').setLevel(logging.INFO)
@@ -29,20 +28,71 @@ logging.getLogger('factory.py').setLevel(logging.INFO)
 logging.getLogger('auth.py').setLevel(logging.INFO)
 logging.getLogger('connectionpool.py').setLevel(logging.INFO)
 
-SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
+DIR_PATH = os.path.dirname(os.path.realpath(__file__))
+
+# these regions have some p2 instances, but not enough for automated testing
+NO_P2_REGIONS = [
+    'ca-central-1',
+    'eu-central-1',
+    'eu-west-2',
+    'us-west-1',
+    'eu-west-3',
+    'eu-north-1',
+    'sa-east-1',
+    'ap-east-1',
+    'me-south-1'
+]
 
 
 def pytest_addoption(parser):
-    parser.addoption('--docker-base-name', default='preprod-mxnet')
+    parser.addoption('--build-image', '-B', action='store_true')
+    parser.addoption('--push-image', '-P', action='store_true')
+    parser.addoption('--dockerfile-type', '-T',
+                     choices=['dlc.cpu', 'dlc.gpu', 'mxnet.cpu'],
+                     default='mxnet')
+    parser.addoption('--dockerfile', '-D', default=None)
+    parser.addoption('--docker-base-name', default='sagemaker-mxnet-training')
     parser.addoption('--region', default='us-west-2')
     parser.addoption('--instance-count', default='1,2', choices=['1', '2', '1,2'])
-    parser.addoption('--framework-version', default=MXNet.LATEST_VERSION)
+    parser.addoption('--framework-version', default="1.6.0")
     parser.addoption('--py-version', default='3', choices=['2', '3', '2,3'])
     parser.addoption('--processor', default='cpu', choices=['gpu', 'cpu', 'cpu,gpu'])
     parser.addoption('--aws-id', default=None)
     parser.addoption('--instance-type', default=None)
     # If not specified, will default to {framework-version}-{processor}-py{py-version}
     parser.addoption('--tag', default=None)
+
+
+@pytest.fixture(scope='session', name='dockerfile_type')
+def fixture_dockerfile_type(request):
+    return request.config.getoption('--dockerfile-type')
+
+
+@pytest.fixture(scope='session', name='dockerfile')
+def fixture_dockerfile(request, dockerfile_type):
+    dockerfile = request.config.getoption('--dockerfile')
+    return dockerfile if dockerfile else 'Dockerfile.{}'.format(dockerfile_type)
+
+
+@pytest.fixture(scope='session', name='build_image', autouse=True)
+def fixture_build_image(request, framework_version, dockerfile, image_uri, region):
+    build_image = request.config.getoption('--build-image')
+    if build_image:
+        return image_utils.build_image(framework_version=framework_version,
+                                       dockerfile=dockerfile,
+                                       image_uri=image_uri,
+                                       region=region,
+                                       cwd=os.path.join(DIR_PATH, '..'))
+
+    return image_uri
+
+
+@pytest.fixture(scope='session', name='push_image', autouse=True)
+def fixture_push_image(request, image_uri, region, aws_id):
+    push_image = request.config.getoption('--push-image')
+    if push_image:
+        return image_utils.push_image(image_uri, region, aws_id)
+    return None
 
 
 def pytest_generate_tests(metafunc):
@@ -93,14 +143,16 @@ def instance_type(request, processor):
     return provided_instance_type if provided_instance_type is not None else default_instance_type
 
 
-@pytest.fixture(scope='session')
-def docker_image(docker_base_name, tag):
+@pytest.fixture(name='docker_registry', scope='session')
+def fixture_docker_registry(aws_id, region):
+    return '{}.dkr.ecr.{}.amazonaws.com'.format(aws_id, region) if aws_id else None
+
+
+@pytest.fixture(name='image_uri', scope='session')
+def fixture_image_uri(docker_registry, docker_base_name, tag):
+    if docker_registry:
+        return '{}/{}:{}'.format(docker_registry, docker_base_name, tag)
     return '{}:{}'.format(docker_base_name, tag)
-
-
-@pytest.fixture(scope='session')
-def ecr_image(aws_id, docker_base_name, tag, region):
-    return '{}.dkr.ecr.{}.amazonaws.com/{}:{}'.format(aws_id, region, docker_base_name, tag)
 
 
 @pytest.fixture(scope='session')
