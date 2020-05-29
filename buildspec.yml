@@ -9,5 +9,5 @@ phases:
   build:
     commands:
 
-      - error_cmd="echo 'In order to make changes to the docker files, please, use https://github.com/aws/deep-learning-containers repository.'"
-      - execute-command-if-has-matching-changes "$error_cmd" "./docker/"
+      - error_cmd="echo 'In order to make changes to the docker files, please, use https://github.com/aws/deep-learning-containers repository.' && exit 1"
+      - execute-command-if-has-matching-changes "$error_cmd" "docker/"
