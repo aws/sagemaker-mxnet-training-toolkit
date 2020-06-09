@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Accepts a list of command and filename patterns, checks to see if any matching
+# files differ from the master branch. If they do, executes the first command.
+# Used by some PR builds to decide which test steps are necessary. Current directory
+# must be a real git clone, so this won't work in codebuild jobs started by codepipeline.
+
+set -euo pipefail
+
+parameters=("$@")
+
+# git check doesn't work in codepipeline release jobs, so we always execute the command and exit
+[ "${RELEASE_BUILD:-0}" == "1" ] && eval ${parameters[0]} && exit 0
+
+git config credential.https://github.com.username sagemaker-bot
+export GIT_ASKPASS=git-oauth-token
+
+branch="${CODEBUILD_WEBHOOK_BASE_REF:-master}"
+changes=$(git log ${branch}..HEAD --oneline --no-merges --name-only --pretty=format:"%H")
+changes_found=false
+
+echo "CODEBUILD_WEBHOOK_BASE_REF = ${CODEBUILD_WEBHOOK_BASE_REF:-<WAS NOT SET>}"
+echo "Comparing current PR to ${branch}."
+echo $changes
+
+for ((i = 1 ; i <= $#-1 ; i++ ))
+do
+    echo "Comparing to ${parameters[$i]}"
+    if [[ $changes = *${parameters[$i]}* ]]
+    then
+        changes_found=true
+    fi
+done
+
+if [[ $changes_found = "true" ]]
+then
+    echo "Changes Found. Executing command passed in as first parameter."
+    eval ${parameters[0]}
+else
+    echo "No Changes Found"
+fi
+
