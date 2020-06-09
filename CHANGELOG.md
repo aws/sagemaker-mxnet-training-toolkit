@@ -1,5 +1,11 @@
 # Changelog
 
+## v4.1.1.post0 (2020-06-09)
+
+### Testing and Release Infrastructure
+
+ * Make docker folder read only, remove unused tests, rename test-toolkit/ -> test/.
+
 ## v4.1.1 (2020-05-12)
 
 ### Bug Fixes and Other Changes
