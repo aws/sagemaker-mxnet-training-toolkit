@@ -66,7 +66,7 @@ setup(
 
     # We don't declare our dependency on mxnet here because we build with
     # different packages for different variants (e.g. mxnet-mkl and mxnet-cu90).
-    install_requires=['sagemaker-training>=3.5.1', 'retrying==1.3.3'],
+    install_requires=['sagemaker-training>=3.5.2', 'retrying==1.3.3'],
     extras_require={
         'test': test_dependencies
     },
