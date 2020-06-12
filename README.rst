@@ -3,8 +3,8 @@ SageMaker MXNet Training Toolkit
 ================================
 
 SageMaker MXNet Training Toolkit is an open-source library for using MXNet to train models on Amazon SageMaker.
-For inference toolkit, see `SageMaker MXNet Inference Toolkit <https://github.com/aws/sagemaker-mxnet-serving-container>`__.
-For dockerfiles used for building SageMaker MXNet Containers, see `AWS Deep Learning Containers <https://github.com/aws/deep-learning-containers>`__.
+For inference, see `SageMaker MXNet Inference Toolkit <https://github.com/aws/sagemaker-mxnet-serving-container>`__.
+For the Dockerfiles used for building SageMaker MXNet Containers, see `AWS Deep Learning Containers <https://github.com/aws/deep-learning-containers>`__.
 For information on running MXNet jobs on Amazon SageMaker, please refer to the `SageMaker Python SDK documentation <https://github.com/aws/sagemaker-python-sdk>`__.
 
 
