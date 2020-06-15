@@ -14,6 +14,55 @@ Contributing
 Please read `CONTRIBUTING.md <https://github.com/aws/sagemaker-mxnet-training-toolkit/blob/master/CONTRIBUTING.md>`__
 for details on our code of conduct, and the process for submitting pull requests to us.
 
+Testing
+-------
+
+Set up a virtual environment for testing.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+One of the multiple ways to setup a virtual environment
+
+::
+
+   # use a package virtualenv
+   virtualenv -p python3 <name of env>
+
+Install requirements
+~~~~~~~~~~~~~~~~~~~~
+
+::
+
+   pip install -r requirements.txt
+
+Install sagemaker-mxnet-training-toolkit
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+   python setup.py sdist
+   pip install dist/sagemaker_mxnet_training*.tar.gz
+
+Test locally
+~~~~~~~~~~~~
+
+To run specific test
+
+::
+
+   pytest test/unit/test_training.py::test_train_for_distributed_scheduler
+
+To run an entire file
+
+::
+
+   pytest test/unit/test_training.py
+
+To run all tests within a folder
+
+::
+
+   pytest test/unit
+
 License
 -------
 
