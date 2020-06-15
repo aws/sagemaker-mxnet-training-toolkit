@@ -66,6 +66,7 @@ def distributed_training_env():
 
     return env
 
+
 @patch('sagemaker_training.entry_point.run')
 def test_train_horovod(run_module, single_machine_training_env):
     single_machine_training_env.additional_framework_parameters = {
@@ -73,11 +74,12 @@ def test_train_horovod(run_module, single_machine_training_env):
     }
 
     training.train(single_machine_training_env)
-    run_module.assert_called_with(uri=MODULE_DIR, 
-				  user_entry_point=MODULE_NAME,
-				  args=single_machine_training_env.to_cmd_args(),
+    run_module.assert_called_with(uri=MODULE_DIR,
+                                  user_entry_point=MODULE_NAME,
+                                  args=single_machine_training_env.to_cmd_args(),
                                   env_vars=single_machine_training_env.to_env_vars(),
                                   runner_type=runner.MPIRunnerType)
+
 
 @patch('os.environ', {})
 @patch('subprocess.Popen')
