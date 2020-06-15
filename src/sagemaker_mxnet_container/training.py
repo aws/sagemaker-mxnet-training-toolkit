@@ -23,6 +23,7 @@ from sagemaker_training import entry_point, environment, runner
 from sagemaker_mxnet_container.training_utils import scheduler_host
 
 LAUNCH_PS_ENV_NAME = 'sagemaker_parameter_server_enabled'
+LAUNCH_MPI_ENV_NAME = 'sagemaker_mpi_enabled'
 ROLES = ['worker', 'scheduler', 'server']
 
 logger = logging.getLogger(__name__)
@@ -73,19 +74,19 @@ def train(env):
             _run_mxnet_process('scheduler', env.hosts, ps_port, ps_verbose)
         _run_mxnet_process('server', env.hosts, ps_port, ps_verbose)
         os.environ.update(_env_vars_for_role('worker', env.hosts, ps_port, ps_verbose))
+
+    mpi_enabled = env.additional_framework_parameters.get(LAUNCH_MPI_ENV_NAME)
+
+    if mpi_enabled:
+        runner_type = runner.MPIRunnerType
     else:
-        mpi_enabled = env.additional_framework_parameters.get('sagemaker_mpi_enabled')
+        runner_type = runner.ProcessRunnerType
 
-        if mpi_enabled:
-            runner_type = runner.MPIRunnerType
-        else:
-            runner_type = runner.ProcessRunnerType
-
-        entry_point.run(uri=env.module_dir,
-                        user_entry_point=env.user_entry_point,
-                        args=env.to_cmd_args(),
-                        env_vars=env.to_env_vars(),
-                        runner_type=runner_type)
+    entry_point.run(uri=env.module_dir,
+                    user_entry_point=env.user_entry_point,
+                    args=env.to_cmd_args(),
+                    env_vars=env.to_env_vars(),
+                    runner_type=runner_type)
 
 
 def main():
