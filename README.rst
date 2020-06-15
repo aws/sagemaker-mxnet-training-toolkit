@@ -35,7 +35,7 @@ Install requirements
 
 ::
 
-   pip install -r requirements.txt
+   pip install .[test]
 
 Install sagemaker-mxnet-training-toolkit
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
