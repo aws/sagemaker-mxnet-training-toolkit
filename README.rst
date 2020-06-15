@@ -25,7 +25,10 @@ One of the multiple ways to setup a virtual environment
 ::
 
    # use a package virtualenv
+   # create a virtualenv
    virtualenv -p python3 <name of env>
+   # activate the virtualenv
+   source <name of env>/bin/activate
 
 Install requirements
 ~~~~~~~~~~~~~~~~~~~~
