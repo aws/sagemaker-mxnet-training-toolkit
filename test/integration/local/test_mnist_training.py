@@ -26,9 +26,6 @@ SCRIPT_PATH = os.path.join(MNIST_PATH, 'mnist.py')
 TRAIN_INPUT = 'file://{}'.format(os.path.join(MNIST_PATH, 'train'))
 TEST_INPUT = 'file://{}'.format(os.path.join(MNIST_PATH, 'test'))
 
-DOCKER_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'container','1.6.0'))
-DOCKER_FILE = os.path.join(DOCKER_PATH, 'Dockerfile.gpu')
-
 def test_single_machine(image_uri, sagemaker_local_session, local_instance_type,
                         framework_version, tmpdir):
     mx = MXNet(entry_point=SCRIPT_PATH, role='SageMakerRole', train_instance_count=1,
@@ -48,20 +45,6 @@ def test_distributed(image_uri, sagemaker_local_session, framework_version, proc
                image_name=image_uri, framework_version=framework_version,
                output_path='file://{}'.format(tmpdir),
                hyperparameters={'sagemaker_parameter_server_enabled': True})
-
-    _train_and_assert_success(mx, str(tmpdir))
-
-
-def test_distributed_horovod(sagemaker_local_session, framework_version, processor, tmpdir):
-    if processor == 'gpu':
-        pytest.skip('Local Mode does not support distributed training on GPU.')
-
-    mx = MXNet(entry_point=SCRIPT_PATH, role='SageMakerRole', train_instance_count=2,
-               train_instance_type='local', sagemaker_session=sagemaker_local_session,
-               image_name=DOCKER_FILE,
-               framework_version=framework_version,
-               output_path='file://{}'.format(tmpdir),
-               hyperparameters={'sagemaker_mpi_enabled': True})
 
     _train_and_assert_success(mx, str(tmpdir))
 
