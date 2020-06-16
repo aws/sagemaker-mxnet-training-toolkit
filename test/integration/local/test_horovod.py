@@ -18,7 +18,9 @@ import tarfile
 
 import pytest
 from sagemaker.mxnet import MXNet
+
 from integration import RESOURCE_PATH
+
 
 @pytest.mark.parametrize('instances, processes', [
     [1, 2],

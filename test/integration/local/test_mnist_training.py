@@ -26,6 +26,7 @@ SCRIPT_PATH = os.path.join(MNIST_PATH, 'mnist.py')
 TRAIN_INPUT = 'file://{}'.format(os.path.join(MNIST_PATH, 'train'))
 TEST_INPUT = 'file://{}'.format(os.path.join(MNIST_PATH, 'test'))
 
+
 def test_single_machine(image_uri, sagemaker_local_session, local_instance_type,
                         framework_version, tmpdir):
     mx = MXNet(entry_point=SCRIPT_PATH, role='SageMakerRole', train_instance_count=1,
