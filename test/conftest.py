@@ -184,6 +184,13 @@ def skip_gpu_instance_restricted_regions(region, instance_type):
 
 
 @pytest.fixture(autouse=True)
+def skip_by_dockerfile_type(request, dockerfile_type):
+    is_generic = (dockerfile_type == 'mxnet.cpu')
+    if request.node.get_closest_marker('skip_generic') and is_generic:
+        pytest.skip('Skipping because running generic image without mpi and horovod')
+
+
+@pytest.fixture(autouse=True)
 def skip_py2_containers(request, tag):
     if request.node.get_closest_marker('skip_py2_containers'):
         if 'py2' in tag:
