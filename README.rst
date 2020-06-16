@@ -35,15 +35,8 @@ Install requirements
 
 ::
 
-   pip install .[test]
+   pip install --upgrade .[test]
 
-Install sagemaker-mxnet-training-toolkit
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-::
-
-   python setup.py sdist
-   pip install dist/sagemaker_mxnet_training*.tar.gz
 
 Test locally
 ~~~~~~~~~~~~
@@ -52,19 +45,31 @@ To run specific test
 
 ::
 
-   pytest test/unit/test_training.py::test_train_for_distributed_scheduler
+   tox -- -k test/unit/test_training.py::test_train_for_distributed_scheduler
 
 To run an entire file
 
 ::
 
-   pytest test/unit/test_training.py
+   tox -- test/unit/test_training.py
 
-To run all tests within a folder
+To run all tests within a folder [e.g. integration]
 
 ::
 
-   pytest test/unit
+   tox -- tests/integ
+   
+You can also run them in parallel:
+
+::
+
+   tox -- -n auto tests/integ
+
+To run for specific interpreter [Python environment], use the ``-e`` flag
+
+::
+
+   tox -e py37 -- test/unit/test_training.py
 
 License
 -------
