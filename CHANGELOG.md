@@ -1,5 +1,11 @@
 # Changelog
 
+## v4.2.0 (2020-06-17)
+
+### Features
+
+ * Add MPI support for distributed training in MXNet
+
 ## v4.1.2 (2020-06-17)
 
 ### Bug Fixes and Other Changes
