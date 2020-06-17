@@ -22,6 +22,7 @@ from sagemaker.mxnet import MXNet
 from integration import RESOURCE_PATH
 
 
+@pytest.mark.skip_gpu
 @pytest.mark.skip_generic
 @pytest.mark.parametrize('instances, processes', [
     [1, 2],
