@@ -1,6 +1,7 @@
 ARG region
 FROM 763104351884.dkr.ecr.$region.amazonaws.com/mxnet-training:1.6.0-cpu-py2
 
+# TODO @chai remove once DLC images have OpenSHH installed
 # OpenSHH config for MPI communication
 RUN mkdir -p /var/run/sshd && \
   sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
