@@ -1,5 +1,25 @@
 # Changelog
 
+## v4.2.0 (2020-06-17)
+
+### Features
+
+ * Add MPI support for distributed training in MXNet
+
+## v4.1.2 (2020-06-17)
+
+### Bug Fixes and Other Changes
+
+ * bump version of sagemaker-training for script entry point fix
+
+### Documentation Changes
+
+ * remove confusing information from the Readme.
+
+### Testing and Release Infrastructure
+
+ * Rename buildspec files.
+
 ## v4.1.1.post0 (2020-06-09)
 
 ### Testing and Release Infrastructure
