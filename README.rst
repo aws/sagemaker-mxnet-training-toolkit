@@ -38,8 +38,8 @@ Install requirements
    pip install --upgrade .[test]
 
 
-Test locally
-~~~~~~~~~~~~
+Local Test
+~~~~~~~~~~
 
 To run specific test
 
@@ -53,23 +53,40 @@ To run an entire file
 
    tox -- test/unit/test_training.py
 
-To run all tests within a folder [e.g. integration]
+To run all tests within a folder [e.g. integration/local/]
+
+Note: To run integration tests locally, one needs to build an image. To trigger image build, use `-B` flag.
 
 ::
 
-   tox -- tests/integ
+   tox -- test/integration/local
    
 You can also run them in parallel:
 
 ::
 
-   tox -- -n auto tests/integ
+   tox -- -n auto test/integration/local
 
 To run for specific interpreter [Python environment], use the ``-e`` flag
 
 ::
 
    tox -e py37 -- test/unit/test_training.py
+
+Remote Test
+~~~~~~~~~~~
+
+Make sure to provide AWS account ID, Region, Docker base name & Tag.
+Docker Registry is composed of (aws_id, region)
+Image URI is composed of (docker_registry, docker_base_name, tag)
+
+Resulting Image URI is composed as: ``{aws_id}.dkr.ecr.{region}.amazonaws.com/{docker_base_name}:{tag}``
+
+::
+
+    tox -- --aws-id <aws_id> --region <region> --docker-base-name <docker_base_name> --tag <tag> test/integration/sagemaker
+
+For more details, refer `conftest.py <test/conftest.py>`_
 
 License
 -------
