@@ -1,5 +1,11 @@
 # Changelog
 
+## v4.2.0.post1 (2020-07-08)
+
+### Documentation Changes
+
+ * update test readme
+
 ## v4.2.0.post0 (2020-06-25)
 
 ### Testing and Release Infrastructure
