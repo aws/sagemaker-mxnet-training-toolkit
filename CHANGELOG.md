@@ -1,5 +1,11 @@
 # Changelog
 
+## v4.2.1 (2020-07-27)
+
+### Bug Fixes and Other Changes
+
+ * remove the openssh addition
+
 ## v4.2.0.post1 (2020-07-08)
 
 ### Documentation Changes
