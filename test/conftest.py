@@ -54,7 +54,7 @@ def pytest_addoption(parser):
     parser.addoption('--docker-base-name', default='sagemaker-mxnet-training')
     parser.addoption('--region', default='us-west-2')
     parser.addoption('--instance-count', default='1,2', choices=['1', '2', '1,2'])
-    parser.addoption('--framework-version', default="1.6.0")
+    parser.addoption('--framework-version', default="1.7.0")
     parser.addoption('--py-version', default='3', choices=['2', '3', '2,3'])
     parser.addoption('--processor', default='cpu', choices=['gpu', 'cpu', 'cpu,gpu'])
     parser.addoption('--aws-id', default=None)
