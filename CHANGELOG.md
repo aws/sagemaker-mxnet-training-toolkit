@@ -1,5 +1,15 @@
 # Changelog
 
+## v4.3.0 (2020-09-14)
+
+### Features
+
+ * support mxnet 1.7.0
+
+### Bug Fixes and Other Changes
+
+ * drop py27, add py38 support
+
 ## v4.2.1 (2020-07-27)
 
 ### Bug Fixes and Other Changes
