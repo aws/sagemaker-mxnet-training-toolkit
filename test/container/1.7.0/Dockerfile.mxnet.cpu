@@ -23,7 +23,7 @@ RUN cd /tmp && \
     curl -O https://bootstrap.pypa.io/get-pip.py && \
     python get-pip.py 'pip==19.1' && rm get-pip.py
 
-RUN pip install --no-cache mxnet==1.7.0
+RUN pip install --no-cache mxnet==1.7.0.post1
 
 COPY dist/sagemaker_mxnet_training-*.tar.gz /sagemaker_mxnet_training.tar.gz
 RUN pip install --no-cache-dir /sagemaker_mxnet_training.tar.gz && \
