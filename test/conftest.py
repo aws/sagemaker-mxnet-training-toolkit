@@ -12,11 +12,10 @@
 # permissions and limitations under the License.
 from __future__ import absolute_import
 
-import logging
-import os
-
 import boto3
 import pytest
+import logging
+import os
 from sagemaker import LocalSession, Session
 
 from utils import image_utils
